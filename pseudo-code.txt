@@ -1,3 +1,12 @@
+FLOW OF PROGRAM
+1. do-while user has not typed "quit"
+2. main menu < this function will return which choice the user choce 
+3. if it is fakedex data base, enter that function. these functions returns void, 
+    for they will only alter the array of struct fakemons
+4. if the user enters quit, confirm it  if confimed, exit the loop
+5. return 0;
+
+
 PRINTING BOXES
 1. Print top bar
 2. Print the main text
@@ -7,34 +16,111 @@ PRINTING BOXES
     this lower bar would get the input from the user
 numbers 1-3 and 5 are repetitive tasks
 
-// the scope is too wide. this function is vague
-CONTENT DISPLAY FUNCTION
-/* This function accepts an array of strings and calculates how much
-    whitespaces are needed to put contents enlcosing the box */
-1. Checks if the format would be centered or justified.
-2. if the format is centered
-    a. voidIsOdd = 0
-    b. if (((CONTENT_WIDTH - LEN_OF_ELEMENT) % 2) == 1)
-        voidisOdd = 1
-    c. nNumWhitespace = (CONTENT_WIDTH - len of element) / 2
-    b. While i < num_of_elements
-        printWhitespace(nNumWhitespace)
-        printf(array[i])
-        if voidIsOdd == 1
-            printWhitespace(nNumWhitespace + 1)
-        else 
-            printWhitespace(nNumWhitespace)
-3. if the format is justified
-
 
 PRINT_CHOICES_FUNCTION
 /* this function displays an array of strings that would be formatted.
     it can print in a grid format (2x2)(4x1), etc...
     it accepts input whether it would print it in justified or centered. 
     it comes with predefined colors. */
-1. check what type of indention is required
-2. if it is centered
-    a. 
+// algo for printing tabulated string arrays //
+// not yet finished
+#include <stdio.h>
+#include <string.h>
+#define WIDIH 28
+
+typedef char string[10];
+
+// limitations: max number of column is 10
+int displayChoices(string words[], int numElem, int column, int row, char format)
+{
+    int currRow;
+    int currCol;
+    int printedElem = 0;
+    
+    int maxLenCol[10] = {};
+    int currElem = 0;
+    
+    int spaces;
+    
+    int lenCurWord = 0;
+    
+    int half_width = WIDIH / 2;
+    
+    // counting the highest length in each column
+    for (currRow = 0; currRow < row; currRow++)
+    {
+        for (currCol = 0; currCol < column && 
+            printedElem < numElem; currCol++)
+            {
+                lenCurWord = strlen(words[currElem]);
+                if (maxLenCol[currCol] < lenCurWord)
+                    maxLenCol[currCol] = lenCurWord;
+                currElem++;
+            }
+    }
+    
+    if (format == 'c')
+    {
+    	// printspaces
+    	int i = 0;
+    	for (i = 0; i < half_width; i++)
+    	{
+    		printf(" ");
+		}
+	}
+	else if (format == 'j')
+		printf(" ");
+	else
+		printf("Tabulation not specified");
+    
+    for (currRow = 0; currRow < row; currRow++)
+    {
+        for (currCol = 0; currCol < column && 
+            printedElem < numElem; currCol++)
+            {
+                printf("> ");
+                printf("%s", words[printedElem]);
+                
+                
+                lenCurWord = strlen(words[printedElem]);
+                
+                
+                if (currCol + 1 < column)
+                {
+                	if (lenCurWord < maxLenCol[currCol])
+                	{
+                		for (spaces = 0; spaces < maxLenCol[currCol] - lenCurWord; 
+                        spaces++)
+                            printf(" ");
+					}
+                    printf("   ");
+                }
+                
+                printedElem++;
+                
+            }
+        printf("\n");
+    }
+    
+    if (format == 'c')
+    {
+	    if (WIDTH % 2 != 0)
+	    {
+	   		// printspaces
+	   		int i = 0;
+	   		for (i = 0; i < half_width + 1; i++)
+	   		{
+    			printf(" ");				
+			}
+		}
+	}
+	else
+	{
+		
+	}
+}
+
+// -------------------------------------------------------- //
 
 
 MAIN MENU CONTENTS FUNCTION
@@ -52,3 +138,23 @@ MAIN MENU CONTENTS FUNCTION
                 printWhitespace(num)
 2. Displaying input choices
     printChoices(menu, 2, 2, 'c')
+3. displaying the rest of the blanks
+4. Display game message, if there are any.
+5. take user input of what they want to do.
+6. display error message if there are any errors and (by reprinting the entire screen)
+7. return what the user selected
+
+
+FAKEDEX DATABASE
+1. Display headers
+2. Display home page of fakedex database
+    "welcome to the fakedex database trainer! what action would you like to do?"
+    printChoices(fakedex_menu, 3, 2, 'c')
+3. print the rest of the height
+4. display game message, if there are any
+5. take user input
+6. display error message if there are any errors
+7. return what the user selected
+
+
+
