@@ -16,7 +16,7 @@ typedef struct
 {
     string11 sFull_Name;
     string5 sShort_Name;
-    string300 sDesc;
+    string300 sDescript;
     char cGender;
     short nCaught;
 } mon_type;
