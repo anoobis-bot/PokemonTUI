@@ -6,6 +6,7 @@ FLOW OF PROGRAM
 4. if the user enters quit, confirm it  if confimed, exit the loop
 5. return 0;
 
+font of header: broadway KB
 
 PRINTING BOXES
 1. Print top bar
@@ -146,15 +147,81 @@ MAIN MENU CONTENTS FUNCTION
 
 
 FAKEDEX DATABASE
-1. Display headers
-2. Display home page of fakedex database
+1. while the user has not enter exit, loop through this
+2. Display headers
+3. Display home page of fakedex database
     "welcome to the fakedex database trainer! what action would you like to do?"
     printChoices(fakedex_menu, 3, 2, 'c')
-3. print the rest of the height
-4. display game message, if there are any
-5. take user input
-6. display error message if there are any errors
-7. return what the user selected
+4. print the rest of the height
+5. display game message, if there are any
+6. take user input
+
+PRINT DEX FUNCTION
+1. the view, edit, and remove dex are inside 1 function. (fakedex database)
+2. this function has the variable page. each page can have a mathematical formula on 
+    which index list can nly be printed at a time
+2. loop until the user typed exit
+3. print header (view, edit, remove)
+4. print dex content (this function accepts the page number)
+5. if mode is (view / edit / remove)
+    each if block nalang yung each printing out of input limitations and possible inputs, 
+    printing options etc.
+        each mode is also a loop until the user types back / exit
+            this goes back to main menu of database
+        // if view, edit, remove
+        when they select, the index must be in the page
+        clear sreen
+        this then displays the fakemonDetails()
+        do you want to edit/remove/exit
+6. if mode is add
+    clear screen
+    add dex header
+    what name, short name
+    type cancel if you want to cancel
+
+
+EXPLORATION
+1. print EXPLORATION header
+2. print trees from header files
+3. print 2d boxes with array.
+4. array has either 1 or 0
+5. if one print square, if 0 print white box?
+6. print trees
+7. print directions
+8. if move, random function (40% chance of encounter)
+
+ENCOUNTER FUNCTION
+this function is inside the eploration function and would be taking the fakemon array
+1. possible art:
+/\︿╱\
+\0_ 0 /╱\╱ 
+\▁︹_/
+2. Print the header. Wild Fakemon!
+3. print the name on left side. then print the picture of the pokemon
+4. Print actions.
+print message. (a wild <insert fakemon name> has appeared. What will you do?)
+5. Input validation
+
+
+BOX
+Page number based on the index avaialble in that page
+Loop until the user has typed "exit"
+1. Print header (BOX)
+2. Print based on number
+3. Provide a template image for boxes (header file)
+4. Print choice action
+5. Input validation
+6. searching algo
+    search each elemtn.name is cmp == 0, 
+    // if you have time, try doing binary search
+    return the page number
+    ask: do you want ot view, release, cancel?
+7. sort
+    Selection sort
+
+
+SETTINGS
+1. only needs the Fakemon Database
 
 
 
