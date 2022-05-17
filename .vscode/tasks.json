@@ -10,7 +10,7 @@
 				"-Wall",
 				"${file}",
 				"-o",
-				"${fileDirname}\\${fileBasenameNoExtension}.exe",
+				"${fileDirname}\\..\\${fileBasenameNoExtension}.exe",
 				// "output.exe",
 			],
 			"options": {
