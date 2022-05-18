@@ -6,6 +6,14 @@ FLOW OF PROGRAM
 4. if the user enters quit, confirm it  if confimed, exit the loop
 5. return 0;
 
+notes:
+1. pwede na hindi cancel sa add new entry
+2. Same name: overwrite. Same short name: invalid!
+3. same name and short name?
+4. dex entry only shows if newly caught lang
+5. for the box, pwedeng numbers nalang for search and sort
+6. after view entry iun box, just go back to slot
+
 font of header: broadway KB
 
 PRINTING BOXES
