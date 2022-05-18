@@ -8,10 +8,14 @@
 			"args": [
 				"-g",
 				"-Wall",
-				"${file}",
+				// "${file}",
+				"main.c",
+				"box_imp.c",
+				"util.c",
 				"-o",
-				"${fileDirname}\\..\\${fileBasenameNoExtension}.exe",
+				// "${fileDirname}\\..\\${fileBasenameNoExtension}.exe",
 				// "output.exe",
+				"../main.exe",
 			],
 			"options": {
 				"cwd": "${fileDirname}"
