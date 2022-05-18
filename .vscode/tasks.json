@@ -13,9 +13,9 @@
 				"box_imp.c",
 				"util.c",
 				"-o",
-				// "${fileDirname}\\..\\${fileBasenameNoExtension}.exe",
+				"${fileDirname}\\..\\main.exe",
 				// "output.exe",
-				"../main.exe",
+				// "../main.exe",
 			],
 			"options": {
 				"cwd": "${fileDirname}"
