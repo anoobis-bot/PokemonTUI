@@ -11,8 +11,9 @@ different modes the dex has
 
 // include files
 #include "../configurations.h"
-#include "../header/util.h"
-#include "../header/util_proto.h"
+#include "../header/definitions.h"
+#include "../protoypes/util_proto.h"
+#include "../header/art.h"
 
 
 /* This functioncreates the GUI for the main menu
@@ -28,10 +29,12 @@ char *main_menu()
     printf(CLEAR);
     printf("\n");
 
-    printspace(1);
+    printSpace(1);
 
+    printf("%c", 218); // "┌"
     for (currCol = 0; currCol < WIDTH; currCol++)
     {
-
+        printf("-");
     }
+    printf("%c", 191); // "┐"
 }

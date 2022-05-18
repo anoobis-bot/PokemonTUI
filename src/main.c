@@ -10,8 +10,9 @@ return values.
 ******************************************/
 
 // included header files
-#include "../header/util.h"
+#include "../header/definitions.h"
 #include "../configurations.h"
+#include "../protoypes/box_imp_proto.h"
 
 
 int main(void)
@@ -19,7 +20,7 @@ int main(void)
     // initialize dex with 0s
     mon_type FakeDex[DEX_MAX] = {0};
 
-
+    main_menu();
 
     return 0;
 }

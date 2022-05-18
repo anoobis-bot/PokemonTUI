@@ -9,16 +9,22 @@ functions that the developer may use
 ******************************************/
 
 // include files
+#include "../configurations.h"
 #include <stdio.h>
 
 /* This function prints n number of spaces 
     int nNumSpace is how many spaces would
     be printed                              */
-void printspace(int nNumSpace)
+void printSpace(int nNumSpace)
 {
     int i = 0;
     for(i = 0; i < nNumSpace; i++)
     {
         printf(" ");
     }
+}
+
+void printArt(char sArtChoice[][WIDTH])
+{
+    
 }
