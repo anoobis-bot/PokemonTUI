@@ -24,17 +24,10 @@ different modes the dex has
         - Settings                                 */
 char *main_menu()
 {
-    int currCol;
-    
+
     printf(CLEAR);
     printf("\n");
 
-    printSpace(1);
+    printHeader(HDR_FakeDex);
 
-    printf("%c", 218); // "┌"
-    for (currCol = 0; currCol < WIDTH; currCol++)
-    {
-        printf("-");
-    }
-    printf("%c", 191); // "┐"
 }
