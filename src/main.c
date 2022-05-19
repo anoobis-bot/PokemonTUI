@@ -20,9 +20,9 @@ int main(void)
     // initialize dex with 0s
     mon_type FakeDex[DEX_MAX] = {{{0}}};
 
-    stringIO sInput;
+    stringIn sInput;
 
-    main_menu(sInput);
+    main_menu(sInput, STR_INPUT_STD + STR_MARGIN);
 
     return 0;
 }

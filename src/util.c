@@ -130,29 +130,35 @@ void printRemark(char *sMessage)
 }
 
 /* This function handles the input of the user.
-    the macro STR_IO_SIZE is the size of the array sInput and sMessage
+    the macro STR_MSG_SIZE is the size of the array sMessage
     I put it that way so the parameters would be fewer
         this function accepts the sInput pointer and alters it based on user input
     error codes:
         0 - succeful input
         1 - the input is too long than the specified input*/
-int getInput(char *sInput, char *sErrorFeedBack)
+int getInput(char *sInput, int nInputSize, char *sErrorFeedBack)
 {
     int nErrorMsg = 0;
 
-    int nStrArrSizeIO = STR_IO_SIZE + STR_MARGIN;
+    char buffer;        // used for flushing the stdin file stream
 
     printSpace(LEFT_MARGIN + LEFT_PAD + 1);
     printf("[INPUT]: ");
-    fgets(sInput, nStrArrSizeIO, stdin);
-    sInput[strcspn(sInput, "\n")] = 0;
+    fgets(sInput, nInputSize, stdin);       // used fgets to limit the characters. it only get upto nInputSize - 1 char in stdin
+    sInput[strcspn(sInput, "\n")] = 0;      // replaces the \n with null character. if the buffer doesn't have it (has more than nInputSize - 1),
+                                            // it replaces the last element in the array (margin) with null
 
-    if (strlen(sInput) == nStrArrSizeIO - 1)
+    if (strlen(sInput) == nInputSize - 1)   // if the characters are too many for the array size
     {
-        snprintf(sErrorFeedBack, nStrArrSizeIO, "Invalid input! You may only enter a maximum of %d characters", 
-                    nStrArrSizeIO - STR_MARGIN);
+        snprintf(sErrorFeedBack, STR_MSG_SIZE, "Invalid input! You may only enter a maximum of %d characters", 
+                    nInputSize - STR_MARGIN);
+        while ( (buffer = getchar()) != '\n' && buffer != EOF );    // flushes stdin filestream 
+
         nErrorMsg = 1;
     }
 
+
     return nErrorMsg;
 }
+
+// qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
