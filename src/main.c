@@ -18,9 +18,11 @@ return values.
 int main(void)
 {
     // initialize dex with 0s
-    mon_type FakeDex[DEX_MAX] = {0};
+    mon_type FakeDex[DEX_MAX] = {{{0}}};
 
-    main_menu();
+    string65 sInput;
+
+    main_menu(sInput);
 
     return 0;
 }
