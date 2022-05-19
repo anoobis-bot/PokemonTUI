@@ -23,7 +23,10 @@
 #define DEX_MAX 150
 
 #define STR_MARGIN 2
-
-#define STR_IO_SIZE 65
+#define STR_MSG_SIZE 65
+#define STR_INPUT_STD 65
+#define STR5_ARR_SIZE 5
+#define STR11_ARR_SIZE 11
+#define STR300_ARR_SIZE 300
 
 #endif
