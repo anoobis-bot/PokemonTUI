@@ -129,20 +129,28 @@ void printRemark(char *sMessage)
 
 }
 
-/* This function handles the input of the user.*/
-int getInput(char *sInput, int nInputArrSize, char *sErrorFeedBack, int nMsgArrSize)
+/* This function handles the input of the user.
+    the macro STR_IO_SIZE is the size of the array sInput and sMessage
+    I put it that way so the parameters would be fewer
+        this function accepts the sInput pointer and alters it based on user input
+    error codes:
+        0 - succeful input
+        1 - the input is too long than the specified input*/
+int getInput(char *sInput, char *sErrorFeedBack)
 {
     int nErrorMsg = 0;
 
+    int nStrArrSizeIO = STR_IO_SIZE + STR_MARGIN;
+
     printSpace(LEFT_MARGIN + LEFT_PAD + 1);
     printf("[INPUT]: ");
-    fgets(sInput, nInputArrSize, stdin);
+    fgets(sInput, nStrArrSizeIO, stdin);
     sInput[strcspn(sInput, "\n")] = 0;
 
-    if (strlen(sInput) == nInputArrSize - 1)
+    if (strlen(sInput) == nStrArrSizeIO - 1)
     {
-        snprintf(sErrorFeedBack, nMsgArrSize, "Invalid input! You may only enter a maximum of %d characters", 
-                    nInputArrSize - STR_MARGIN);
+        snprintf(sErrorFeedBack, nStrArrSizeIO, "Invalid input! You may only enter a maximum of %d characters", 
+                    nStrArrSizeIO - STR_MARGIN);
         nErrorMsg = 1;
     }
 
