@@ -21,10 +21,11 @@ the program needs
 /* there are 2 extra bytes
     the first one is for input length checking
     and the second one is for the null byte*/
-typedef char string5[5 + STR_MARGIN];
-typedef char string11[11 + STR_MARGIN];
-typedef char string300[300 + STR_MARGIN];
-typedef char stringIO[STR_IO_SIZE + STR_MARGIN];
+typedef char string5[STR5_ARR_SIZE + STR_MARGIN];
+typedef char string11[STR11_ARR_SIZE + STR_MARGIN];
+typedef char string300[STR300_ARR_SIZE + STR_MARGIN];
+typedef char stringIn[STR_INPUT_STD + STR_MARGIN];
+typedef char stringMsg[STR_MSG_SIZE + STR_MARGIN];
 
 
 // macro define
