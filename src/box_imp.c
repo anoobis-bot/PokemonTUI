@@ -22,20 +22,18 @@ different modes the dex has
         - Explore
         - Box
         - Settings                                 */
-void main_menu(string65 sInput)
+void main_menu(stringIO sInput)
 {
     int currRow;
 
     // declaring string variables
-    string65 sUsrInput;
-    int nInputArrSize = sizeof(sUsrInput)/sizeof(sUsrInput[0]);   // storing the array size of sInput to var nInputArrSize
+    int nInputArrSize = STR_IO_SIZE + STR_MARGIN;   // storing the array size of sInput to var nInputArrSize
 
     // Input validation
     int Input_Fail;
 
     // message that would be sent to the user at the bottom screen
-    string65 sMessage = "";
-    int nMsgArrSize = sizeof(sMessage)/sizeof(sMessage[0]); // storing the array size of sMessage to var nMsgArrSize
+    stringIO sMessage = "";
 
     
     do {
@@ -52,13 +50,14 @@ void main_menu(string65 sInput)
             printRightRemain(0);
         }
 
-        // prints bottom part of the box
+        // prints bottom part of the box and the system message too, if there are any.
         printRemark(sMessage);
         sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
         // getInput returns if the user input is valid or not.
         // refer to getInput implementation (util.c) for the list of possible error msg returns
-        Input_Fail = getInput(sInput, nInputArrSize, sMessage, nMsgArrSize);
+        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+        Input_Fail = getInput(sInput, sMessage);
 
     } while (Input_Fail);
 }

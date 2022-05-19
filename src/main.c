@@ -20,7 +20,7 @@ int main(void)
     // initialize dex with 0s
     mon_type FakeDex[DEX_MAX] = {{{0}}};
 
-    string65 sInput;
+    stringIO sInput;
 
     main_menu(sInput);
 
