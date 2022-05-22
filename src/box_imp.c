@@ -13,6 +13,7 @@ different modes the dex has
 #include "../configurations.h"
 #include "../header/definitions.h"
 #include "../protoypes/util_proto.h"
+#include "../protoypes/art_proto.h"
 #include "../header/art.h"
 
 
@@ -24,7 +25,7 @@ different modes the dex has
         - Settings                                 */
 void main_menu(stringIn sInput, int sInputSize)
 {
-    int currRow;
+    int currRow = 0;
 
     // Input validation
     int Input_Fail = 0;
@@ -40,16 +41,17 @@ void main_menu(stringIn sInput, int sInputSize)
         // prints top part of the box
         printHeader(HDR_FakeDex);
 
-        // prints main content of the box
-        for (currRow = 0; currRow < HEIGHT; currRow++)
-        {
-            printLeftStart();
-            printRightRemain(0);
-        }
+        
+        // main content
+        printFillerLines(HEIGHT / 8, &currRow);
+        displayPokeball(ART_Pokeball, &currRow);
+        printBottomRemain(currRow);
+
 
         // prints bottom part of the box and the system message too, if there are any.
         printRemark(sMessage);
         sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
 
         // getInput returns if the user input is valid or not.
         // refer to getInput implementation (util.c) for the list of possible error msg returns
