@@ -52,6 +52,27 @@ void printRightRemain(int nContentLen)
     printf("\n");
 }
 
+void printBottomRemain(int currRow)
+{
+    while (currRow < HEIGHT)
+    {
+            printLeftStart();
+            printRightRemain(0);
+            currRow++;
+    }
+}
+
+void printFillerLines(int nQuantity, int *currRow)
+{
+    int i;
+    for (i = 0; i < nQuantity; i++)
+    {
+        printLeftStart(); 
+        printRightRemain(0); 
+        (*currRow)++;
+    }
+}
+
 /* This function prints the top bar of the TUI. It accepts
     the text art (in art.h) as it would be printed as the 
     title of the current page of the TUI.                   */
@@ -161,4 +182,3 @@ int getInput(char *sInput, int nInputSize, char *sErrorFeedBack)
     return nErrorMsg;
 }
 
-// qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
