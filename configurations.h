@@ -24,6 +24,7 @@
 
 #define STR_MARGIN 2
 #define STR_MSG_SIZE 65
+#define STR_CHOICES_SIZE 15
 #define STR_INPUT_STD 65
 #define STR5_ARR_SIZE 5
 #define STR11_ARR_SIZE 11

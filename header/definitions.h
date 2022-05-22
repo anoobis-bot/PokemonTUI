@@ -26,6 +26,7 @@ typedef char string11[STR11_ARR_SIZE + STR_MARGIN];
 typedef char string300[STR300_ARR_SIZE + STR_MARGIN];
 typedef char stringIn[STR_INPUT_STD + STR_MARGIN];
 typedef char stringMsg[STR_MSG_SIZE + STR_MARGIN];
+typedef char stringChoice[STR_CHOICES_SIZE];
 
 
 // macro define

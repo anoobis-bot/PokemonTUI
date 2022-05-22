@@ -23,7 +23,7 @@ different modes the dex has
         - Explore
         - Box
         - Settings                                 */
-void main_menu(stringIn sInput, int sInputSize)
+void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
 {
     int currRow = 0;
 
@@ -45,6 +45,8 @@ void main_menu(stringIn sInput, int sInputSize)
         // main content
         printFillerLines(HEIGHT / 8, &currRow);
         displayPokeball(ART_Pokeball, &currRow);
+        printFillerLines(1, &currRow);
+        printChoices(sMainChoices, 5, 2, 2, 'c', &currRow);
         printBottomRemain(currRow);
 
 

@@ -182,3 +182,92 @@ int getInput(char *sInput, int nInputSize, char *sErrorFeedBack)
     return nErrorMsg;
 }
 
+void printChoices(char sChoices[][STR_CHOICES_SIZE], int numElem, int column, int row, char format, int *boxHeight)
+{
+    int currRow;
+    int currCol;
+    int printedElem = 0;
+    
+    int maxLenCol[10] = {};
+    int currElem = 0;
+    
+    int lenCurWord = 0;
+
+    int nNumSpacesBetween = 3;
+    int nCursorLen = 2;
+
+    int rowWidth;
+    
+    // counting the highest length in each column
+    for (currRow = 0; currRow < row; currRow++)
+    {
+        for (currCol = 0; currCol < column && 
+            currElem < numElem; currCol++)
+            {
+                lenCurWord = strlen(sChoices[currElem]);
+                if (maxLenCol[currCol] < lenCurWord)
+                    maxLenCol[currCol] = lenCurWord;
+                currElem++;
+            }
+    }
+
+    int i;
+    int words_row_width = 0;
+    for (i = 0; i < 10; i++)
+    {
+        words_row_width += maxLenCol[i];
+    }
+    int half_start = (WIDTH / 2) - ((words_row_width + (nCursorLen * column) + ((column - 1) * nNumSpacesBetween)) / 2);
+    if (half_start % 2 == 1)
+        half_start--;
+
+
+	if (format != 'c' && format != 'j')
+        printf("Tabulation not specified");
+    
+    for (currRow = 0; currRow < row; currRow++)
+    {
+        rowWidth = 0;
+        if (format == 'c')
+        {
+    	    printLeftStart();
+            printSpace(half_start);
+            rowWidth += half_start;
+        }
+        else if (format == 'j')		                                    
+            printLeftStart();
+
+        for (currCol = 0; currCol < column && printedElem < numElem; currCol++)
+            {
+                printf("> ");
+                rowWidth += nCursorLen;
+
+                printf("%s", sChoices[printedElem]);
+                lenCurWord = strlen(sChoices[printedElem]);
+                rowWidth += lenCurWord;
+                
+                if (currCol + 1 < column)
+                {
+                	if (lenCurWord < maxLenCol[currCol])
+                	{
+                		printSpace(maxLenCol[currCol] - lenCurWord);
+                        rowWidth += maxLenCol[currCol] - lenCurWord;
+					}
+                    printSpace(nNumSpacesBetween);
+                    rowWidth += nNumSpacesBetween;
+                }
+                
+                printedElem++;
+                
+            }
+        if (format == 'c')
+        {
+    	    printRightRemain(rowWidth);
+        }
+        else if (format == 'j')		                                    
+            printRightRemain(rowWidth);
+    }
+
+    (*boxHeight) += row;
+    
+}
