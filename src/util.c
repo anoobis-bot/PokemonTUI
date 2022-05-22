@@ -271,3 +271,39 @@ void printChoices(char sChoices[][STR_CHOICES_SIZE], int numElem, int column, in
     (*boxHeight) += row;
     
 }
+
+void printText(char *sTempText, int *currRow)
+{
+    char sText[500];
+    char *sTemp;
+
+    int nRowPrintedElem = 0;
+    int nWordLen;
+
+    strcpy(sText, sTempText);
+
+    printLeftStart();
+    sTemp = strtok(sText, " ");
+    nWordLen = strlen(sTemp) + 1;
+    while (sTemp != NULL)
+    {
+        if (nRowPrintedElem + (nWordLen - 1) < WIDTH - (LEFT_PAD + RIGHT_PAD))
+        {
+            nRowPrintedElem += nWordLen;
+            printf("%s ", sTemp);
+        }
+        else
+        {
+            printRightRemain(nRowPrintedElem);
+            (*currRow)++;
+            nRowPrintedElem = 0;
+            printLeftStart();
+        }
+
+        sTemp = strtok(NULL, " ");
+        if (sTemp != NULL)
+            nWordLen = (strlen(sTemp)) + 1;
+    }
+    printRightRemain(nRowPrintedElem);
+    (*currRow)++;
+}

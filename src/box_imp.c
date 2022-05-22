@@ -31,7 +31,7 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
     int Input_Fail = 0;
 
     // message that would be sent to the user at the bottom screen
-    stringMsg sMessage = "";
+    stringMsg sMessage = "Choose the choices in the menu";
 
     
     do {
@@ -43,10 +43,12 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
 
         
         // main content
+        printText("Welcome to the Fakedex game trainer! What would you like to do?", &currRow);
         printFillerLines(HEIGHT / 8, &currRow);
         displayPokeball(ART_Pokeball, &currRow);
         printFillerLines(1, &currRow);
         printChoices(sMainChoices, 5, 2, 2, 'c', &currRow);
+        
         printBottomRemain(currRow);
 
 
