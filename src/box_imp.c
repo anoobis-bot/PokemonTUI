@@ -17,39 +17,41 @@ different modes the dex has
 #include "../header/art.h"
 
 
-/* This functioncreates the GUI for the main menu
-    it returns what the user selected
-        - it can be fakedex database
-        - Explore
-        - Box
-        - Settings                                 */
+/* This function creates the GUI for the main menu
+    it modifies the sInput to what the user has selected.
+    PARAMETERS:
+    - sInput is the input thw ould be later modified
+    - sInputSize is the size of the char array sInput
+    - sMainChoices is the array of strings composed of the main menu choices    */
 void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
 {
-    int currRow = 0;
+    int currRow = 0;    // indicates to functions on how many rows are already printed in the content area.
+                        // this so that the height of the content is consistent to the macro HEIGHT
 
-    // Input validation
-    int Input_Fail = 0;
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
-    // message that would be sent to the user at the bottom screen
-    stringMsg sMessage = "Choose the choices in the menu";
+    
+    stringMsg sMessage = "Choose the choices in the menu";  // message that would be sent to the user at the bottom screen
+                                                            // initialized to "Choose the choices in the menu"
 
     
     do {
-        printf(CLEAR);
-        printf("\n");
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
 
-        // prints top part of the box
-        printHeader(HDR_FakeDex);
+        // prints the header of the TUI
+        printHeader(HDR_FakeDex); 
 
         
-        // main content
+        // prints the main content of the TUI
         printText("Welcome to the Fakedex game trainer! What would you like to do?", &currRow);
-        printFillerLines(HEIGHT / 8, &currRow);
-        displayPokeball(ART_Pokeball, &currRow);
+        printFillerLines(HEIGHT / 8, &currRow);             // prints lines 1/8 of the HEIGHT
+        displayPokeball(ART_Pokeball, &currRow);            // dipalys the pokeball art
         printFillerLines(1, &currRow);
-        printChoices(sMainChoices, 5, 2, 2, 'c', &currRow);
+        printChoices(sMainChoices, 5, 2, 2, 'c', &currRow); // prints the possible choices fot main menu
         
-        printBottomRemain(currRow);
+        printBottomRemain(currRow); // prints the remaining row so that it would be HEIGHT 
+                                    // number of content rows
 
 
         // prints bottom part of the box and the system message too, if there are any.

@@ -1,3 +1,13 @@
+/******************************************
+File Name: art_proto.h
+
+Author: Francis Zaccharie B. de Leon
+Last Update: May 22, 2022
+
+This file contains the function prototypes
+of the functions in util.c file
+******************************************/
+
 #ifndef UTIL_PROTO_H
 #define UTIL_PROTO_H
 

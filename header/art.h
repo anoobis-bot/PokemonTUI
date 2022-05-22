@@ -2,9 +2,10 @@
 File Name: art.h
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 19, 2022
+Last Update: May 22, 2022
 
-This file contains the art that would
+This file contains the declaration of 2d 
+array variables for the art that would
 be printed in the console
 Each line would be a row in a 2d array.
 This is implemented this way so that 
@@ -13,12 +14,16 @@ printing art and text together in the
 same line.
 The prefix of a text art is HDR_ follwed
 by the text.
+The prefix of an image are is ART_ followed
+by the image
 ******************************************/
 
 #ifndef ART_H
 #define ART_H
 
-#include "../configurations.h"
+#include "../configurations.h"  // added this so that the WIDTH macro could be imported
+                                // this serves as a limiter so that the compiler would warn the developer if the image
+                                // is too big for the width of the TUI.
 
 char HDR_FakeDex[ART_TEXT_HEIGHT][WIDTH] = 
 {

@@ -18,11 +18,13 @@ return values.
 int main(void)
 {
     // choices in the game
-    stringChoice main_menu_choices[5] = {"Fakedex", "Exploration", "Box", "Settings", "Exit"};
+    stringChoice main_menu_choices[5] = {"Fakedex", "Exploration", "Box", "Settings", "Exit"};  // main menu choices
 
-    // initialize dex with 0s
+
+    // initialize dex and make all members equal to 0
     mon_type FakeDex[DEX_MAX] = {{{0}}};
 
+    // sInput is the variable that will hold the user inputt
     stringIn sInput;
 
     // main menu screen
