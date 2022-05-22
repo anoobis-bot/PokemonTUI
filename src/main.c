@@ -22,6 +22,7 @@ int main(void)
 
     stringIn sInput;
 
+    // main menu screen
     main_menu(sInput, STR_INPUT_STD + STR_MARGIN);
 
     return 0;
