@@ -12,7 +12,7 @@ different modes the dex has
 // include files
 #include "../configurations.h"
 #include "../header/definitions.h"
-#include "../header/lists_size.h"
+#include "../header/array_sizes.h"
 #include "../protoypes/util_proto.h"
 #include "../protoypes/art_proto.h"
 #include "../header/art.h"

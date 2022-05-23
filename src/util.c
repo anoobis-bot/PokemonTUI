@@ -10,6 +10,7 @@ functions that the developer may use
 
 // include files
 #include "../configurations.h"
+#include "../header/array_sizes.h"
 #include <stdio.h>
 #include <string.h>
 

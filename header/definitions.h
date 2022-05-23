@@ -14,6 +14,8 @@ the program needs.
 // include libraries
 #include <stdio.h>
 #include <string.h>
+
+#include "array_sizes.h"
 #include "../configurations.h"
 
 

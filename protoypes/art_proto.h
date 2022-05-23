@@ -11,6 +11,8 @@ of the functions in art.c file
 #ifndef ART_PROTO_H
 #define ART_PROTO_H
 
+#include "../configurations.h"
+
 void displayPokeball(char sPokeBallArt[][WIDTH], int *currRow);
 
 #endif

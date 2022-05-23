@@ -11,7 +11,7 @@ return values.
 
 // included header files
 #include "../header/definitions.h"
-#include "../header/lists_size.h"
+#include "../header/array_sizes.h"
 #include "../configurations.h"
 #include "../protoypes/box_imp_proto.h"
 

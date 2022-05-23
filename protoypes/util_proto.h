@@ -11,6 +11,9 @@ of the functions in util.c file
 #ifndef UTIL_PROTO_H
 #define UTIL_PROTO_H
 
+#include "../header/array_sizes.h"
+#include "../configurations.h"
+
 void printSpace(int nNumSpace);
 void printLeftStart();
 void printRightRemain(int nContentLen);
