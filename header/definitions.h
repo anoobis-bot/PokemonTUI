@@ -25,7 +25,7 @@ typedef char string5[STR5_ARR_SIZE + STR_MARGIN];
 typedef char string11[STR11_ARR_SIZE + STR_MARGIN];
 typedef char string300[STR300_ARR_SIZE + STR_MARGIN];
 typedef char stringIn[STR_INPUT_STD + STR_MARGIN];
-typedef char stringMsg[STR_MSG_SIZE + STR_MARGIN];
+typedef char stringMsg[WIDTH];                  // message does not need the margin since it does not depend on user input
 typedef char stringChoice[STR_CHOICES_SIZE];    // choices do not need the margin since they
                                                 // are already predefined in a list (array)
 
