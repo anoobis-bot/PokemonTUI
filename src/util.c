@@ -312,11 +312,14 @@ void printChoices(char sChoices[][STR_CHOICES_SIZE], int numElem, int column, in
     - *currRow: for updating the currRow in box_imp.c based on how many rows the text consumed
     LIMITATIONS
     - can only input 500 characters of sTempText                                                                               */
-void printText(char *sTempText, int *currRow)
+void printText(char *sTempText, char format, int *currRow)
 {
     char sText[500];    // strcpy from sTempText since sTempText is only a pointer (cant do string manipulations)
     char *sTemp;        // storage of word in the sText
     int nWordLen;       // length of that word
+    char sLineTextHolder[WIDTH];    // this is a buffer that will hold all the words in a single line
+
+    int nLeftExtraSpace = 0;        // used if it is centered. used in printSpace to print the appropriate number of spaces when format is centered
 
     int nRowPrintedElem = 0;    // used fto know how many characters were already printed in a row (new line if it exceeds WIDTH)
 
@@ -330,21 +333,44 @@ void printText(char *sTempText, int *currRow)
     {
         if (nRowPrintedElem + (nWordLen - 1) < WIDTH - (LEFT_PAD + RIGHT_PAD))  // if kasya pa yung word sa row
         {
-            nRowPrintedElem += nWordLen;    // update the number of characters in the row
-            printf("%s ", sTemp);           // print the word
+            strcat(sLineTextHolder, sTemp); // adds the word to the sLineTextHolder buffer
+            strcat(sLineTextHolder, " ");   // adds space since strtok does not include the space
+            nRowPrintedElem += nWordLen;    // update the number of characters in the row since new words are added
         }
-        else
+        else    // if di na kasya yung word, then print the sLineTextHolder buffer. after that, clean the buffer
         {
-            printRightRemain(nRowPrintedElem);  // if di kasya, print number of spaces na meron pa and close it off
+            if (format == 'c')  // if the format is centered
+            {
+                nLeftExtraSpace = (WIDTH / 2) - ((int)strlen(sLineTextHolder) / 2); // number of spaces required to center text
+                printSpace(nLeftExtraSpace);
+            }
+
+            printf("%s", sLineTextHolder);  // print the buffer
+            sLineTextHolder[0] = '\0';      // clean the buffer
+            printRightRemain(nRowPrintedElem + nLeftExtraSpace);  // print number of spaces na meron pa and close it off
             (*currRow)++;                       // update the currRow
             nRowPrintedElem = 0;                // reset the number of elements in a row
             printLeftStart();
+            
+            strcat(sLineTextHolder, sTemp);     // since sTemp still holds the next word, it is stored as the next line already
+            strcat(sLineTextHolder, " ");
+            nRowPrintedElem += nWordLen;    // update the number of characters in the row (next row in this case)
+
+            nLeftExtraSpace = 0;            // the row has different number of words so the space required to center is different
         }
 
         sTemp = strtok(NULL, " ");              // proceed to the next word
         if (sTemp != NULL)  // if it reaches the end of the string, sTemp might be NULL. segmenetaion fault guard
             nWordLen = (strlen(sTemp)) + 1;     // + 1 for the space
     }
-    printRightRemain(nRowPrintedElem);  // print the rest of the space after reaching the last word
+    // printing the final row
+    if (format == 'c') 
+    {
+        nLeftExtraSpace = (WIDTH / 2) - ((int)strlen(sLineTextHolder) / 2);
+        printSpace(nLeftExtraSpace);
+    }
+    printf("%s", sLineTextHolder);
+    sLineTextHolder[0] = '\0';
+    printRightRemain(nRowPrintedElem + nLeftExtraSpace);  // print the rest of the space after reaching the last word
     (*currRow)++;                       // updates the currRow for box_imp.c
 }

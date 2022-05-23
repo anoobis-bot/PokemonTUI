@@ -44,8 +44,9 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
 
         
         // prints the main content of the TUI
-        printText("Welcome to the Fakedex game trainer! What would you like to do?", &currRow);
-        printFillerLines(HEIGHT / 8, &currRow);             // prints lines 1/8 of the HEIGHT
+        printFillerLines(HEIGHT / 10, &currRow);
+        printText("Welcome to the Fakedex game trainer!", 'c', &currRow);
+        printFillerLines(1, &currRow);             // prints lines 1/8 of the HEIGHT
         displayPokeball(ART_Pokeball, &currRow);            // dipalys the pokeball art
         printFillerLines(1, &currRow);
         printChoices(sMainChoices, 5, 2, 2, 'c', &currRow); // prints the possible choices fot main menu
