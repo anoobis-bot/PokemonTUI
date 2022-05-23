@@ -14,6 +14,7 @@ list arrays
 
 // list arrays
 #define MAINCHOICES_SIZE 5
+#define DATABASECHOICES_SIZE 5
 
 
 // sizes for char array for strings

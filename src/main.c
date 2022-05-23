@@ -20,6 +20,7 @@ int main(void)
 {
     // choices in the game
     stringChoice sMainChoices[MAINCHOICES_SIZE] = {"Fakedex", "Exploration", "Box", "Settings", "Exit"};  // main menu choices
+    stringChoice sDatabaseChoices[DATABASECHOICES_SIZE] = {"Add Dex", "View Dex", "Update Dex", "Remove Dex", "Cancel"};
 
 
     // initialize dex and make all members equal to 0
@@ -29,7 +30,13 @@ int main(void)
     stringIn sInput;
 
     // main menu screen
-    main_menu(sInput, STR_INPUT_STD + STR_MARGIN, sMainChoices, MAINCHOICES_SIZE);
+    main_Menu(sInput, STR_INPUT_STD + STR_MARGIN, sMainChoices, MAINCHOICES_SIZE);
+
+    // Fakedex
+    if (strcmp(sInput, sMainChoices[0]) == 0)    
+    {
+        fakedex_Database(sInput, STR_INPUT_STD + STR_MARGIN, sDatabaseChoices, DATABASECHOICES_SIZE);
+    }
 
     return 0;
 }

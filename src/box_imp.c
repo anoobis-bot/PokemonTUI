@@ -24,7 +24,7 @@ different modes the dex has
     - sInput is the input thw ould be later modified
     - sInputSize is the size of the char array sInput
     - sMainChoices is the array of strings composed of the main menu choices    */
-void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[], int nMainChoicesSize)
+void main_Menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[], int nMainChoicesSize)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -47,11 +47,11 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[], int
         
         // prints the main content of the TUI
         printFillerLines(HEIGHT / 10, &currRow);
-        printText("Welcome to the Fakedex game trainer!", 'c', &currRow);
+        printText("Welcome to the Fakedex game, trainer!", 'c', &currRow);
         printFillerLines(1, &currRow);              // prints lines 1/8 of the HEIGHT
         displayPokeball(ART_Pokeball, &currRow);    // dipalys the pokeball art
         printFillerLines(1, &currRow);
-        printChoices(sMainChoices, nMainChoicesSize, 2, 2, 'c', &currRow); // prints the possible choices fot main menu
+        printChoices(sMainChoices, nMainChoicesSize, 3, 2, 'c', &currRow); // prints the possible choices fot main menu
         
         printBottomRemain(currRow); // prints the remaining row so that it would be HEIGHT 
                                     // number of content rows
@@ -69,4 +69,44 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[], int
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
     } while (Input_Fail);
+}
+
+void fakedex_Database(stringIn sInput, int sInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+    
+    stringMsg sMessage = "Welcome to the Fakedex Database!";  // message that would be sent to the user at the bottom screen
+                                                            // initialized to "Choose the choices in the menu"
+    
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_Database); 
+
+        // prints the main content of the TUI
+        printFillerLines(HEIGHT / 2, &currRow);
+        printText("Welcome to the Fakedex Database, Trainer! What would you like to do?", 'c', &currRow);
+        printFillerLines(1, &currRow);
+        printChoices(sDatabaseChoices, nDatabaseChoicesSize, nDatabaseChoicesSize, 1, 'c', &currRow);
+
+        printBottomRemain(currRow);
+
+        // prints bottom part of the box and the system message too, if there are any.
+        printRemark(sMessage);
+        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+        // getInput returns if the user input is valid or not.
+        // refer to getInput implementation (util.c) for the list of possible error msg returns
+        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+        Input_Fail = getInput(sInput, sInputSize, sDatabaseChoices, nDatabaseChoicesSize, sMessage);
+        // if the input fails, it will prompt the user to type an input again
+        // only valid inputs will be returned (sInput)
+    } while ((strcmp(sInput, sDatabaseChoices[nDatabaseChoicesSize - 1]) != 0));
 }
