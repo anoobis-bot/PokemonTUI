@@ -11,6 +11,7 @@ return values.
 
 // included header files
 #include "../header/definitions.h"
+#include "../header/lists_size.h"
 #include "../configurations.h"
 #include "../protoypes/box_imp_proto.h"
 
@@ -18,7 +19,7 @@ return values.
 int main(void)
 {
     // choices in the game
-    stringChoice main_menu_choices[5] = {"Fakedex", "Exploration", "Box", "Settings", "Exit"};  // main menu choices
+    stringChoice sMainChoices[MAINCHOICES_SIZE] = {"Fakedex", "Exploration", "Box", "Settings", "Exit"};  // main menu choices
 
 
     // initialize dex and make all members equal to 0
@@ -28,7 +29,7 @@ int main(void)
     stringIn sInput;
 
     // main menu screen
-    main_menu(sInput, STR_INPUT_STD + STR_MARGIN, main_menu_choices);
+    main_menu(sInput, STR_INPUT_STD + STR_MARGIN, sMainChoices);
 
     return 0;
 }

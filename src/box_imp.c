@@ -12,6 +12,7 @@ different modes the dex has
 // include files
 #include "../configurations.h"
 #include "../header/definitions.h"
+#include "../header/lists_size.h"
 #include "../protoypes/util_proto.h"
 #include "../protoypes/art_proto.h"
 #include "../header/art.h"
@@ -46,10 +47,10 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
         // prints the main content of the TUI
         printFillerLines(HEIGHT / 10, &currRow);
         printText("Welcome to the Fakedex game trainer!", 'c', &currRow);
-        printFillerLines(1, &currRow);             // prints lines 1/8 of the HEIGHT
-        displayPokeball(ART_Pokeball, &currRow);            // dipalys the pokeball art
+        printFillerLines(1, &currRow);              // prints lines 1/8 of the HEIGHT
+        displayPokeball(ART_Pokeball, &currRow);    // dipalys the pokeball art
         printFillerLines(1, &currRow);
-        printChoices(sMainChoices, 5, 2, 2, 'c', &currRow); // prints the possible choices fot main menu
+        printChoices(sMainChoices, MAINCHOICES_SIZE, 2, 2, 'c', &currRow); // prints the possible choices fot main menu
         
         printBottomRemain(currRow); // prints the remaining row so that it would be HEIGHT 
                                     // number of content rows
