@@ -24,10 +24,10 @@ different modes the dex has
     - sInput is the input thw ould be later modified
     - sInputSize is the size of the char array sInput
     - sMainChoices is the array of strings composed of the main menu choices    */
-void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
+void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[], int nMainChoicesSize)
 {
-    int currRow = 0;    // indicates to functions on how many rows are already printed in the content area.
-                        // this so that the height of the content is consistent to the macro HEIGHT
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
@@ -39,6 +39,7 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_FakeDex); 
@@ -50,7 +51,7 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
         printFillerLines(1, &currRow);              // prints lines 1/8 of the HEIGHT
         displayPokeball(ART_Pokeball, &currRow);    // dipalys the pokeball art
         printFillerLines(1, &currRow);
-        printChoices(sMainChoices, MAINCHOICES_SIZE, 2, 2, 'c', &currRow); // prints the possible choices fot main menu
+        printChoices(sMainChoices, nMainChoicesSize, 2, 2, 'c', &currRow); // prints the possible choices fot main menu
         
         printBottomRemain(currRow); // prints the remaining row so that it would be HEIGHT 
                                     // number of content rows
@@ -64,7 +65,7 @@ void main_menu(stringIn sInput, int sInputSize, stringChoice sMainChoices[])
         // getInput returns if the user input is valid or not.
         // refer to getInput implementation (util.c) for the list of possible error msg returns
         // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
-        Input_Fail = getInput(sInput, sInputSize, sMessage);
+        Input_Fail = getInput(sInput, sInputSize, sMainChoices, nMainChoicesSize, sMessage);
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
     } while (Input_Fail);

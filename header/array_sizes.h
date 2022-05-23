@@ -1,6 +1,18 @@
+/******************************************
+File Name: array_sizes.h
+
+Author: Francis Zaccharie B. de Leon
+Last Update: May 23, 2022
+
+This file contains most of the macros for
+declaring the sizes of arrays.
+Whether char arrays, art arrays or 
+list arrays
+******************************************/
 #ifndef LISTS_SIZE_H
 #define LISTS_SIZE_H
 
+// list arrays
 #define MAINCHOICES_SIZE 5
 
 
@@ -23,5 +35,6 @@
 
 // for art sizes
 #define ART_TEXT_HEIGHT 3   // height of the text art (art.h)
+
 
 #endif

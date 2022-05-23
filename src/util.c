@@ -175,12 +175,16 @@ void printRemark(char *sMessage)
     - sInputSize: size of the sInputArray
     ERROR CODES:
     0: succesful input
-    1: The input is too long and exceeds sInputSize                     */
-int getInput(char *sInput, int nInputSize, char *sErrorFeedBack)
+    1: The input is too long and exceeds sInputSize
+    2: The input entered is not in the list of input                     */
+int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], int nChoicesSize, char *sErrorFeedBack)
 {
     int nErrorMsg = 0;  // error code
 
     char buffer;        // used for flushing the stdin file stream
+
+    int currChoice;     // used in loops for checking each element in the sChoices array
+    int isMatch = 0;    // used to check if the user has entered an input identical to one of the elements in the list
 
     // prints and setup the [INPUT] prompt
     printSpace(LEFT_MARGIN + LEFT_PAD + 1);
@@ -191,13 +195,26 @@ int getInput(char *sInput, int nInputSize, char *sErrorFeedBack)
 
     if (strlen(sInput) == nInputSize - 1)   // if the characters are too many for the array size 
     {
-        snprintf(sErrorFeedBack, STR_MSG_SIZE, "Invalid input! You may only enter a maximum of %d characters", 
+        snprintf(sErrorFeedBack, WIDTH - STR_MARGIN, "Invalid input! You may only enter a maximum of %d characters", 
                     nInputSize - STR_MARGIN);
         while ( (buffer = getchar()) != '\n' && buffer != EOF );    // flushes stdin filestream 
 
         nErrorMsg = 1;
     }
 
+    // checks if the input is one of the elements in sChoices array. Case-sensitive (strcmp)
+    for (currChoice = 0; (currChoice < nChoicesSize) && (isMatch == 0); currChoice++)
+    {
+        if (strcmp(sChoices[currChoice], sInput) == 0)
+            isMatch = 1;
+    }
+
+    if ((!isMatch) && (nErrorMsg == 0)) // if strcnmp did not return 0 and input is not larger that nInputSize
+    {
+        snprintf(sErrorFeedBack, WIDTH - STR_MARGIN, "Your input is not in the choices. Inputs are case-sensitive.");
+
+        nErrorMsg = 2;
+    }
 
     return nErrorMsg;
 }

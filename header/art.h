@@ -24,7 +24,7 @@ by the image
 #include "../configurations.h"  // added this so that the WIDTH macro could be imported
                                 // this serves as a limiter so that the compiler would warn the developer if the image
                                 // is too big for the width of the TUI.
-#include "../header/array_sizes.h"
+#include "../header/array_sizes.h"  // ART_TEXT_HEIGHT
 
 char HDR_FakeDex[ART_TEXT_HEIGHT][WIDTH] = 
 {
