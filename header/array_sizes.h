@@ -22,9 +22,6 @@ list arrays
 #define STR_MSG_SIZE 65
 #define STR_CHOICES_SIZE 15
 #define STR_INPUT_STD 65
-#define STR5_ARR_SIZE 5
-#define STR11_ARR_SIZE 11
-#define STR300_ARR_SIZE 300
 
 // this margin is used for error checking. the first one is for checking if the input has 
 // exeeded the maximum number of elements. (e.g. is string can only handle 5 elements, if the 6th element
@@ -32,6 +29,11 @@ list arrays
 // memory values remain safe / untouched that might caused undefined behavior. 
 // the second one is for the null byte.
 #define STR_MARGIN 2
+
+// array sizes for the Full name, short name, description, gender, and caught
+#define FULL_NAME_SIZE 11
+#define SHORT_NAME_SIZE 5
+#define DESCRIPTION_SIZE 300
 
 
 // for art sizes

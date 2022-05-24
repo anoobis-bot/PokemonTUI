@@ -23,9 +23,9 @@ the program needs.
 /* there are 2 extra bytes (STR_MARGIN)
     the first one is for input length checking
     and the second one is for the null byte*/
-typedef char string5[STR5_ARR_SIZE + STR_MARGIN];
-typedef char string11[STR11_ARR_SIZE + STR_MARGIN];
-typedef char string300[STR300_ARR_SIZE + STR_MARGIN];
+typedef char stringSName[SHORT_NAME_SIZE + STR_MARGIN];
+typedef char stringFName[FULL_NAME_SIZE + STR_MARGIN];
+typedef char stringDesc[DESCRIPTION_SIZE + STR_MARGIN];
 typedef char stringIn[STR_INPUT_STD + STR_MARGIN];
 typedef char stringMsg[WIDTH];                  // message does not need the margin since it does not depend on user input
 typedef char stringChoice[STR_CHOICES_SIZE];    // choices do not need the margin since they
@@ -39,9 +39,9 @@ typedef char stringChoice[STR_CHOICES_SIZE];    // choices do not need the margi
 // struct definition
 typedef struct 
 {
-    string11 sFull_Name;
-    string5 sShort_Name;
-    string300 sDescript;
+    stringFName sFull_Name;
+    stringSName sShort_Name;
+    stringDesc sDescript;
     char cGender;
     short nCaught;
 } mon_type;
