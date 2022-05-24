@@ -40,6 +40,13 @@ char HDR_Database[ART_TEXT_HEIGHT][WIDTH] =
     {"|_|_/ /_/--\\  |_|  /_/--\\ |_|_) /_/--\\ _)_) |_|__"}, 
 };
 
+char HDR_Add_Dex[ART_TEXT_HEIGHT][WIDTH] = 
+{
+    {"  __    ___   ___       ___   ____  _   "}, 
+    {" / /\\  | | \\ | | \\     | | \\ | |_  \\ \\_/"}, 
+    {"/_/--\\ |_|_/ |_|_/     |_|_/ |_|__ /_/ \\"}, 
+};
+
 
 char ART_Pokeball[9][WIDTH] = 
 {

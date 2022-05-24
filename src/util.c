@@ -209,7 +209,14 @@ int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], in
             isMatch = 1;
     }
 
-    if ((!isMatch) && (nErrorMsg == 0)) // if strcnmp did not return 0 and input is not larger that nInputSize
+    // catch case. if there are no choices to pick (e.g. input a name) catch it with this if statement
+    if (sChoices == NULL)
+    {
+        // empty. just return the input
+    }
+
+    // if there are choices in the game, start from here
+    else if ((!isMatch) && (nErrorMsg == 0)) // if strcnmp did not return 0 and input is not larger that nInputSize
     {
         snprintf(sErrorFeedBack, WIDTH - STR_MARGIN, "Your input is not in the choices. Inputs are case-sensitive.");
 
