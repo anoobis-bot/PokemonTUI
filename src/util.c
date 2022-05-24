@@ -336,6 +336,7 @@ void printText(char *sTempText, char format, int *currRow)
     char *sTemp;        // storage of word in the sText
     int nWordLen;       // length of that word
     char sLineTextHolder[WIDTH];    // this is a buffer that will hold all the words in a single line
+    sLineTextHolder[0] = '\0';      // since strcat() would be used. This clean is a safe guard so that strcat is sure to start at the 0th element
 
     int nLeftExtraSpace = 0;        // used if it is centered. used in printSpace to print the appropriate number of spaces when format is centered
 
