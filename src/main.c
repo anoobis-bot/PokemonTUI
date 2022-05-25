@@ -28,25 +28,34 @@ int main(void)
     // initialize dex and make all members equal to 0
     mon_type FakeDex[DEX_MAX] = {{{0}}};
 
+    // number of Fakemon already created
+    int nMonCreated = 0;
+
     // sizes of each member in the FakeDex struct (mon_type)
-    int nDatabase_In_Sizes[4] = {FULL_NAME_SIZE + STR_MARGIN, SHORT_NAME_SIZE + STR_MARGIN, DESCRIPTION_SIZE + STR_MARGIN, 
+    int nDatabase_In_Sizes[STRUCT_IN_NUM] = {FULL_NAME_SIZE + STR_MARGIN, SHORT_NAME_SIZE + STR_MARGIN, DESCRIPTION_SIZE + STR_MARGIN, 
                                     1 + STR_MARGIN};
 
     // sInput is the variable that will hold the user inputt
     stringIn sInput;
 
+    // sMessage is the message feedback that the program will say to the computer
+    stringMsg sMessage = "";
+
     do {
         // main menu screen
-        mainMenu(sInput, STR_INPUT_STD + STR_MARGIN, sMainChoices, MAINCHOICES_SIZE);
+        mainMenu(sInput, STR_INPUT_STD + STR_MARGIN, sMainChoices, MAINCHOICES_SIZE, sMessage);
 
         // Fakedex Database
         if (strcmp(sInput, sMainChoices[0]) == 0)
         {
             do {
-                fakedexDatabase(sInput, STR_INPUT_STD + STR_MARGIN, sDatabaseChoices, DATABASECHOICES_SIZE);   // Fakedex Database TUI
+                fakedexDatabase(sInput, STR_INPUT_STD + STR_MARGIN, sDatabaseChoices, DATABASECHOICES_SIZE, sMessage);   // Fakedex Database TUI
                 // Add Dex
                 if (strcmp(sInput, sDatabaseChoices[0]) == 0)
-                    addDex(sInput, nDatabase_In_Sizes, 4, FakeDex);  // Add Dex TUI
+                {
+                    addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex, nMonCreated, sMessage);  // Add Dex TUI
+                    nMonCreated++;
+                }
 
             } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"
         }

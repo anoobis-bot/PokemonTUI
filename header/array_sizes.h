@@ -21,7 +21,7 @@ list arrays
 // refer to definitions.h, this is the size of the strings          
 #define STR_MSG_SIZE 65
 #define STR_CHOICES_SIZE 15
-#define STR_INPUT_STD 65
+#define STR_INPUT_STD 400
 
 // this margin is used for error checking. the first one is for checking if the input has 
 // exeeded the maximum number of elements. (e.g. is string can only handle 5 elements, if the 6th element
@@ -35,6 +35,8 @@ list arrays
 #define SHORT_NAME_SIZE 5
 #define DESCRIPTION_SIZE 300
 
+// how many user inputs for the mon_type struct
+#define STRUCT_IN_NUM 4
 
 // for art sizes
 #define ART_TEXT_HEIGHT 3   // height of the text art (art.h)

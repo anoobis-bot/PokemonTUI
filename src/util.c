@@ -173,6 +173,9 @@ void printRemark(char *sMessage)
     - sInput: variable that holds the input of the user. it is to 
         be altered in this function
     - sInputSize: size of the sInputArray
+    - nChoices: the list of choices the sInput is to be compared to. (checks if it matches to any of it)
+    - nChoiceSize: size of the array nChoices
+    - sErrorFeedback: put sMessage here.
     ERROR CODES:
     0: succesful input
     1: The input is too long and exceeds sInputSize
@@ -199,6 +202,8 @@ int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], in
                     nInputSize - STR_MARGIN);
         while ( (buffer = getchar()) != '\n' && buffer != EOF );    // flushes stdin filestream 
 
+        sInput[0] = '\0';   // cleans input buffer if the input was invalid.
+
         nErrorMsg = 1;
     }
 
@@ -219,6 +224,8 @@ int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], in
     else if ((!isMatch) && (nErrorMsg == 0)) // if strcnmp did not return 0 and input is not larger that nInputSize
     {
         snprintf(sErrorFeedBack, WIDTH - STR_MARGIN, "Your input is not in the choices. Inputs are case-sensitive.");
+
+        sInput[0] = '\0';   // cleans the input buffer if the input was invalid
 
         nErrorMsg = 2;
     }
