@@ -341,6 +341,7 @@ void printChoices(char sChoices[][STR_CHOICES_SIZE], int numElem, int column, in
     and prints it out justified or centered
     PARAMETERS:
     - sTempText: The text to be displayed
+    - fomat: you can input 'c' for center or 'j' for justified
     - *currRow: for updating the currRow in box_imp.c based on how many rows the text consumed
     LIMITATIONS
     - can only input 500 characters of sTempText                                                                               */
