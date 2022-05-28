@@ -2,7 +2,7 @@
 File Name: box_imp.c
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 18, 2022
+Last Update: May 28, 2022
 
 This file constains the function 
 implementations for the GUI of the 
@@ -22,9 +22,9 @@ different modes the dex has
     it modifies the sInput to what the user has selected.
     PARAMETERS:
     - sInput is the input thw ould be later modified
-    - sInputSize is the size of the char array sInput
+    - nInputSize is the size of the char array sInput
     - sMainChoices is the array of strings composed of the main menu choices    */
-void mainMenu(stringIn sInput, int sInputSize, stringChoice sMainChoices[], int nMainChoicesSize, stringMsg sMessage)
+void mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int nMainChoicesSize, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -65,13 +65,13 @@ void mainMenu(stringIn sInput, int sInputSize, stringChoice sMainChoices[], int 
         // getInput returns if the user input is valid or not.
         // refer to getInput implementation (util.c) for the list of possible error msg returns
         // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
-        Input_Fail = getInput(sInput, sInputSize, sMainChoices, nMainChoicesSize, sMessage);
+        Input_Fail = getInput(sInput, nInputSize, sMainChoices, nMainChoicesSize, sMessage);
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
     } while (Input_Fail);
 }
 
-void fakedexDatabase(stringIn sInput, int sInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize, stringMsg sMessage)
+void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -107,7 +107,7 @@ void fakedexDatabase(stringIn sInput, int sInputSize, stringChoice sDatabaseChoi
         // getInput returns if the user input is valid or not.
         // refer to getInput implementation (util.c) for the list of possible error msg returns
         // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
-        Input_Fail = getInput(sInput, sInputSize, sDatabaseChoices, nDatabaseChoicesSize, sMessage);
+        Input_Fail = getInput(sInput, nInputSize, sDatabaseChoices, nDatabaseChoicesSize, sMessage);
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
     } while (Input_Fail);
@@ -238,4 +238,263 @@ void addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Dat
     }
 
     strcpy(sMessage, "Succesfully added a new entry!");
+}
+
+int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage)
+{
+    int nIntIn;     // since the input that would be used here is integers, this would be the buffer for it
+
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+
+    if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
+        snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");   // message that would be sent to the user
+
+
+    // variables used for page display functions
+    int currPage = 0;
+    int nMaxPage;
+    // used to display the index number of fakemon
+    int currMon = 0;
+
+    // initializinf the max page (based on the number of elements that are in Fakedex[] already)
+    nMaxPage = currPopulation / MON_PAGE;
+    if ((currPopulation % MON_PAGE) != 0)   // ceiling operation. (if there is a decimal in the quotient, round it up always)
+        nMaxPage++;
+    if (nMaxPage == 0)
+        nMaxPage = 1;
+    
+
+    // this is the value to be returned. it is the index of the fakemon in Fakedex[]
+    int mon_Sel = -1; 
+
+    // 3 modes. 
+    // 0 = selecting whether they would like to go back, navigate, or select a fakemon
+    // 1 = navigate (change page) ;; 2 = select a fakemon
+    int Mode = 0;
+
+    // local array of choices if mode = 0
+    stringChoice modeChoices[3] = {"Navigate", "Select", "Cancel"};
+
+
+    // these variables are used to format the diplay TUI of this page -----
+
+    const int nLeftPad = 3;         // this page (view dex) has a unique left and right padding from the rest
+    const int nRightPad = 2;        // it has much larger padding
+    const int nSpaceBetween = 4;    // space between the name and description
+   
+    // max space given to encode the description of the fakemon in one line. the constant 3 here is for "<number>. ", 
+    // which is 3 chars
+    const int nDescNumMax = WIDTH - LEFT_PAD - nLeftPad - 3 - FULL_NAME_SIZE - nSpaceBetween - nRightPad  - RIGHT_PAD;
+    
+    // since printText function cannot handle variable outputs (i.e. %d place holders and %s)
+    // strcat() is used to place the contents of each line to the outputBuffer. After placing all the contents
+    // of a singe line to the outputBuffer, it is printf()ed to the output screen. 
+    // snprintf could be used, but it would still need to use strcat(). for uniformity, strcat was used to
+    // create the single line in a buffer, which is then printed out.
+    const int OutputBufMax = WIDTH;
+    char outputBuffer[OutputBufMax];
+    char sDescBuffer[nDescNumMax];
+
+    // for loops with strcat() is used to concatinate the number of Pad " " that would be printed
+    int currPad;
+
+    // used to know the lacking number of spaces to print to reach FULL_NAME_SIZE
+    int nNameLack;
+
+    // buffer used to print the current number of the fakemon <number>.
+    char sNumHolder[3];
+    
+    // these are created to easily change the header text of each column. right now they say: Name      Description
+    const int Name_HDR_Len = 5;
+    char Name_HDR[Name_HDR_Len];
+    strcpy(Name_HDR, "Name");
+    const int Desc_HDR_Len = 12;
+    char Desc_HDR[Desc_HDR_Len];
+    strcpy(Desc_HDR, "Description");
+
+    // up until here -----
+
+
+    do {    // loop until the user has slected a fakemon or typed "Cancel"
+
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_View_Dex); 
+
+
+        // main content of the TUI
+        printFillerLines(1, &currRow);
+        printText("Fakemon Entries", 'c', &currRow);
+        snprintf(outputBuffer, OutputBufMax, "%d of %d", (currPage + 1), nMaxPage); // putting the page info in buffer
+        printText(outputBuffer, 'c', &currRow); // printing the page info
+
+        printFillerLines(1, &currRow);
+
+        outputBuffer[0] = '\0';     // initializing the buffer since strcat will be used
+        // putting nLeftPad number of spaces in buffer (to print the left pad)
+        for (currPad = 0; currPad < nLeftPad + 3; currPad++)
+            strcat(outputBuffer, " ");
+
+        // putting header text
+        strcat(outputBuffer, Name_HDR);
+        // putting appropriate number of spaces between the 2 text headers
+        for (currPad = 0; currPad < nSpaceBetween + (FULL_NAME_SIZE - Name_HDR_Len); currPad++)
+            strcat(outputBuffer, " ");
+        strcat(outputBuffer, Desc_HDR);
+        // printing the bufffer containing the header text
+        printLeftStart();
+        printf("%s", outputBuffer);
+        printRightRemain(strlen(outputBuffer));
+        currRow++;
+
+        printFillerLines(1, &currRow);
+
+
+        // printing of fakedex entries
+        for (currMon = 0; (currMon < MON_PAGE) && (currMon + (currPage * MON_PAGE)) < currPopulation ; currMon++)
+        {
+            // strcat will be used in the buffer so in is initialized again
+            outputBuffer[0] = '\0'; 
+
+            // prepping the description of the current fakemon entry. if the length of the fakemon's description exceeds 
+            // the nDescNumMax - 4 (for the ...\0) it is truncated and replaced with an ellipsis ...
+            // nore: snprintf only prints n-1 to buffer
+            snprintf(sDescBuffer, nDescNumMax - 3, Fakedex[currMon + (currPage * MON_PAGE)].sDescript);
+            sDescBuffer[nDescNumMax - 4] = '\0';    // since sDescBuffer is not initialized to all 0, making sure it it has null
+            if (strlen(Fakedex[currMon + (currPage * MON_PAGE)].sDescript) > nDescNumMax - 4)
+                strcat(sDescBuffer, "..."); // if it is truncated, put ellipsis on it
+            
+            // this is where the printing of the line starts.
+            // putting the necessary number of pad to the buffer first 
+            for (currPad = 0; currPad < nLeftPad; currPad++)
+                strcat(outputBuffer, " ");
+
+            // sNumHolder is the buffer for the number of the current pokemon entry
+            // (currMon + 1) + (currPage * MON_PAGE) displays what index + 1 the fakemon is based on the current page
+            snprintf(sNumHolder, 3, "%d.", (currMon + 1) + (currPage * MON_PAGE));
+            strcat(outputBuffer, sNumHolder);   // putting the sNumHolder to the outputBuffer
+            // space after the number
+            strcat(outputBuffer, " ");
+
+            // putting to the buffer the full name of the current fakemon entry
+            strcat(outputBuffer, Fakedex[currMon + (currPage * MON_PAGE)].sFull_Name);
+
+            // putting  the appropriate number of whitespaces after the name so that the description would 
+            // have a uniform start position. nNameLack is the number of whitespaces lacking to reach the length
+            // FULL NAME SIZE. Full name cannot overflow since in the add dex function, characters more
+            // than FULL_NAME_SIZE is rejected
+            nNameLack = strlen(Fakedex[currMon + (currPage * MON_PAGE)].sFull_Name);
+            for (currPad = 0; currPad < nSpaceBetween + (FULL_NAME_SIZE - nNameLack); currPad++)
+                strcat(outputBuffer, " ");
+            
+            // putting the preppared sDescBuffer to the output buffer
+            strcat(outputBuffer, sDescBuffer);
+
+            // printing the outputBuffer. one fakemon per line.
+            printLeftStart();
+            printf("%s", outputBuffer);
+            printRightRemain(strlen(outputBuffer));
+            currRow++;
+            printFillerLines(1, &currRow);
+        }   // repeat this line by line until all fakemon entries are exhausted or when MON_PAGE number of fakemon
+            // already populates the page
+
+        
+        // after printing the fakemon entries, print the choices orlower part of the TUI
+        if (Mode == 0)
+        {
+            // prints the choices of modes
+            printChoices(modeChoices, 3, 3, 1, 'c', &currRow);
+
+            printBottomRemain(currRow);
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+
+            getInput(sInput, nInputSize, modeChoices, 3, sMessage);
+            if (strcmp(sInput, modeChoices[0]) == 0)    // navigate mode
+            {
+                Mode = 1;
+                snprintf(sMessage, STR_MSG_SIZE, "Which Page woud you like to go? Enter -1 to cancel");
+            }
+            else if (strcmp(sInput, modeChoices[1]) == 0)   // select mode
+            {
+                Mode = 2;
+                snprintf(sMessage, STR_MSG_SIZE, "Type the Fakemon's number you want to select. Enter -1 to cancel");
+            }
+            // if cancel is typed, the whole loop is stopped
+        }
+        else if (Mode == 1) // navigate
+        {
+            // prints bottom part of the box and the system message too, if there are any.
+            printBottomRemain(currRow);
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            // since sInput will return a string and the required data is int, sInput is turned into int using strtoll
+            getInput(sInput, nInputSize, NULL, 0, sMessage);
+            nIntIn = strtoll(sInput, NULL, 10); // strtoll returns 0 if conversion is unsuccesful
+            if ((nIntIn < 1 && nIntIn != -1) || nIntIn > nMaxPage)  // if strtoll returned error or the input is not in range
+            {                                                       // but excluding -1 (for escape function)
+                snprintf(sMessage, STR_MSG_SIZE, "Only input the avaialble page number or -1.");
+                sInput[0] = '\0';
+            }
+            else if (nIntIn == -1)  // escape function. returns to mode 0
+            {
+                Mode = 0;
+                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+            }
+            else    // or if the user inputted a valid number, page is set to that and mode returns to 0
+            {
+                currPage = nIntIn - 1;  // currPage starts at index 0
+                Mode = 0;
+                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+            }
+            
+        }
+        else if (Mode == 2) // select
+        {
+            // prints bottom part of the box and the system message too, if there are any.
+            printBottomRemain(currRow);
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            // since sInput will return a string and the required data is int, sInput is turned into int using strtoll
+            getInput(sInput, nInputSize, NULL, 0, sMessage);
+            nIntIn = strtoll(sInput, NULL, 10); // strtoll returns 0 if conversion is unsuccesful
+            // if the input is unsuccesful, negative (exculdding -1 for escape), not in range of the current fakemon
+            // numbers in the page, or greater than the number of fakemon entries
+            if ((nIntIn < ((currPage * MON_PAGE) + 1) && nIntIn != -1) || nIntIn > (currPage * MON_PAGE) + MON_PAGE ||
+                    nIntIn > currPopulation)
+            {
+                snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
+                sInput[0] = '\0';
+            }
+            else if (nIntIn == -1)  // escape function. returns to mode 0 
+            {
+                Mode = 0;
+                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+            }
+            else    // succesful input. mon_Sel is returned.
+            {
+                mon_Sel = nIntIn - 1; // mon_Sel starts at 0 index
+            }
+        }
+
+    } while(strcmp(sInput, modeChoices[2]) != 0 && mon_Sel < 0);    // while sInput != "Cancel" && mon_Sel is negative
+                                                                    // (there are no negative in the Fakedex array)
+    
+    if (strcmp(sInput, modeChoices[2]) == 0)    // if the user typed cancel
+    {
+        mon_Sel = -1;       // make sure that there were no selected fakemon
+        sInput[0] = '\0';   // "Cancel" will be left in the sInput buffer which could cause compplications for
+    }                       // other functions. that is why after typing, sInput is cleaned.
+
+    return mon_Sel;
 }

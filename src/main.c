@@ -2,7 +2,7 @@
 File Name: main.c
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 18, 2022
+Last Update: May 28, 2022
 
 This is the highest level of source code.
 It contains just function calls and simple
@@ -55,6 +55,11 @@ int main(void)
                 {
                     addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex, nMonCreated, sMessage);  // Add Dex TUI
                     nMonCreated++;
+                }
+                // View Dex
+                else if (strcmp(sInput, sDatabaseChoices[1]) == 0)
+                {
+                    viewDex(sInput, STR_INPUT_STD + STR_MARGIN, FakeDex, nMonCreated, sMessage);
                 }
 
             } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"

@@ -20,4 +20,6 @@
 
 #define DEX_MAX 150             // maximuim number of entities in the fakedex database
 
+#define MON_PAGE 5              // how many fakemon to display in a page in view dex
+
 #endif

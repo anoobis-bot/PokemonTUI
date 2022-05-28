@@ -2,7 +2,7 @@
 File Name: definitions.h
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 22, 2022
+Last Update: May 28, 2022
 
 This file contains most of the definitons 
 the program needs.
@@ -14,6 +14,7 @@ the program needs.
 // include libraries
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "array_sizes.h"
 #include "../configurations.h"

@@ -14,6 +14,6 @@ of the functions in box_imp.c file
 void mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int sMainChoicesSize , stringMsg sMessage);
 void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize, stringMsg sMessage);
 void addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nMonCreated, stringMsg sMessage);
-void viewDex(stringIn sInput, int nInputSize, stringMsg sMessage);
+int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage);
 
 #endif

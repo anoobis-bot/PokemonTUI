@@ -2,7 +2,7 @@
 File Name: art.h
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 22, 2022
+Last Update: May 28, 2022
 
 This file contains the declaration of 2d 
 array variables for the art that would
@@ -45,6 +45,13 @@ char HDR_Add_Dex[ART_TEXT_HEIGHT][WIDTH] =
     {"  __    ___   ___       ___   ____  _   "}, 
     {" / /\\  | | \\ | | \\     | | \\ | |_  \\ \\_/"}, 
     {"/_/--\\ |_|_/ |_|_/     |_|_/ |_|__ /_/ \\"}, 
+};
+
+char HDR_View_Dex[ART_TEXT_HEIGHT][WIDTH] = 
+{
+    {" _      _   ____  _           ___   ____  _    "},
+    {"\\ \\  / | | | |_  \\ \\    /    | | \\ | |_  \\ \\_/ "},
+    {" \\_\\/  |_| |_|__  \\_\\/\\/     |_|_/ |_|__ /_/ \\ "},
 };
 
 
