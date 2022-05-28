@@ -282,7 +282,7 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
 
     const int nLeftPad = 3;         // this page (view dex) has a unique left and right padding from the rest
     const int nRightPad = 2;        // it has much larger padding
-    const int nSpaceBetween = 4;    // space between the name and description
+    const int nSpaceBetween = 3;    // space between the name and description
    
     // max space given to encode the description of the fakemon in one line. the constant 3 here is for "<number>. ", 
     // which is 3 chars
@@ -343,7 +343,7 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
         // putting header text
         strcat(outputBuffer, Name_HDR);
         // putting appropriate number of spaces between the 2 text headers
-        for (currPad = 0; currPad < nSpaceBetween + (FULL_NAME_SIZE - Name_HDR_Len); currPad++)
+        for (currPad = 0; currPad < nSpaceBetween + (FULL_NAME_SIZE - (Name_HDR_Len - 1)); currPad++)
             strcat(outputBuffer, " ");
         strcat(outputBuffer, Desc_HDR);
         // printing the bufffer containing the header text
@@ -388,8 +388,8 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             // have a uniform start position. nNameLack is the number of whitespaces lacking to reach the length
             // FULL NAME SIZE. Full name cannot overflow since in the add dex function, characters more
             // than FULL_NAME_SIZE is rejected
-            nNameLack = strlen(Fakedex[currMon + (currPage * MON_PAGE)].sFull_Name);
-            for (currPad = 0; currPad < nSpaceBetween + (FULL_NAME_SIZE - nNameLack); currPad++)
+            nNameLack = FULL_NAME_SIZE - strlen(Fakedex[currMon + (currPage * MON_PAGE)].sFull_Name);
+            for (currPad = 0; currPad < nSpaceBetween + nNameLack; currPad++)
                 strcat(outputBuffer, " ");
             
             // putting the preppared sDescBuffer to the output buffer
