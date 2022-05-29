@@ -71,7 +71,8 @@ void mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int 
     } while (Input_Fail);
 }
 
-void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize, stringMsg sMessage)
+void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize, 
+                        stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -79,8 +80,7 @@ void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoi
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
     if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
-        strcpy(sMessage, "Welcome to the Fakedex Database!");        // message that would be sent to the user at the bottom screen
-                                                           
+        strcpy(sMessage, "Welcome to the Fakedex Database!"); // message that would be sent to the user at the bottom screen
     
     do {
         printf(CLEAR);  // clears the screen
@@ -138,7 +138,7 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
 
 
         // main content
-        printText("These are your new Fakemon Information", 'c', &currRow);
+        printText("These are your Fakemon Information", 'c', &currRow);
         printFillerLines(1, &currRow);
         // print full name
         snprintf(outputBuffer, 500, "%s %s", "Full Name:", Fakedex[nMonEntry].sFull_Name);
@@ -192,18 +192,32 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
     }    
 }
 
-void addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nCurrMon, stringMsg sMessage)
+int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nCurrMon, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
+    // value used in a for loop to check if the name match any of the already stored data 
+    int compMon = 0;        // compareMon
+    int isDuplicate = 0;   // will turn into 1 once there is a found duplictae
+    // this is where the temporary data would be stored if the full name is the same(since it may overwrite data)
+    mon_type tempMon = {{0}};
+    // choices for viewMon() if there is a duplicate
+    stringChoice sDuplicateChoice[2] = {"Yes", "No"};
+
+    // this is what to return, whether a new mon was created. set to yes by default
+    int newCreatedMon = 1;
 
     if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
         strcpy(sMessage, "");   // message that would be sent to the user at the bottom screen. set to none at the moment 
 
-    // there are 4 entries (question) that the user needs to fill. Full name, short name, description and gender.
+    // there are 4 entries (question) that the user needs to fill. 
+    // 0 = Full name, 
+    // 1 = short name, 
+    // 2 = description,
+    // 3 = gender.
     // this variable lets the function know what kind of entry the program currently needs from the user
     int currQuestion = 0;
 
@@ -238,10 +252,25 @@ void addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Dat
         strcpy(sOutSName, "Short Name: ");
         strcpy(sOutDesc, "Description: ");
         strcpy(sOutGender, "Gender: ");
-        strcat(sOutFName, dex_Database[nCurrMon].sFull_Name);   // based on the available information the user has inputted
-        strcat(sOutSName, dex_Database[nCurrMon].sShort_Name);  // because the array was initialized to 0, all other entries are
-        strcat(sOutDesc, dex_Database[nCurrMon].sDescript);     // 0 or NULL, so if the user has not yet inputted this, it will not conctenate anything.
-        if (dex_Database[nCurrMon].cGender == 'M')  // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
+
+        if (isDuplicate)    // if the entry is duplicate, the inputted data is stored in a temporary data buffer
+        {                   // since the data maybe discarded. so the data to be printed cannot come from dex_Database
+            strcat(sOutFName, tempMon.sFull_Name);
+            strcat(sOutSName, tempMon.sShort_Name);
+            strcat(sOutDesc, tempMon.sDescript);
+        }
+        else
+        {
+            // the buffers are based on the available information the user has inputted.
+            // because the array was initialized to 0, all other entries are
+            // 0 or NULL, so if the user has not yet inputted this, it will not conctenate anything.
+            strcat(sOutFName, dex_Database[nCurrMon].sFull_Name);   
+            strcat(sOutSName, dex_Database[nCurrMon].sShort_Name);  
+            strcat(sOutDesc, dex_Database[nCurrMon].sDescript);     
+        }
+        
+        // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
+        if (dex_Database[nCurrMon].cGender == 'M')  
             strcat(sOutGender, "MALE");
         else if (dex_Database[nCurrMon].cGender == 'F')
             strcat(sOutGender, "FEMALE");
@@ -287,36 +316,132 @@ void addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Dat
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
 
-        // sInput is assigned to its rightful struct member
-        if (currQuestion == 0)
-            strcpy(dex_Database[nCurrMon].sFull_Name, sInput);
-        else if (currQuestion == 1)
-            strcpy(dex_Database[nCurrMon].sShort_Name, sInput);
-        else if (currQuestion == 2)
-            strcpy(dex_Database[nCurrMon].sDescript, sInput);
-        
-        // for gender's input case, the developer did not modify the getInput command to alter the Input_Fail to output as 2, 
-        // it cannot check if the user input is in the choices since that needs an argument for the 3rd parameter,
-        // which in this case, set to NULL. since this is the only time that this particular problem will arise, 
-        // there is no need to alter the getInput function as this will complicate the getInput function.
-        else if (currQuestion == 3)
-        {
-            if (sInput[0] == 'M' || sInput[0] == 'F' || sInput[0] == 'U')
-                dex_Database[nCurrMon].cGender = sInput[0];
-            else if (Input_Fail != 1)   // if there are just the right amount of Input (no errors in that part)
-            {
-                Input_Fail = 2; // user input not in the choices
-                strcpy(sMessage, "Invalid input! You can only enter 'M', 'F', or 'U'" );    // this overides the message if the input is too long
-            }
-        }
-
+        // if the input was valid (the size of input is not greater than the alloted size of the member)
         if (!(Input_Fail))
         {
-            currQuestion++;
+            // since the full name of the fakemon is the basis for overwiting data this is the only question
+            // in which the input from that question is compared to every full name in the data base to check if there are
+            // duplicates.
+            if (currQuestion == 0)
+            {
+                for (compMon = 0; compMon < nCurrMon && !(isDuplicate); compMon++)
+                {
+                    if (strcmp(sInput, dex_Database[compMon].sFull_Name) == 0)
+                    {
+                        isDuplicate = 1;
+                        // compMon is the index where the fakemon to be overwritten resides.
+                        // compMon is decremented to balance it out 
+                        // since at the end of the for loop, it would be incremeneted.
+                        compMon--;
+                    }
+                }
+            }
+
+            if (isDuplicate)    // isDuplicate will never turn again to 0 once set to 1
+            {
+                // store the user input to the tempMon struct buffer
+                if (currQuestion == 0)
+                    strcpy(tempMon.sFull_Name, sInput);
+                else if (currQuestion == 1)
+                    strcpy(tempMon.sShort_Name, sInput);
+                else if (currQuestion == 2)
+                    strcpy(tempMon.sDescript, sInput);
+                
+                // for gender's input case, the developer did not modify the getInput command to alter the Input_Fail to 
+                // output as 2, it cannot check if the user input is in the choices (M, F, U)since that needs an argument 
+                // for the  3rd parameter, which in this case, set to NULL, since the full and short name and 
+                // description does not need choices. Since this is the only time that this particular problem will arise, 
+                // there is no need to alter the getInput function as this will complicate the getInput function.
+                else if (currQuestion == 3)
+                {
+                    if (sInput[0] == 'M' || sInput[0] == 'F' || sInput[0] == 'U')
+                        tempMon.cGender = sInput[0];
+                    else // if other letters are inputted
+                    {
+                        Input_Fail = 2; // user input not in the choices
+                        strcpy(sMessage, "Invalid input! You can only enter 'M', 'F', or 'U'" );    
+                    }
+                }
+                
+                // procceed to the next question if the input was succesful
+                if (!(Input_Fail))  
+                    currQuestion++;
+
+
+                // if all questions have been asked
+                if (currQuestion >= nInputQty)
+                {
+                    // tell the user that there has been a duplicate
+                    snprintf(sMessage, STR_MSG_SIZE, "We found a duplicate, would you like to overide this entry?");
+                    // show the original entry and ask if they want to overwrite
+                    viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, compMon, sMessage);
+                    if (strcmp(sInput, sDuplicateChoice[0]) == 0)   // if they entered "Yes"
+                    {
+                        dex_Database[compMon] = tempMon;    // update the compMon(index) with its new value
+                        snprintf(sMessage, STR_MSG_SIZE, "Fakemon entry updated");
+                    }
+                    else    // if they answered no, this function end and the tempMon was not assigned to anything
+                        snprintf(sMessage, STR_MSG_SIZE, "Fakemon entry discarded");
+                    
+                    newCreatedMon = 0;  // no new entry was made, they just updated/discarded an entry
+                }
+            }
+
+            else if (!(isDuplicate))    // if the Full Name is not duplicated
+            {
+                // sInput is assigned to its rightful struct member
+                if (currQuestion == 0)
+                    strcpy(dex_Database[nCurrMon].sFull_Name, sInput);
+                
+                else if (currQuestion == 1)
+                {
+                    // checks if there are any duplicates of the Short Name in the database
+                    for (compMon = 0; compMon < nCurrMon && !(isDuplicate); compMon++)
+                    {
+                        if (strcmp(sInput, dex_Database[compMon].sShort_Name) == 0)
+                        {
+                            Input_Fail = 3;
+                            snprintf(sMessage, STR_MSG_SIZE, 
+                                        "Duplicate short name in the database! Enter a unique short name.");
+                        }
+                    }
+
+                    // if there are no duplicates, assign the short name
+                    if (!(Input_Fail))
+                        strcpy(dex_Database[nCurrMon].sShort_Name, sInput);
+                }
+                
+                else if (currQuestion == 2)
+                    strcpy(dex_Database[nCurrMon].sDescript, sInput);
+                
+                // for gender's input case, the developer did not modify the getInput command to alter the Input_Fail to 
+                // output as 2, it cannot check if the user input is in the choices (M, F, U)since that needs an argument for the 
+                // 3rd parameter, which in this case, set to NULL, since the full and short name and description does not
+                // need choices. Since this is the only time that this particular problem will arise, 
+                // there is no need to alter the getInput function as this will complicate the getInput function.
+                else if (currQuestion == 3)
+                {
+                    if (sInput[0] == 'M' || sInput[0] == 'F' || sInput[0] == 'U')
+                        dex_Database[nCurrMon].cGender = sInput[0];
+                    else // if other letters are inputted
+                    {
+                        Input_Fail = 2; // user input not in the choices
+                        strcpy(sMessage, "Invalid input! You can only enter 'M', 'F', or 'U'" );    
+                    }
+                }
+
+                // if the input was successful, proceed to the next question
+                if (!(Input_Fail))
+                    currQuestion++;
+            }
+            
         }
     }
 
-    strcpy(sMessage, "Succesfully added a new entry!");
+    if (newCreatedMon)
+        strcpy(sMessage, "Succesfully added a new entry!");
+
+    return newCreatedMon;
 }
 
 int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage)

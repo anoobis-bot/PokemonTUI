@@ -46,6 +46,9 @@ int main(void)
     // sMessage is the message feedback that the program will say to the computer
     stringMsg sMessage = "";
 
+    // used to catch the return value of functions whether the operation was succesful or not. default to no
+    int isSucces = 0;
+
     do {
         // main menu screen
         mainMenu(sInput, STR_INPUT_STD + STR_MARGIN, sMainChoices, MAINCHOICES_SIZE, sMessage);
@@ -54,19 +57,25 @@ int main(void)
         if (strcmp(sInput, sMainChoices[0]) == 0)
         {
             do {
-                fakedexDatabase(sInput, STR_INPUT_STD + STR_MARGIN, sDatabaseChoices, DATABASECHOICES_SIZE, sMessage);   // Fakedex Database TUI
+                fakedexDatabase(sInput, STR_INPUT_STD + STR_MARGIN, sDatabaseChoices,       // Fakedex Database TUI
+                                    DATABASECHOICES_SIZE, sMessage);   
                 // Add Dex
                 if (strcmp(sInput, sDatabaseChoices[0]) == 0)
                 {
-                    addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex, nMonCreated, sMessage);  // Add Dex TUI
-                    nMonCreated++;
+                    isSucces = addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Add Dex TUI
+                                        nMonCreated, sMessage);  
+                    if (isSucces)   // addDex returns 1 if new fakemon populated the Fakedex (excluding update entries)
+                        nMonCreated++;
                 }
                 // View Dex
                 else if (strcmp(sInput, sDatabaseChoices[1]) == 0)
                 {
                     do {
-                        mon_Sel = viewDex(sInput, STR_INPUT_STD + STR_MARGIN, FakeDex, nMonCreated, sMessage);
-                        if (mon_Sel != -1)
+                        mon_Sel = viewDex(sInput, STR_INPUT_STD + STR_MARGIN, FakeDex,      // View Dex TUI
+                                            nMonCreated, sMessage);
+                        // mon_Sel is -1 if no fakemon in the fakedex is selected (if the user typed cancel)
+                        // there are no -1 in the index of the array Fakemon[]
+                        if (mon_Sel != -1)  
                             viewMon(sInput, STR_INPUT_STD + STR_MARGIN, sViewMonDexChoices, VIEWMONDEXCHOICES_SIZE, 
                                         FakeDex, mon_Sel, sMessage);
                     } while (mon_Sel != -1);
