@@ -180,7 +180,8 @@ void printRemark(char *sMessage)
     0: succesful input
     1: The input is too long and exceeds sInputSize
     2: The input entered is not in the list of input                     
-    3: Duplicate input from the database                                                                */
+    3: Duplicate input from the database
+    4: Input is empty                                                                                       */
 int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], int nChoicesSize, char *sErrorFeedBack)
 {
     int nErrorMsg = 0;  // error code
@@ -207,6 +208,12 @@ int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], in
 
         nErrorMsg = 1;
     }
+    else if (strlen(sInput) == 0)   // if there are no inputs
+    {
+        snprintf(sErrorFeedBack, WIDTH - STR_MARGIN, "You must have an input!");
+
+        nErrorMsg = 4;
+    }
 
     // checks if the input is one of the elements in sChoices array. Case-sensitive (strcmp)
     for (currChoice = 0; (currChoice < nChoicesSize) && (isMatch == 0); currChoice++)
@@ -218,7 +225,7 @@ int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], in
     // catch case. if there are no choices to pick (e.g. input a name) catch it with this if statement
     if (sChoices == NULL)
     {
-        // empty. just return the input. nErrorMsg would still be 0
+        // empty. just return the input. nErrorMsg would still be 0 (provided strlen is in range)
     }
 
     // if there are choices in the game, start from here
