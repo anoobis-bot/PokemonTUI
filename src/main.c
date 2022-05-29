@@ -23,6 +23,8 @@ int main(void)
     stringChoice sMainChoices[MAINCHOICES_SIZE] = {"Fakedex", "Exploration", "Box", "Settings", "Exit"};  // main menu choices
     // Fakedex Database Choices
     stringChoice sDatabaseChoices[DATABASECHOICES_SIZE] = {"Add Dex", "View Dex", "Update Dex", "Remove Dex", "Cancel"};
+    // View fakemon entry choices
+    stringChoice sViewMonDexChoices[VIEWMONDEXCHOICES_SIZE] = {"Cancel"};
 
     
     // initialize dex and make all members equal to 0
@@ -30,6 +32,9 @@ int main(void)
 
     // number of Fakemon already created
     int nMonCreated = 0;
+
+    // selected fakemon in the Fakdex database
+    int mon_Sel = -1;
 
     // sizes of each member in the FakeDex struct (mon_type)
     int nDatabase_In_Sizes[STRUCT_IN_NUM] = {FULL_NAME_SIZE + STR_MARGIN, SHORT_NAME_SIZE + STR_MARGIN, DESCRIPTION_SIZE + STR_MARGIN, 
@@ -59,7 +64,12 @@ int main(void)
                 // View Dex
                 else if (strcmp(sInput, sDatabaseChoices[1]) == 0)
                 {
-                    viewDex(sInput, STR_INPUT_STD + STR_MARGIN, FakeDex, nMonCreated, sMessage);
+                    do {
+                        mon_Sel = viewDex(sInput, STR_INPUT_STD + STR_MARGIN, FakeDex, nMonCreated, sMessage);
+                        if (mon_Sel != -1)
+                            viewMon(sInput, STR_INPUT_STD + STR_MARGIN, sViewMonDexChoices, VIEWMONDEXCHOICES_SIZE, 
+                                        FakeDex, mon_Sel, sMessage);
+                    } while (mon_Sel != -1);
                 }
 
             } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"

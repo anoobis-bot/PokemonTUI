@@ -15,6 +15,7 @@ list arrays
 // list arrays
 #define MAINCHOICES_SIZE 5
 #define DATABASECHOICES_SIZE 5
+#define VIEWMONDEXCHOICES_SIZE 1
 
 
 // sizes for char array for strings

@@ -113,6 +113,85 @@ void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoi
     } while (Input_Fail);
 }
 
+void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoicesSize, mon_type *Fakedex, int nMonEntry, 
+                stringMsg sMessage)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+
+    if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
+        strcpy(sMessage, "What would you like to do?");   // message that would be sent to the user at the bottom screen.
+    
+    // buffer that will be printed out in printText function. Max of 500 characters
+    char outputBuffer[500] = "";
+
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_View_Fakemon);
+
+
+        // main content
+        printText("These are your new Fakemon Information", 'c', &currRow);
+        printFillerLines(1, &currRow);
+        // print full name
+        snprintf(outputBuffer, 500, "%s %s", "Full Name:", Fakedex[nMonEntry].sFull_Name);
+        printText(outputBuffer, 'j', &currRow);
+        printFillerLines(1, &currRow);
+        // print short name
+        snprintf(outputBuffer, 500, "%s %s", "Short Name:", Fakedex[nMonEntry].sShort_Name);
+        printText(outputBuffer, 'j', &currRow);
+        printFillerLines(1, &currRow);
+        // print desciption
+        snprintf(outputBuffer, 500, "%s %s", "Description:", Fakedex[nMonEntry].sDescript);
+        printText(outputBuffer, 'j', &currRow);
+        printFillerLines(1, &currRow);
+        // print Gender
+        if (Fakedex[nMonEntry].cGender == 'M')  // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
+            snprintf(outputBuffer, 500, "%s %s", "Gender:", "MALE");
+        else if (Fakedex[nMonEntry].cGender == 'F')  
+            snprintf(outputBuffer, 500, "%s %s", "Gender:", "FEMALE");
+        else if (Fakedex[nMonEntry].cGender == 'U')  
+            snprintf(outputBuffer, 500, "%s %s", "Gender:", "UNKNOWN");
+        printText(outputBuffer, 'j', &currRow);
+        printFillerLines(1, &currRow);
+        // print caught or uncaught
+        if (Fakedex[nMonEntry].nCaught == 0)  // since nCaught member only has short, putting the constant CAUGHT or UNCAUGHT
+            snprintf(outputBuffer, 500, "%s %s", "Status:", "UNCAUGHT");
+        else if (Fakedex[nMonEntry].nCaught == 1)  
+            snprintf(outputBuffer, 500, "%s %s", "Status:", "CAUGHT");
+        printText(outputBuffer, 'j', &currRow);
+        printFillerLines(1, &currRow);
+
+        printChoices(sChoices, nChoicesSize, nChoicesSize, 1, 'c', &currRow);
+
+        printBottomRemain(currRow);
+
+
+        // prints bottom part of the box and the system message too, if there are any.
+        printRemark(sMessage);
+        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+        // getInput returns if the user input is valid or not.
+        // refer to getInput implementation (util.c) for the list of possible error msg returns
+        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+        Input_Fail = getInput(sInput, nInputSize, sChoices, nChoicesSize, sMessage);
+        // if the input fails, it will prompt the user to type an input again
+        // only valid inputs will be returned (sInput)
+    } while (Input_Fail && (strcmp(sInput, sChoices[nChoicesSize - 1]) != 0));
+
+    if (strcmp(sInput, sChoices[nChoicesSize - 1]) == 0)    // if the user typed cancel
+    {
+        sInput[0] = '\0';   // "Cancel" will be left in the sInput buffer which could cause compplications for
+    }    
+}
+
 void addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nCurrMon, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
