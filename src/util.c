@@ -13,6 +13,7 @@ functions that the developer may use
 #include "../header/array_sizes.h"
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h> 
 
 /* This function prints n number of spaces 
     PARAMETERS:
@@ -181,7 +182,8 @@ void printRemark(char *sMessage)
     1: The input is too long and exceeds sInputSize
     2: The input entered is not in the list of input                     
     3: Duplicate input from the database
-    4: Input is empty                                                                                       */
+    4: Input is empty                                                                                       
+    5: Invalid file type                                                                                       */
 int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], int nChoicesSize, char *sErrorFeedBack)
 {
     int nErrorMsg = 0;  // error code
@@ -415,4 +417,54 @@ void printText(char *sTempText, char format, int *currRow)
     sLineTextHolder[0] = '\0';
     printRightRemain(nRowPrintedElem + nLeftExtraSpace);  // print the rest of the space after reaching the last word
     (*currRow)++;                       // updates the currRow for box_imp.c
+}
+
+void printFileNames(char *path, int *currRow)
+{
+    int numSavs = 0;
+
+    int isOpened = 1;
+
+    char outputBuffer[WIDTH] = "";
+
+    char displayNum[3];
+
+    const int nLeftPad = WIDTH / 3;
+    int currPad;
+
+    DIR * dpath = opendir(path);    // opens the specified path
+    if (dpath == NULL)              // if the directory was not opened succesfully
+        isOpened = 0; 
+
+    if (isOpened)
+    {
+        struct dirent * dir;            // creates a struct that can handle dir operations
+
+        while ((dir = readdir(dpath)) != NULL)  // if there are still files in the directory
+        {
+            numSavs++;
+            printLeftStart();
+
+            outputBuffer[0] = '\0';
+            for (currPad = 0; currPad < nLeftPad; currPad++)
+                strcat(outputBuffer, " ");
+
+            snprintf(displayNum, 3, "%d.", numSavs);
+
+            strcat(outputBuffer, displayNum);
+
+            strcat(outputBuffer, " ");
+
+            strcat(outputBuffer, dir->d_name);
+
+            printRightRemain(strlen(outputBuffer));
+            (*currRow)++;
+
+            printFillerLines(1, currRow);
+        }
+        closedir(dpath); // finally close the directory
+    }
+
+    else
+        printText("No save files yet...", 'c', currRow);
 }

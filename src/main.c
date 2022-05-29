@@ -25,6 +25,8 @@ int main(void)
     stringChoice sDatabaseChoices[DATABASECHOICES_SIZE] = {"Add Dex", "View Dex", "Update Dex", "Remove Dex", "Cancel"};
     // View fakemon entry choices
     stringChoice sViewMonDexChoices[VIEWMONDEXCHOICES_SIZE] = {"Cancel"};
+    // Settings choice
+    stringChoice sSettingChoices[SETTINGCHOICES_SIZE] = {"Save", "Load", "Cancel"};
 
     
     // initialize dex and make all members equal to 0
@@ -83,7 +85,27 @@ int main(void)
 
             } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"
         }
+        
+        // Settings
+        else if (strcmp(sInput, sMainChoices[3]) == 0)
+        {
+            do {
+                settings(sInput, STR_INPUT_STD + STR_MARGIN, sSettingChoices,   // settings TUI
+                    SETTINGCHOICES_SIZE, sMessage);
+                
+                // save
+                if (strcmp(sInput, sSettingChoices[0]) == 0)
+                {
+                    save(sInput, STR_INPUT_STD + STR_MARGIN, sMessage);
+                }
+                // load
+                else if (strcmp(sInput, sSettingChoices[0]) == 1)
+                {
 
+                }
+
+            } while (strcmp(sInput, sSettingChoices[SETTINGCHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"
+        }
     } while (strcmp(sInput, sMainChoices[MAINCHOICES_SIZE - 1]) != 0);  // while the user has not typed "Exit"
 
     return 0;

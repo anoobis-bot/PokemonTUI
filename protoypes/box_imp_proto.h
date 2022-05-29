@@ -18,5 +18,8 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
                 int nMonEntry, stringMsg sMessage);
 int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nCurrMon, stringMsg sMessage);
 int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage);
+void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
+                        stringMsg sMessage);
+void save(stringIn sInput, int nInputSize, stringMsg sMessage);
 
 #endif

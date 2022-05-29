@@ -702,3 +702,120 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
 
     return mon_Sel;
 }
+
+void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
+                        stringMsg sMessage)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+    if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
+        strcpy(sMessage, "What would you like to do?"); // message that would be sent to the user at the bottom screen
+    
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_Settings); 
+
+
+        // prints the main content of the TUI
+        printFillerLines(HEIGHT / 5, &currRow);
+        printText("Save Slots:", 'c', &currRow);
+        printFillerLines(2, &currRow);
+        printFileNames("../sav", &currRow);
+        printFillerLines(2, &currRow);
+        printChoices(sSettingChoices, nSettingChoiceSize, nSettingChoiceSize, 1, 'c', &currRow);
+
+        printBottomRemain(currRow);
+
+
+        // prints bottom part of the box and the system message too, if there are any.
+        printRemark(sMessage);
+        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+        // getInput returns if the user input is valid or not.
+        // refer to getInput implementation (util.c) for the list of possible error msg returns
+        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+        Input_Fail = getInput(sInput, nInputSize, sSettingChoices, nSettingChoiceSize, sMessage);
+        // if the input fails, it will prompt the user to type an input again
+        // only valid inputs will be returned (sInput)
+    } while (Input_Fail);
+}
+
+void save(stringIn sInput, int nInputSize, stringMsg sMessage)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+    if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
+        strcpy(sMessage, ""); // message that would be sent to the user at the bottom screen
+
+
+    char pathBuffer[STR_INPUT_STD + 5];
+
+    
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_Save);
+
+        // prints the main content of the TUI
+        printFillerLines(HEIGHT / 5, &currRow);
+        printText("Save Slots:", 'c', &currRow);
+        printFillerLines(2, &currRow);
+        printFileNames("../sav", &currRow);
+        printFillerLines(2, &currRow);
+        
+        printBottomRemain(currRow);
+
+
+        snprintf(sMessage, STR_MSG_SIZE, "Enter a name for your save file. Include a .txt at the end.");
+        // prints bottom part of the box and the system message too, if there are any.
+        printRemark(sMessage);
+        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+        // getInput returns if the user input is valid or not.
+        // refer to getInput implementation (util.c) for the list of possible error msg returns
+        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+        Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
+        // if the input fails, it will prompt the user to type an input again
+        // only valid inputs will be returned (sInput)
+
+        if (!(Input_Fail))
+        {
+            if (strcmp(&(sInput[strlen(sInput) - 4]), ".txt") == 0)
+            {
+                Input_Fail = 5;
+                snprintf(sMessage, STR_MSG_SIZE, "Invalid file format! Use .txt at the end of the file name");
+                sInput[0] = '\0';
+            }
+            else if (strcmp(sInput, ".txt") == 0)
+            {
+                Input_Fail = 4;
+                snprintf(sMessage, STR_MSG_SIZE, "Please enter a file name followed by a .txt");
+                sInput[0] = '\0';
+            }
+
+            else
+            {
+                snprintf(pathBuffer, STR_INPUT_STD + 5, "../sav/%s", sInput);
+                FILE *fptr;
+                fptr = fopen(pathBuffer, "w");
+                fclose(fptr);
+            }
+        }
+        
+
+    } while (Input_Fail);
+
+}
