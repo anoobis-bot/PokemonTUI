@@ -24,6 +24,7 @@ void printRemark(char *sMessage);
 int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], int nChoicesSize, char *sErrorFeedBack);
 void printChoices(char sChoices[][STR_CHOICES_SIZE], int numElem, int column, int row, char format, int *currRow);
 void printText(char *sTempText, char format, int *currRow);
-void printFileNames(char *path, int *currRow);
+int printFileNames(char *path, int *currRow);
+int fileExists(const char *fname);
 
 #endif

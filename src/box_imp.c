@@ -714,6 +714,9 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
 
     if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
         strcpy(sMessage, "What would you like to do?"); // message that would be sent to the user at the bottom screen
+
+    // number of save files already in sav
+    int nNumSav = 0;
     
     do {
         printf(CLEAR);  // clears the screen
@@ -728,7 +731,7 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
         printFillerLines(HEIGHT / 5, &currRow);
         printText("Save Slots:", 'c', &currRow);
         printFillerLines(2, &currRow);
-        printFileNames("sav", &currRow);
+        nNumSav = printFileNames("sav", &currRow);
         printFillerLines(2, &currRow);
         printChoices(sSettingChoices, nSettingChoiceSize, nSettingChoiceSize, 1, 'c', &currRow);
 
@@ -745,10 +748,21 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
         Input_Fail = getInput(sInput, nInputSize, sSettingChoices, nSettingChoiceSize, sMessage);
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
+
+        if (strcmp(sInput, sSettingChoices[0]) == 0)    // if choice is save
+        {
+            if (nNumSav >= MAX_SAV_FILES)       // if there are too many save files
+            {
+                Input_Fail = 7; 
+                snprintf(sMessage, STR_MSG_SIZE, "You only have %d save slots. Please remove a save file.", MAX_SAV_FILES);
+                sInput[0] = '\0';
+            }
+        }
+        
     } while (Input_Fail);
 }
 
-void save(stringIn sInput, int nInputSize, stringMsg sMessage)
+void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -756,7 +770,7 @@ void save(stringIn sInput, int nInputSize, stringMsg sMessage)
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
     if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
-        strcpy(sMessage, "Enter a name for your save file. Include a .txt at the end.");
+        strcpy(sMessage, "Enter a name for your file. Put .txt at the end. You can 'Cancel'");
         // message that would be sent to the user at the bottom screen
 
 
@@ -767,6 +781,8 @@ void save(stringIn sInput, int nInputSize, stringMsg sMessage)
     // tells if the file opening was succesful. default to yes
     int isOpened = 1;
 
+    // used in for loops when looping thorgh every fakemon entry
+    int currMon;
     
     do {
         printf(CLEAR);  // clears the screen
@@ -800,16 +816,27 @@ void save(stringIn sInput, int nInputSize, stringMsg sMessage)
         // if the specified file name length is accepted
         if (!(Input_Fail))
         {
-            if (strcmp(&(sInput[strlen(sInput) - 4]), ".txt") != 0) // if the file extension is not .txt
+            if (strcmp(sInput, "Cancel") == 0)
+            {
+                Input_Fail = 0;
+                sInput[0] = '\0';
+            }
+            else if (strcmp(&(sInput[strlen(sInput) - 4]), ".txt") != 0) // if the file extension is not .txt
             {
                 Input_Fail = 5;
-                snprintf(sMessage, STR_MSG_SIZE, "Invalid file format! Use .txt at the end of the file name");
+                snprintf(sMessage, STR_MSG_SIZE, "Type .txt at the end of the file name. Try again or type 'Cancel'");
                 sInput[0] = '\0';
             }
             else if (strcmp(sInput, ".txt") == 0)   // if the file name is empty (only .txt)
             {
                 Input_Fail = 4;
-                snprintf(sMessage, STR_MSG_SIZE, "Please enter a file name followed by a .txt");
+                snprintf(sMessage, STR_MSG_SIZE, "Type a file name followed by a .txt. Try again or type 'Cancel'");
+                sInput[0] = '\0';
+            }
+            else if (fileExists(sInput))    // if the entered file name already exist
+            {
+                Input_Fail = 6;
+                snprintf(sMessage, STR_MSG_SIZE, "That file name is already taken! Try again or type 'Cancel'");
                 sInput[0] = '\0';
             }
 
@@ -827,6 +854,30 @@ void save(stringIn sInput, int nInputSize, stringMsg sMessage)
                 
                 if (isOpened)   // if succesfully opened
                 {
+                    fprintf(fptr, "NUMBER OF ENTRIES: %d\n", nMonCreated);
+                    fprintf(fptr, "\n");
+                    for (currMon = 0; currMon < nMonCreated; currMon++)
+                    {
+                        fprintf(fptr, "FULL NAME: %s\n", Fakedex[currMon].sFull_Name);
+                        fprintf(fptr, "SHORT NAME: %s\n", Fakedex[currMon].sShort_Name);
+                        fprintf(fptr, "DESCRIPTION: %s\n", Fakedex[currMon].sDescript);
+                        // since cGender is only a character data type, literal constants such as MALE must be printed
+                        if (Fakedex[currMon].cGender == 'M')  
+                            fprintf(fptr, "GENDER: MALE\n");
+                        else if (Fakedex[currMon].cGender == 'F')  
+                            fprintf(fptr, "GENDER: FEMALE\n");
+                        else if (Fakedex[currMon].cGender == 'U')  
+                            fprintf(fptr, "GENDER: UNKNOWN\n");
+                        
+                        // since nCaught is only a short data type, literal constants such as YES must be printed
+                        if (Fakedex[currMon].nCaught == 1)  
+                            fprintf(fptr, "CAUGHT: YES\n");
+                        if (Fakedex[currMon].nCaught == 0)  
+                            fprintf(fptr, "CAUGHT: NO\n");
+
+                        fprintf(fptr, "\n");
+                    }
+                    fprintf(fptr, "--------- DEX END ---------\n");
 
                     fclose(fptr);
                 }

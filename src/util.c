@@ -183,7 +183,9 @@ void printRemark(char *sMessage)
     2: The input entered is not in the list of input                     
     3: Duplicate input from the database
     4: Input is empty                                                                                       
-    5: Invalid file type                                                                                       */
+    5: Invalid file type
+    6: File name taken
+    7: Too many save files                                                                                     */
 int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], int nChoicesSize, char *sErrorFeedBack)
 {
     int nErrorMsg = 0;  // error code
@@ -422,8 +424,10 @@ void printText(char *sTempText, char format, int *currRow)
 /* This function prints all the file names inside the *path directory
     PARAMETERS:
     - *path: directory you want the filenames to be printed
-    - *currRow: for updating the currRow in box_imp.c based on how many rows the text consumed  */
-void printFileNames(char *path, int *currRow)
+    - *currRow: for updating the currRow in box_imp.c based on how many rows the text consumed
+    RETURN
+    - Number of files in the directory  */
+int printFileNames(char *path, int *currRow)
 {
     int numSavs = 0;    // keeps track how many files are in the directory
 
@@ -484,4 +488,23 @@ void printFileNames(char *path, int *currRow)
 
     else
         printText("Can't open directory!", 'c', currRow);
+    
+    return numSavs;
+}
+
+/* This function returns 1 if the input file name exists in the directory "sav", otherwise, return 0
+    PARAMETERS:
+    - *fname: name of the file  */
+int fileExists(const char *fname)
+{
+    char path[5 + FILE_NAME_LEN + STR_MARGIN] = "sav\\";
+    strcat(path, fname);
+
+    FILE *file;
+    if ((file = fopen(path, "r")))
+    {
+        fclose(file);
+        return 1;
+    }
+    return 0;
 }

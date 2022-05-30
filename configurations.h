@@ -24,4 +24,6 @@
 
 #define FILE_NAME_LEN 14
 
+#define MAX_SAV_FILES 3
+
 #endif

@@ -1,0 +1,9 @@
+NUMBER OF ENTRIES: 1
+
+FULL NAME: Venosaur
+SHORT NAME: VNZRA
+DESCRIPTION: I liked bulabasaur better because he is cute. I hate his evolutions
+GENDER: UNKNOWN
+CAUGHT: NO
+
+--------- DEX END ---------

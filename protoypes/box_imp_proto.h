@@ -20,6 +20,6 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
 int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage);
 void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
                         stringMsg sMessage);
-void save(stringIn sInput, int nInputSize, stringMsg sMessage);
+void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], stringMsg sMessage);
 
 #endif
