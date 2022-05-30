@@ -16,6 +16,7 @@ different modes the dex has
 #include "../protoypes/util_proto.h"
 #include "../protoypes/art_proto.h"
 #include "../header/art.h"
+#include <errno.h>
 
 
 /* This function creates the GUI for the main menu
@@ -727,7 +728,7 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
         printFillerLines(HEIGHT / 5, &currRow);
         printText("Save Slots:", 'c', &currRow);
         printFillerLines(2, &currRow);
-        printFileNames("../sav", &currRow);
+        printFileNames("sav", &currRow);
         printFillerLines(2, &currRow);
         printChoices(sSettingChoices, nSettingChoiceSize, nSettingChoiceSize, 1, 'c', &currRow);
 
@@ -755,10 +756,16 @@ void save(stringIn sInput, int nInputSize, stringMsg sMessage)
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
     if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
-        strcpy(sMessage, ""); // message that would be sent to the user at the bottom screen
+        strcpy(sMessage, "Enter a name for your save file. Include a .txt at the end.");
+        // message that would be sent to the user at the bottom screen
 
 
-    char pathBuffer[STR_INPUT_STD + 5];
+    // file name has the maximum input of FILE_NAME_LEN characters (including .txt), so this space would not be a problem
+    // STR_MARGIN is used so that there is a secured null byte
+    char pathBuffer[FILE_NAME_LEN + STR_MARGIN] = "";
+
+    // tells if the file opening was succesful. default to yes
+    int isOpened = 1;
 
     
     do {
@@ -773,13 +780,12 @@ void save(stringIn sInput, int nInputSize, stringMsg sMessage)
         printFillerLines(HEIGHT / 5, &currRow);
         printText("Save Slots:", 'c', &currRow);
         printFillerLines(2, &currRow);
-        printFileNames("../sav", &currRow);
+        printFileNames("sav", &currRow);
         printFillerLines(2, &currRow);
         
         printBottomRemain(currRow);
 
 
-        snprintf(sMessage, STR_MSG_SIZE, "Enter a name for your save file. Include a .txt at the end.");
         // prints bottom part of the box and the system message too, if there are any.
         printRemark(sMessage);
         sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
@@ -791,27 +797,39 @@ void save(stringIn sInput, int nInputSize, stringMsg sMessage)
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
 
+        // if the specified file name length is accepted
         if (!(Input_Fail))
         {
-            if (strcmp(&(sInput[strlen(sInput) - 4]), ".txt") == 0)
+            if (strcmp(&(sInput[strlen(sInput) - 4]), ".txt") != 0) // if the file extension is not .txt
             {
                 Input_Fail = 5;
                 snprintf(sMessage, STR_MSG_SIZE, "Invalid file format! Use .txt at the end of the file name");
                 sInput[0] = '\0';
             }
-            else if (strcmp(sInput, ".txt") == 0)
+            else if (strcmp(sInput, ".txt") == 0)   // if the file name is empty (only .txt)
             {
                 Input_Fail = 4;
                 snprintf(sMessage, STR_MSG_SIZE, "Please enter a file name followed by a .txt");
                 sInput[0] = '\0';
             }
 
-            else
+            else    // no other possible errors. save the file with the filename
             {
-                snprintf(pathBuffer, STR_INPUT_STD + 5, "../sav/%s", sInput);
+                snprintf(pathBuffer, STR_INPUT_STD + 5, "sav\\%s", sInput); // put the file path to the pathBuffer
                 FILE *fptr;
-                fptr = fopen(pathBuffer, "w");
-                fclose(fptr);
+                fptr = fopen(pathBuffer, "w");  // write file
+
+                if (fptr == NULL)   // if unable to open file
+                {
+                    snprintf(sMessage, STR_MSG_SIZE, "%s", strerror(errno));
+                    isOpened = 0;
+                }
+                
+                if (isOpened)   // if succesfully opened
+                {
+
+                    fclose(fptr);
+                }
             }
         }
         

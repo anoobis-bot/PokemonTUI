@@ -22,4 +22,6 @@
 
 #define MON_PAGE 5              // how many fakemon to display in a page in view dex
 
+#define FILE_NAME_LEN 14
+
 #endif

@@ -96,7 +96,7 @@ int main(void)
                 // save
                 if (strcmp(sInput, sSettingChoices[0]) == 0)
                 {
-                    save(sInput, STR_INPUT_STD + STR_MARGIN, sMessage);
+                    save(sInput, FILE_NAME_LEN + STR_MARGIN, sMessage); // save TUI
                 }
                 // load
                 else if (strcmp(sInput, sSettingChoices[0]) == 1)
@@ -104,7 +104,8 @@ int main(void)
 
                 }
 
-            } while (strcmp(sInput, sSettingChoices[SETTINGCHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"
+            } while (strcmp(sInput, sSettingChoices[SETTINGCHOICES_SIZE - 1]) != 0); 
+            // while the user has not typed "Cancel"
         }
     } while (strcmp(sInput, sMainChoices[MAINCHOICES_SIZE - 1]) != 0);  // while the user has not typed "Exit"
 

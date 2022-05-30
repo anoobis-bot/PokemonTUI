@@ -419,18 +419,22 @@ void printText(char *sTempText, char format, int *currRow)
     (*currRow)++;                       // updates the currRow for box_imp.c
 }
 
+/* This function prints all the file names inside the *path directory
+    PARAMETERS:
+    - *path: directory you want the filenames to be printed
+    - *currRow: for updating the currRow in box_imp.c based on how many rows the text consumed  */
 void printFileNames(char *path, int *currRow)
 {
-    int numSavs = 0;
+    int numSavs = 0;    // keeps track how many files are in the directory
 
-    int isOpened = 1;
+    int isOpened = 1;   // used to know if opening the directory is succesful
 
-    char outputBuffer[WIDTH] = "";
+    char outputBuffer[WIDTH] = "";  // buffer where filenames are stored, which is then printed
 
-    char displayNum[3];
+    char displayNum[3]; // concatinated in outputBuffer. used to store the number.
 
-    const int nLeftPad = WIDTH / 3;
-    int currPad;
+    const int nLeftPad = WIDTH / 3; // left pad
+    int currPad;    // used in for loops for printing the pad 
 
     DIR * dpath = opendir(path);    // opens the specified path
     if (dpath == NULL)              // if the directory was not opened succesfully
@@ -442,29 +446,42 @@ void printFileNames(char *path, int *currRow)
 
         while ((dir = readdir(dpath)) != NULL)  // if there are still files in the directory
         {
-            numSavs++;
-            printLeftStart();
+            // every directory has "." and ".." exclude them in the list
+            if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+            {
+                numSavs++;  // increment to keep track the number of files
+                
+                printLeftStart();
 
-            outputBuffer[0] = '\0';
-            for (currPad = 0; currPad < nLeftPad; currPad++)
+                outputBuffer[0] = '\0'; // resets the output buffer since strcat() will be used
+                // puts the necessary space based on nLeftPad
+                for (currPad = 0; currPad < nLeftPad; currPad++)
+                    strcat(outputBuffer, " ");
+
+                // puts the current number of the file to the buffer
+                snprintf(displayNum, 3, "%d.", numSavs);
+                strcat(outputBuffer, displayNum);
+                // space after number
                 strcat(outputBuffer, " ");
 
-            snprintf(displayNum, 3, "%d.", numSavs);
+                // puts the name of the file to the buffer
+                strcat(outputBuffer, dir->d_name);
 
-            strcat(outputBuffer, displayNum);
+                // prints the buffer
+                printf("%s", outputBuffer);
+                printRightRemain(strlen(outputBuffer));
+                (*currRow)++;
 
-            strcat(outputBuffer, " ");
-
-            strcat(outputBuffer, dir->d_name);
-
-            printRightRemain(strlen(outputBuffer));
-            (*currRow)++;
-
-            printFillerLines(1, currRow);
+                printFillerLines(1, currRow);
+            }
         }
         closedir(dpath); // finally close the directory
+
+        // if no files are in the directory
+        if (numSavs == 0)
+            printText("No save files yet...", 'c', currRow);
     }
 
     else
-        printText("No save files yet...", 'c', currRow);
+        printText("Can't open directory!", 'c', currRow);
 }
