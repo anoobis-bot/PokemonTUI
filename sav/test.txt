@@ -1,0 +1,27 @@
+NUMBER OF ENTRIES: 4
+
+FULL NAME: Blastoise
+SHORT NAME: BLST
+DESCRIPTION: Coolest boii in town
+GENDER: MALE
+CAUGHT: NO
+
+FULL NAME: Pillar
+SHORT NAME: PLAR
+DESCRIPTION: Sand Dune.
+GENDER: UNKNOWN
+CAUGHT: NO
+
+FULL NAME: Ghastly
+SHORT NAME: GHST
+DESCRIPTION: Only the Coolest ghost type Pokemon ever! look at that tongue man. and that shadow ball!
+GENDER: MALE
+CAUGHT: NO
+
+FULL NAME: Hello
+SHORT NAME: ITSAM
+DESCRIPTION: MEA MARIO
+GENDER: MALE
+CAUGHT: NO
+
+--------- DEX END ---------

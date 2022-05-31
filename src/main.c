@@ -65,7 +65,7 @@ int main(void)
                 if (strcmp(sInput, sDatabaseChoices[0]) == 0)
                 {
                     isSucces = addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Add Dex TUI
-                                        nMonCreated, sMessage);  
+                                        nMonCreated, sMessage, -1);  
                     if (isSucces)   // addDex returns 1 if new fakemon populated the Fakedex (excluding update entries)
                         nMonCreated++;
                 }
@@ -81,6 +81,12 @@ int main(void)
                             viewMon(sInput, STR_INPUT_STD + STR_MARGIN, sViewMonDexChoices, VIEWMONDEXCHOICES_SIZE, 
                                         FakeDex, mon_Sel, sMessage);
                     } while (mon_Sel != -1);
+                }
+                // Update Dex
+                else if (strcmp(sInput, sDatabaseChoices[2]) == 0)
+                {
+                    updateDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Update Dex TUI
+                        nMonCreated, sMessage);
                 }
 
             } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"

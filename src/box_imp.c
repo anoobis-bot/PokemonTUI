@@ -154,7 +154,8 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
         printText(outputBuffer, 'j', &currRow);
         printFillerLines(1, &currRow);
         // print Gender
-        if (Fakedex[nMonEntry].cGender == 'M')  // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
+        // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
+        if (Fakedex[nMonEntry].cGender == 'M')  
             snprintf(outputBuffer, 500, "%s %s", "Gender:", "MALE");
         else if (Fakedex[nMonEntry].cGender == 'F')  
             snprintf(outputBuffer, 500, "%s %s", "Gender:", "FEMALE");
@@ -163,7 +164,8 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
         printText(outputBuffer, 'j', &currRow);
         printFillerLines(1, &currRow);
         // print caught or uncaught
-        if (Fakedex[nMonEntry].nCaught == 0)  // since nCaught member only has short, putting the constant CAUGHT or UNCAUGHT
+        // since nCaught member only has short, putting the constant CAUGHT or UNCAUGHT
+        if (Fakedex[nMonEntry].nCaught == 0)  
             snprintf(outputBuffer, 500, "%s %s", "Status:", "UNCAUGHT");
         else if (Fakedex[nMonEntry].nCaught == 1)  
             snprintf(outputBuffer, 500, "%s %s", "Status:", "CAUGHT");
@@ -193,8 +195,23 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
     }    
 }
 
-int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nCurrMon, stringMsg sMessage)
+int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nMonCreated, 
+            stringMsg sMessage, int nCurrMon)
 {
+    // this will aslo be used for updateDex function since they have very similar functions, 
+    // so putting these would allow which mode the function is currently is
+    int isUpdateDex = 0;
+    if (nCurrMon < 0)   // if in addDex mode
+    {
+        // the current created fakemon is the highest index (nMonCreated)
+        nCurrMon = nMonCreated;
+    }
+    // else if the nCurrMon >= 0, that means this will replace whatever data in the index nCurrMon
+    else    // if in updateDex Mode
+    {
+        isUpdateDex = 1;
+    }
+
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
@@ -241,7 +258,10 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         currRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
-        printHeader(HDR_Add_Dex);
+        if (isUpdateDex)
+            printHeader(HDR_Update_Dex);
+        else
+            printHeader(HDR_Add_Dex);
 
 
         // setup for main content
@@ -267,20 +287,26 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             // 0 or NULL, so if the user has not yet inputted this, it will not conctenate anything.
             strcat(sOutFName, dex_Database[nCurrMon].sFull_Name);   
             strcat(sOutSName, dex_Database[nCurrMon].sShort_Name);  
-            strcat(sOutDesc, dex_Database[nCurrMon].sDescript);     
+            strcat(sOutDesc, dex_Database[nCurrMon].sDescript);
+            if (dex_Database[nCurrMon].cGender == 'M')  
+                strcat(sOutGender, "MALE");
+            else if (dex_Database[nCurrMon].cGender == 'F')
+                strcat(sOutGender, "FEMALE");
+            else if (dex_Database[nCurrMon].cGender == 'U')
+                strcat(sOutGender, "UNKNOWN");
         }
         
         // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
-        if (dex_Database[nCurrMon].cGender == 'M')  
-            strcat(sOutGender, "MALE");
-        else if (dex_Database[nCurrMon].cGender == 'F')
-            strcat(sOutGender, "FEMALE");
-        else if (dex_Database[nCurrMon].cGender == 'U')
-            strcat(sOutGender, "UNKNOWN");
+        
 
         // prints the main content of the TUI. Printing of the output buffers.
         printFillerLines(1, &currRow);
-        printText("These are your new Fakemon Information", 'c', &currRow);
+
+        if (isUpdateDex)
+            printText("These are your current Fakemon Information", 'c', &currRow);
+        else
+            printText("These are your new Fakemon Information", 'c', &currRow);
+
         printFillerLines(1, &currRow);
         printText(sOutFName, 'j', &currRow);
         printFillerLines(1, &currRow);
@@ -325,16 +351,22 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             // duplicates.
             if (currQuestion == 0)
             {
-                for (compMon = 0; compMon < nCurrMon && !(isDuplicate); compMon++)
+                for (compMon = 0; compMon < nMonCreated && !(isDuplicate); compMon++)
                 {
-                    if (strcmp(sInput, dex_Database[compMon].sFull_Name) == 0)
+                    // if in the updateDex function, we wouldnt want to trigger a isDuplicate, if the sInput
+                    // is its own data (if they do not want to change the contents)
+                    if (compMon != nCurrMon)
                     {
-                        isDuplicate = 1;
-                        // compMon is the index where the fakemon to be overwritten resides.
-                        // compMon is decremented to balance it out 
-                        // since at the end of the for loop, it would be incremeneted.
-                        compMon--;
+                        if (strcmp(sInput, dex_Database[compMon].sFull_Name) == 0)
+                        {
+                            isDuplicate = 1;
+                            // compMon is the index where the fakemon to be overwritten resides.
+                            // compMon is decremented to balance it out 
+                            // since at the end of the for loop, it would be incremeneted.
+                            compMon--;
+                        }
                     }
+                    
                 }
             }
 
@@ -397,14 +429,20 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                 else if (currQuestion == 1)
                 {
                     // checks if there are any duplicates of the Short Name in the database
-                    for (compMon = 0; compMon < nCurrMon && !(isDuplicate); compMon++)
+                    for (compMon = 0; compMon < nMonCreated && !(isDuplicate); compMon++)
                     {
-                        if (strcmp(sInput, dex_Database[compMon].sShort_Name) == 0)
+                        // if in the updateDex function, we wouldnt want to trigger a isDuplicate, if the sInput
+                        // is its own data (if they do not want to change the contents)
+                        if (compMon != nCurrMon)
                         {
-                            Input_Fail = 3;
-                            snprintf(sMessage, STR_MSG_SIZE, 
-                                        "Duplicate short name in the database! Enter a unique short name.");
+                            if (strcmp(sInput, dex_Database[compMon].sShort_Name) == 0)
+                            {
+                                Input_Fail = 3;
+                                snprintf(sMessage, STR_MSG_SIZE, 
+                                            "Duplicate short name in the database! Enter a unique short name.");
+                            }
                         }
+                        
                     }
 
                     // if there are no duplicates, assign the short name
@@ -443,6 +481,127 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         strcpy(sMessage, "Succesfully added a new entry!");
 
     return newCreatedMon;
+}
+
+void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int nMonCreated, 
+                stringMsg sMessage)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+    // variable used to exit the function
+    int toCancel = 0;
+
+    if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
+        strcpy(sMessage, "Enter 'Cancel' to go back."); 
+        // message that would be sent to the user at the bottom screen.
+    
+
+    // there are 2 modes.
+    // 1: if in search mode. searching if the name entered matches to any of the fakemon entries
+    // 2: edit mode. edits each members of the fakemon struct
+    // default to mode 1
+    int Mode = 1;
+
+    // variable used to know if the input full name matches to any thing on the data base.
+    // default to no;
+    int isMatch = 0;
+    // variable used to loop through the fakedex, search if there is match
+    int currMon;
+    
+    // for confirmation if they want to update the dex
+    stringChoice confirmChoices[2] = {"Yes", "Cancel"};
+
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_Update_Dex);
+
+
+        // main content
+        // if trying to get fakemon name
+        if (Mode == 1)
+        {
+            printFillerLines(HEIGHT / 2, &currRow);
+            printText("Which Fakemon do you want to update? Enter its full name.", 'c', &currRow);
+
+            printBottomRemain(currRow);
+
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            // getInput returns if the user input is valid or not.
+            // refer to getInput implementation (util.c) for the list of possible error msg returns
+            // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+            Input_Fail = getInput(sInput, nInputSizes[0], NULL, 0, sMessage);   // 0 index is for the full name size
+            // if the input fails, it will prompt the user to type an input again
+            // only valid inputs will be returned (sInput)
+
+            // if the string length is accepted
+            if (!(Input_Fail))
+            {   
+                // if the user typed cancel
+                if (strcmp(sInput, "Cancel") == 0)
+                {
+                    toCancel = 1;   // end loop and escape function
+                    sInput[0] = '\0';
+                }
+
+                // if they did not type cancel
+                if (!(toCancel))
+                {
+                    for (currMon = 0; currMon < nMonCreated && !(isMatch); currMon++)
+                    {
+                        // if the input matches with one of the fakemon
+                        if (strcmp(Fakedex[currMon].sFull_Name, sInput) == 0)
+                        {
+                            isMatch = 1;
+                            currMon--;  // since currMon will be incremented at the exit of the for loop
+                            Mode = 2;   // change mode to update mode
+                        }
+                    }
+
+                    if (!isMatch)
+                    {
+                        snprintf(sMessage, STR_MSG_SIZE, "No fakemon found with that name! type 'Cancel' to go back.");
+                        Input_Fail = 2;
+                    }
+                }
+                
+            }
+        }
+
+        else if (Mode == 2)
+        {
+            // confirm if they want to update this fakemon
+            snprintf(sMessage, STR_MSG_SIZE, "Are you sure you want to update this fakemon's information?");
+            viewMon(sInput, nInputSizes[0], confirmChoices, 2, Fakedex, currMon, sMessage);
+
+            // if they said yes
+            if (strcmp(sInput, confirmChoices[0]) == 0) // if they confirmed
+            {
+                if (addDex(sInput, nInputSizes, nInputQty, Fakedex, nMonCreated, sMessage, currMon))
+                {
+                    snprintf(sMessage, STR_MSG_SIZE, "Fakemon entry Updated!");
+                }
+                else
+                {
+                    // if it were an overwrite proceedure, sMessafe will come from addDex()
+                }
+            }
+            else
+            {
+                snprintf(sMessage, STR_MSG_SIZE, "Update entry cancelled.");
+            }
+            // escape the function after Mode 2
+            toCancel = 1;
+        }
+    } while (!(toCancel));
 }
 
 int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage)
