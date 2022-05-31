@@ -185,7 +185,8 @@ void printRemark(char *sMessage)
     4: Input is empty                                                                                       
     5: Invalid file type
     6: File name taken
-    7: Too many save files                                                                                     */
+    7: Too many save files
+    8: file name does not exist                                                                                 */
 int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], int nChoicesSize, char *sErrorFeedBack)
 {
     int nErrorMsg = 0;  // error code

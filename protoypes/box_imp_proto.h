@@ -21,5 +21,6 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
 void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
                         stringMsg sMessage);
 void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], stringMsg sMessage);
+void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[], stringMsg sMessage);
 
 #endif

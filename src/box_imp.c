@@ -888,3 +888,219 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
     } while (Input_Fail);
 
 }
+
+void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[], stringMsg sMessage)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+    if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
+        strcpy(sMessage, "Enter a name for your file. Put .txt at the end. You can 'Cancel'");
+        // message that would be sent to the user at the bottom screen
+
+    // used to know if file opening is succesful. default to no
+    int isOpened = 0;
+
+    // file name has the maximum input of FILE_NAME_LEN characters (including .txt), so this space 
+    // would not be a problem
+    // STR_MARGIN is used so that there is a secured null byte
+    char pathBuffer[FILE_NAME_LEN + STR_MARGIN] = "";
+
+    // variable used to know if the user confirmed to overwrite the file. deafult to no
+    int isConfirmed = 0;
+    int isConfimring = 0;   // is confirming is the state in which the program asks for a sure overwrite
+    // choices for confirming
+    stringChoice confirmChoices[2] = {"Yes", "No"};
+
+    // used in for loops when looping thorgh every fakemon entry
+    int currMon;
+
+    // file pointer used for file operations
+    FILE *fptr;  
+
+    // for the strings used in cGender, since the data stored in a text file is a string
+    // a buffer is needed to convert that data into the right data type
+    // 10 should be a big enough size since the largest word is UNKNOWN
+    const int stringBuffer_Size = 10;
+    char stringBuffer[stringBuffer_Size];
+    
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_Load);
+
+        // prints the main content of the TUI
+        printFillerLines(HEIGHT / 5, &currRow);
+        printText("Save Slots:", 'c', &currRow);
+        printFillerLines(2, &currRow);
+        printFileNames("sav", &currRow);
+        printFillerLines(2, &currRow);
+        
+        if (!(isConfimring))    // if not confirmiing for an overwrite (getting file name)
+        {
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            // get the file name
+            Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
+        }
+        else if (isConfimring)  // if confirming for an overwrite
+        {
+            printChoices(confirmChoices, 2, 2, 1, 'c', &currRow);
+
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            // get the confimation for overwrite
+            Input_Fail = getInput(sInput, nInputSize, confirmChoices, 2, sMessage);
+
+            if (!(Input_Fail))
+            {
+                if (strcmp(sInput, "Yes") == 0)
+                    isConfirmed = 1;
+                else if (strcmp(sInput, "No") == 0)
+                    isConfirmed = 0;
+            }
+        }
+
+        // if the specified string length is accepted
+        if (!(Input_Fail))
+        {
+            // if not confirming for an overwrite (the file name is the input)
+            if (!(isConfimring))
+            {
+                // if they typed cancel
+                if (strcmp(sInput, "Cancel") == 0)
+                {
+                    Input_Fail = 0;
+                    sInput[0] = '\0';   // cleans the input buffer
+
+                    if (isOpened)
+                        fclose(fptr);
+                }
+                // if they did not typed cancel
+                // open the file with the inputted file name
+                else
+                {
+                    // put the file name to the pathBuffer
+                    snprintf(pathBuffer, STR_INPUT_STD + 5, "sav\\%s", sInput);
+                    fptr = fopen(pathBuffer, "r");  // open file in read mode
+                    isOpened = 1;   // set to yes. 
+
+                    if (fptr == NULL)   // if the entered file name does not exist in the sav directory
+                    {
+                        Input_Fail = 8;
+                        sInput[0] = '\0';
+                        isOpened = 0;       // set to no if file opening was unsuccesful
+                        snprintf(sMessage, STR_MSG_SIZE, 
+                                    "That file name does not exist! Try again or type 'Cancel'");
+                    }
+                    
+                    if (isOpened)
+                    {
+                        // set the question state to confirm if the user wants to overwrite
+                        // will loop to the start
+                        isConfimring = 1;
+                        snprintf(sMessage, STR_MSG_SIZE, 
+                                    "Loading this file will delete all your current data. Proceed?");
+                    }
+                }
+                
+            }
+            
+            // if the overwrite question has been asked
+            // (which will only happen if file opening was succesful)
+            else if (isConfimring)
+            {
+                // if they said yes, overwrite the data and load the file
+                if (isConfirmed)
+                {
+                    // deletes all the current data
+                    for (currMon = 0; currMon < *nMonCreated; currMon++)
+                    {
+                        (Fakedex[currMon].sFull_Name)[0] = '\0';
+                        (Fakedex[currMon].sShort_Name)[0] = '\0';
+                        (Fakedex[currMon].sDescript)[0] = '\0';
+                        Fakedex[currMon].cGender = 0;
+                        Fakedex[currMon].nCaught = 0;
+                    }
+
+                    // PRELIMINARY INFO
+                    // asterisk (*) is used to discard information that are not needed.
+                    // such as, FULL NAME:, SHORT NAME:, etc. only the important data are gathered 
+                    fscanf(fptr, " %*s %*s %*s %d", nMonCreated);   // sets created fakemon
+
+                    // loops through every fakemon entry
+                    for (currMon = 0; currMon < *nMonCreated; currMon++)
+                    {
+                        //FULL NAME
+                        // META information discarded
+                        fscanf(fptr, " %*s %*s ");
+                        // since there may be spaces in the entries, fgets is used
+                        fgets(Fakedex[currMon].sFull_Name, FULL_NAME_SIZE + STR_MARGIN, fptr);
+                        // removes the new line characterin the string
+                        Fakedex[currMon].sFull_Name[strcspn(Fakedex[currMon].sFull_Name, "\n")] = 0;
+
+                        // SHORT NAME
+                        fscanf(fptr, " %*s %*s ");
+                        fgets(Fakedex[currMon].sShort_Name, SHORT_NAME_SIZE + STR_MARGIN, fptr);
+                        Fakedex[currMon].sShort_Name[strcspn(Fakedex[currMon].sShort_Name, "\n")] = 0;
+
+                        // DESCRIPTION
+                        fscanf(fptr, " %*s ");
+                        fgets(Fakedex[currMon].sDescript, DESCRIPTION_SIZE + STR_MARGIN, fptr);
+                        Fakedex[currMon].sDescript[strcspn(Fakedex[currMon].sDescript, "\n")] = 0;
+
+                        // GENDER
+                        // since the data in the save text file has the literal MALE, FEMALE, or UNKNOWN
+                        // in it, it is necessary to convert those literals into characters
+                        fscanf(fptr, " %*s ");
+                        fgets(stringBuffer, stringBuffer_Size, fptr);
+                        stringBuffer[strcspn(stringBuffer, "\n")] = 0;
+                        if (strcmp(stringBuffer, "MALE") == 0)
+                            Fakedex[currMon].cGender = 'M';
+                        else if (strcmp(stringBuffer, "FEMALE") == 0)
+                            Fakedex[currMon].cGender = 'F';
+                        else if (strcmp(stringBuffer, "UNKNOWN") == 0)
+                            Fakedex[currMon].cGender = 'U';
+                        
+                        // CAUGHT
+                        // same case with gender
+                        fscanf(fptr, " %*s ");
+                        fgets(stringBuffer, stringBuffer_Size, fptr);
+                        stringBuffer[strcspn(stringBuffer, "\n")] = 0;
+                        if (strcmp(stringBuffer, "YES") == 0)
+                            Fakedex[currMon].nCaught = 1;
+                        else if (strcmp(stringBuffer, "NO") == 0)
+                            Fakedex[currMon].nCaught = 0;
+                        
+                        snprintf(sMessage, STR_MSG_SIZE, "File succesfully loaded!");
+                    }
+                }
+                // if they do not want to overwrite and load anymore
+                else if (!(isConfirmed))
+                {
+                    snprintf(sMessage, STR_MSG_SIZE, "Loading File Cancelled");
+                }
+
+                // either way, close the file and exit the function (will go back to settings menu)
+                fclose(fptr);
+                isConfimring = 0;   // to end the function
+                sInput[0] = '\0';   // cleaning input buffer
+                
+            }
+        }
+
+    } while (Input_Fail || isConfimring);
+}

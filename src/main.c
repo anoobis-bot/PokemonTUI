@@ -99,9 +99,9 @@ int main(void)
                     save(sInput, FILE_NAME_LEN + STR_MARGIN, nMonCreated, FakeDex, sMessage); // save TUI
                 }
                 // load
-                else if (strcmp(sInput, sSettingChoices[0]) == 1)
+                else if (strcmp(sInput, sSettingChoices[1]) == 0)
                 {
-
+                    load(sInput, FILE_NAME_LEN + STR_MARGIN, &nMonCreated, FakeDex, sMessage);
                 }
 
             } while (strcmp(sInput, sSettingChoices[SETTINGCHOICES_SIZE - 1]) != 0); 
