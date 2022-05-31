@@ -538,7 +538,8 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
             // getInput returns if the user input is valid or not.
             // refer to getInput implementation (util.c) for the list of possible error msg returns
             // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
-            Input_Fail = getInput(sInput, nInputSizes[0], NULL, 0, sMessage);   // 0 index is for the full name size
+            Input_Fail = getInput(sInput, nInputSizes[0], NULL, 0, sMessage);
+            // 0 index is for the full name size since the full name is the one being asked
             // if the input fails, it will prompt the user to type an input again
             // only valid inputs will be returned (sInput)
 
@@ -581,6 +582,8 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
             // confirm if they want to update this fakemon
             snprintf(sMessage, STR_MSG_SIZE, "Are you sure you want to update this fakemon's information?");
             viewMon(sInput, nInputSizes[0], confirmChoices, 2, Fakedex, currMon, sMessage);
+            // sInputSize[0] is the size since "Yes" and "Cancel" are the only one being asked
+            // the STR_FNAME_SIZE is enough for that
 
             // if they said yes
             if (strcmp(sInput, confirmChoices[0]) == 0) // if they confirmed
@@ -600,6 +603,158 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
             }
             // escape the function after Mode 2
             toCancel = 1;
+        }
+    } while (!(toCancel));
+}
+
+void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, stringMsg sMessage)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+    // variable used to exit the function
+    int toCancel = 0;
+
+    if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
+        strcpy(sMessage, "Type fakemon's full name or enter 'Cancel' to go back."); 
+        // message that would be sent to the user at the bottom screen.
+    
+
+    // there are 2 modes.
+    // 1: if in search mode. searching if the name entered matches to any of the fakemon entries
+    // 2: edit mode. edits each members of the fakemon struct
+    // default to mode 1
+    int Mode = 1;
+
+    // variable used to know if the input full name matches to any thing on the data base.
+    // default to no;
+    int isMatch = 0;
+    // variable used to loop through the fakedex, search if there is match
+    int currMon;
+    
+    // for confirmation if they want to update the dex
+    stringChoice confirmChoices[2] = {"Yes", "Cancel"};
+
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_Update_Dex);
+
+
+        // main content
+        // if trying to get fakemon name
+        if (Mode == 1)
+        {
+            printFillerLines(HEIGHT / 2, &currRow);
+            printText("Which Fakemon do you want to update? Enter its full name.", 'c', &currRow);
+
+            printBottomRemain(currRow);
+
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            // getInput returns if the user input is valid or not.
+            // refer to getInput implementation (util.c) for the list of possible error msg returns
+            // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+            Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
+            // nInputSize is the full name size.
+            // if the input fails, it will prompt the user to type an input again
+            // only valid inputs will be returned (sInput)
+
+            // if the string length is accepted
+            if (!(Input_Fail))
+            {   
+                // if the user typed cancel
+                if (strcmp(sInput, "Cancel") == 0)
+                {
+                    toCancel = 1;   // end loop and escape function
+                    sInput[0] = '\0';
+                }
+
+                // if they did not type cancel
+                if (!(toCancel))
+                {
+                    for (currMon = 0; currMon < *(nMonCreated) && !(isMatch); currMon++)
+                    {
+                        // if the input matches with one of the fakemon
+                        if (strcmp(Fakedex[currMon].sFull_Name, sInput) == 0)
+                        {
+                            isMatch = 1;
+                            currMon--;  // since currMon will be incremented at the exit of the for loop
+                            Mode = 2;   // change mode to update mode
+                        }
+                    }
+                    
+                    // if nothing matched
+                    if (!isMatch)
+                    {
+                        snprintf(sMessage, STR_MSG_SIZE, 
+                                    "No fakemon found with that name! Try again or type 'Cancel'.");
+                        Input_Fail = 2;
+                    }
+                }
+                
+            }
+        }
+
+        // if trying to delete (based on the input fakemon)
+        else if (Mode == 2)
+        {
+            if (Fakedex[currMon].nCaught == 0)  // if the fakemon is not yet caught
+            {
+                // confirm if they want to update this fakemon
+                snprintf(sMessage, STR_MSG_SIZE, "Are you sure you want to delete this fakemon");
+                viewMon(sInput, nInputSize, confirmChoices, 2, Fakedex, currMon, sMessage);
+                // sInputSize is the size since "Yes" and "Cancel" are the only one being asked
+                // the STR_FNAME_SIZE is enough for that
+                // that's pretty big already
+
+                // if they said yes
+                if (strcmp(sInput, confirmChoices[0]) == 0) // if they confirmed
+                {
+                    // shifts all entries to the left by one starting from currMon
+                    // this essentially deletes the currMon by overwriting it by its next entry
+                    // only go up until < nMonCreated - 1 since it's going to have a segmentation fault
+                    for (; currMon < (*nMonCreated) - 1; currMon++)
+                    {
+                        strcpy(Fakedex[currMon].sFull_Name, Fakedex[currMon + 1].sFull_Name);
+                        strcpy(Fakedex[currMon].sShort_Name, Fakedex[currMon + 1].sShort_Name);
+                        strcpy(Fakedex[currMon].sDescript, Fakedex[currMon + 1].sDescript);
+                        Fakedex[currMon].cGender = Fakedex[currMon + 1].cGender;
+                        Fakedex[currMon].nCaught = Fakedex[currMon + 1].nCaught;
+                    }
+
+                    // delete the last entry since it's already copied(shifted) to the left
+                    // nMonCreated starts at index 1
+                    (Fakedex[*(nMonCreated) - 1].sFull_Name)[0] = '\0';
+                    (Fakedex[*(nMonCreated) - 1].sShort_Name)[0] = '\0';
+                    (Fakedex[*(nMonCreated) - 1].sDescript)[0] = '\0';
+                    Fakedex[*(nMonCreated) - 1].cGender = 0;
+                    Fakedex[*(nMonCreated) - 1].nCaught = 0;
+                    (*nMonCreated)--;
+
+                    snprintf(sMessage, STR_MSG_SIZE, "Fakemon deleted.");
+                }
+                else
+                {
+                    snprintf(sMessage, STR_MSG_SIZE, "Fakemon not deleted.");
+                }
+                // escape the function after Mode 2
+                toCancel = 1;
+            }
+            else    // if already caught
+            {
+                toCancel = 0;
+                Mode = 1;       // repeat and get full name again
+                snprintf(sMessage, STR_MSG_SIZE, "Cannot remove caught Fakemon");
+                sInput[0] = '\0';
+            }
+            
         }
     } while (!(toCancel));
 }

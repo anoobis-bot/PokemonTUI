@@ -88,6 +88,11 @@ int main(void)
                     updateDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Update Dex TUI
                         nMonCreated, sMessage);
                 }
+                // Remove Dex
+                else if (strcmp(sInput, sDatabaseChoices[3]) == 0)
+                {
+                    removeDex(sInput, FULL_NAME_SIZE + STR_MARGIN, FakeDex, &nMonCreated, sMessage);
+                }
 
             } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"
         }
