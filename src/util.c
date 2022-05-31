@@ -509,3 +509,14 @@ int fileExists(const char *fname)
     }
     return 0;
 }
+
+/* This function returns 1 if the file deletion was succesful
+    PARAMETERS:
+    - *fname: name of the file  */
+int deleteSav(char *fname)
+{
+    char pathBuffer[FILE_NAME_LEN + 6] = "";
+    snprintf(pathBuffer, FILE_NAME_LEN + 6, "sav\\%s", fname);
+    
+    return remove(pathBuffer);
+}

@@ -12,3 +12,4 @@ DESCRIPTION: OVERATED AF! But, can fly.
 GENDER: FEMALE
 CAUGHT: NO
 
+--------- DEX END ---------

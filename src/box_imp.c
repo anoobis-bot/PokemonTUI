@@ -715,8 +715,6 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
     if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
         strcpy(sMessage, "What would you like to do?"); // message that would be sent to the user at the bottom screen
 
-    // number of save files already in sav
-    int nNumSav = 0;
     
     do {
         printf(CLEAR);  // clears the screen
@@ -731,7 +729,7 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
         printFillerLines(HEIGHT / 5, &currRow);
         printText("Save Slots:", 'c', &currRow);
         printFillerLines(2, &currRow);
-        nNumSav = printFileNames("sav", &currRow);
+        printFileNames("sav", &currRow);
         printFillerLines(2, &currRow);
         printChoices(sSettingChoices, nSettingChoiceSize, nSettingChoiceSize, 1, 'c', &currRow);
 
@@ -749,16 +747,6 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
 
-        if (strcmp(sInput, sSettingChoices[0]) == 0)    // if choice is save
-        {
-            if (nNumSav >= MAX_SAV_FILES)       // if there are too many save files
-            {
-                Input_Fail = 7; 
-                snprintf(sMessage, STR_MSG_SIZE, "You only have %d save slots. Please remove a save file.", MAX_SAV_FILES);
-                sInput[0] = '\0';
-            }
-        }
-        
     } while (Input_Fail);
 }
 
@@ -774,15 +762,39 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
         // message that would be sent to the user at the bottom screen
 
 
-    // file name has the maximum input of FILE_NAME_LEN characters (including .txt), so this space would not be a problem
-    // STR_MARGIN is used so that there is a secured null byte
-    char pathBuffer[FILE_NAME_LEN + STR_MARGIN] = "";
+    // file name has the maximum input of FILE_NAME_LEN characters (including .txt), so this space would 
+    // not be a problem
+    // the constant 6 is used for the additional "sav\\" path
+    char pathBuffer[nInputSize + 6];
+    pathBuffer[0] = '\0';   // making sure that the buffer has no string
+    // used as a buffer for the accepted file name, since sInput will also be used for yes or no (confirmation)
+    char fileNameBuffer[nInputSize];
+    // this is used since when deleting a file, the user is prompted to input the file name that they want 
+    // to delete. This buffer holds that file name to be deleted
+    char deleteNameBuffer[nInputSize];  
+    fileNameBuffer[0] = '\0';
+    deleteNameBuffer[0] = '\0';
 
     // tells if the file opening was succesful. default to yes
     int isOpened = 1;
 
+    // variables used when deleting or overwriting the file
+    int isOverwriting = 0;
+    int toOverwrite = 0;
+    int isDeleting = 0;
+    int availDeleteName = 0;
+    int toDelete = 0;
+
+    stringChoice confirmChoices[2] = {"Yes", "No"};
+
+    // used to know how many save slots are populated
+    int nNumSav = 0;
+
     // used in for loops when looping thorgh every fakemon entry
     int currMon;
+
+    // variable used to know if the user wanted to cancel save operation. 
+    int toCancel = 0;
     
     do {
         printf(CLEAR);  // clears the screen
@@ -796,96 +808,241 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
         printFillerLines(HEIGHT / 5, &currRow);
         printText("Save Slots:", 'c', &currRow);
         printFillerLines(2, &currRow);
-        printFileNames("sav", &currRow);
+        nNumSav = printFileNames("sav", &currRow);  // updates how many save files
         printFillerLines(2, &currRow);
         
-        printBottomRemain(currRow);
+        // if not asking for confirmation (not asking for the file name input)
+        if (isOverwriting || (isDeleting && !(availDeleteName)))
+        {
+            printChoices(confirmChoices, 2, 2, 1, 'c', &currRow);
 
+            printBottomRemain(currRow);
 
-        // prints bottom part of the box and the system message too, if there are any.
-        printRemark(sMessage);
-        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
-        // getInput returns if the user input is valid or not.
-        // refer to getInput implementation (util.c) for the list of possible error msg returns
-        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
-        Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
-        // if the input fails, it will prompt the user to type an input again
-        // only valid inputs will be returned (sInput)
+            Input_Fail = getInput(sInput, nInputSize, confirmChoices, 2, sMessage);
+
+            if (!(Input_Fail))
+            {
+                if (strcmp(sInput, "Yes") == 0)
+                {
+                    toDelete = 1;
+                    toOverwrite = 1;
+                }
+            }
+
+        }
+        // if in delete mode and asking which file to delete
+        else if (isDeleting && availDeleteName)
+        {
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            Input_Fail = getInput(deleteNameBuffer, nInputSize, NULL, 0, sMessage);
+        }
+        // if not any one those, ask for the file name
+        else
+        {
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
+        }
+
 
         // if the specified file name length is accepted
         if (!(Input_Fail))
         {
-            if (strcmp(sInput, "Cancel") == 0)
+            // if the file name is the input
+            if (!(isOverwriting || isDeleting))
             {
-                Input_Fail = 0;
-                sInput[0] = '\0';
-            }
-            else if (strcmp(&(sInput[strlen(sInput) - 4]), ".txt") != 0) // if the file extension is not .txt
-            {
-                Input_Fail = 5;
-                snprintf(sMessage, STR_MSG_SIZE, "Type .txt at the end of the file name. Try again or type 'Cancel'");
-                sInput[0] = '\0';
-            }
-            else if (strcmp(sInput, ".txt") == 0)   // if the file name is empty (only .txt)
-            {
-                Input_Fail = 4;
-                snprintf(sMessage, STR_MSG_SIZE, "Type a file name followed by a .txt. Try again or type 'Cancel'");
-                sInput[0] = '\0';
-            }
-            else if (fileExists(sInput))    // if the entered file name already exist
-            {
-                Input_Fail = 6;
-                snprintf(sMessage, STR_MSG_SIZE, "That file name is already taken! Try again or type 'Cancel'");
-                sInput[0] = '\0';
-            }
-
-            else    // no other possible errors. save the file with the filename
-            {
-                snprintf(pathBuffer, STR_INPUT_STD + 5, "sav\\%s", sInput); // put the file path to the pathBuffer
-                FILE *fptr;
-                fptr = fopen(pathBuffer, "w");  // write file
-
-                if (fptr == NULL)   // if unable to open file
+                // check if the user typed cancel
+                if (strcmp(sInput, "Cancel") == 0)
                 {
-                    snprintf(sMessage, STR_MSG_SIZE, "%s", strerror(errno));
-                    isOpened = 0;
+                    toCancel = 1;
+                    sInput[0] = '\0';
+                }
+                // or check if the file name is valid
+                else if (strcmp(&(sInput[strlen(sInput) - 4]), ".txt") != 0) // if the file extension is not .txt
+                {
+                    Input_Fail = 5;
+                    snprintf(sMessage, STR_MSG_SIZE, 
+                                "Type .txt at the end of the file name. Try again or type 'Cancel'");
+                    sInput[0] = '\0';
+                }
+                else if (strcmp(sInput, ".txt") == 0)   // if the file name is empty (only .txt)
+                {
+                    Input_Fail = 4;
+                    snprintf(sMessage, STR_MSG_SIZE, 
+                                "Type a file name followed by a .txt. Try again or type 'Cancel'");
+                    sInput[0] = '\0';
                 }
                 
-                if (isOpened)   // if succesfully opened
+                else // if there are no more problems, accept the file name
                 {
-                    fprintf(fptr, "NUMBER OF ENTRIES: %d\n", nMonCreated);
-                    fprintf(fptr, "\n");
-                    for (currMon = 0; currMon < nMonCreated; currMon++)
-                    {
-                        fprintf(fptr, "FULL NAME: %s\n", Fakedex[currMon].sFull_Name);
-                        fprintf(fptr, "SHORT NAME: %s\n", Fakedex[currMon].sShort_Name);
-                        fprintf(fptr, "DESCRIPTION: %s\n", Fakedex[currMon].sDescript);
-                        // since cGender is only a character data type, literal constants such as MALE must be printed
-                        if (Fakedex[currMon].cGender == 'M')  
-                            fprintf(fptr, "GENDER: MALE\n");
-                        else if (Fakedex[currMon].cGender == 'F')  
-                            fprintf(fptr, "GENDER: FEMALE\n");
-                        else if (Fakedex[currMon].cGender == 'U')  
-                            fprintf(fptr, "GENDER: UNKNOWN\n");
-                        
-                        // since nCaught is only a short data type, literal constants such as YES must be printed
-                        if (Fakedex[currMon].nCaught == 1)  
-                            fprintf(fptr, "CAUGHT: YES\n");
-                        if (Fakedex[currMon].nCaught == 0)  
-                            fprintf(fptr, "CAUGHT: NO\n");
-
-                        fprintf(fptr, "\n");
-                    }
-                    fprintf(fptr, "--------- DEX END ---------\n");
-
-                    fclose(fptr);
+                    // put the accepted file name in the fileNameBuffer
+                    strcpy(fileNameBuffer, sInput);
                 }
             }
-        }
-        
 
-    } while (Input_Fail);
+
+            // if there were no problems in the file name and the user has not typed cancel
+            if (!(Input_Fail) && !(toCancel))
+            {
+                // if Overwriting mode
+                if (isOverwriting)
+                {
+                    // if confirmed to overwrite, delete the same file name
+                    if (toOverwrite)
+                    {
+                        deleteSav(fileNameBuffer);
+                        nNumSav--;  // update the number of files
+                    }
+                    // if they do not want to overwrite
+                    else
+                    {
+                        // turning these variables to 0 exits the loop and the function
+                        Input_Fail = 0;
+                        isDeleting = 0;
+                        isOverwriting = 0;
+                        snprintf(sMessage, STR_MSG_SIZE, "Save Cancelled");
+                    }
+                }
+                // if in delete mode
+                else if (isDeleting)
+                {
+                    // if they want to delete
+                    if (toDelete)
+                    {
+                        // if they already have a file name they entered to delete
+                        if (availDeleteName)
+                        {
+                            // if the file to be deleted exists (based on the file name)
+                            if (fileExists(deleteNameBuffer))
+                            {
+                                deleteSav(deleteNameBuffer);
+                                nNumSav--;  // update the number of files
+                            }
+                            // if the file does not exist, exit the function
+                            else
+                            {
+                                // turning these variables to 0 exits the loop and the function
+                                Input_Fail = 0;
+                                isDeleting = 0;
+                                isOverwriting = 0;
+                                snprintf(sMessage, STR_MSG_SIZE, 
+                                            "That file does not exist. Save operation cancelled.");
+                            }
+                        }
+                        else
+                        {
+                            availDeleteName = 1;
+                            snprintf(sMessage, STR_MSG_SIZE, "Type the name of the file you want to delete");
+                        }
+                    }
+                    // if if they do not want to delete
+                    else
+                    {
+                        // turning these variables to 0 exits the loop and the function
+                        Input_Fail = 0;
+                        isDeleting = 0;
+                        isOverwriting = 0;
+                        snprintf(sMessage, STR_MSG_SIZE, "Save Cancelled");
+                    }
+                }
+
+                else if (fileExists(fileNameBuffer))    // if the entered file name already exist
+                {
+                    // set the mode to isOverwriting
+                    Input_Fail = 6;
+                    snprintf(sMessage, STR_MSG_SIZE, 
+                        "The file name is already in the slot. Do you want to Overwrite?");
+                    sInput[0] = '\0';
+                    isOverwriting = 1;
+                }
+                else if (nNumSav >= MAX_SAV_FILES) // if there are too many save files
+                {
+                    // set the mode to isDeleting
+                    Input_Fail = 7;
+                    snprintf(sMessage, STR_MSG_SIZE, 
+                        "Maximum of %d save slots. Do you want to delete a save slot?", MAX_SAV_FILES);
+                    sInput[0] = '\0';
+                    isDeleting = 1;
+                }
+
+                
+                // if there are no other possible errors. save the file with the filename
+                // if there are too many save files, it is handeled by now since 
+                // a save file is already deleted. if they said no to the confirmation, no
+                // file will be deleted and thus, no new file will be created because of the
+                // expression !(nNumSav >= MAX_SAV_FILES).
+                // !(fileExists(fileNameBuffer)) is also a safeguard, so that no new file will be created
+                // if the input file name is a duplicate.
+                if (!(nNumSav >= MAX_SAV_FILES) && !(fileExists(fileNameBuffer)))    
+                {
+                    // put the file path to the pathBuffer
+                    snprintf(pathBuffer, nInputSize + 6, "sav\\%s", fileNameBuffer);
+                    FILE *fptr;
+                    fptr = fopen(pathBuffer, "w");  // write file
+
+                    if (fptr == NULL)   // if unable to open file. just another precaution
+                    {
+                        snprintf(sMessage, STR_MSG_SIZE, "%s", strerror(errno));
+                        isOpened = 0;
+                    }
+                    
+                    if (isOpened)   // if succesfully opened
+                    {
+                        // write the current data to a save file
+                        fprintf(fptr, "NUMBER OF ENTRIES: %d\n", nMonCreated);
+                        fprintf(fptr, "\n");
+                        for (currMon = 0; currMon < nMonCreated; currMon++)
+                        {
+                            fprintf(fptr, "FULL NAME: %s\n", Fakedex[currMon].sFull_Name);
+                            fprintf(fptr, "SHORT NAME: %s\n", Fakedex[currMon].sShort_Name);
+                            fprintf(fptr, "DESCRIPTION: %s\n", Fakedex[currMon].sDescript);
+                            // since cGender is only a character data type, 
+                            // literal constants such as MALE must be printed
+                            if (Fakedex[currMon].cGender == 'M')  
+                                fprintf(fptr, "GENDER: MALE\n");
+                            else if (Fakedex[currMon].cGender == 'F')  
+                                fprintf(fptr, "GENDER: FEMALE\n");
+                            else if (Fakedex[currMon].cGender == 'U')  
+                                fprintf(fptr, "GENDER: UNKNOWN\n");
+                            
+                            // since nCaught is only a short data type,
+                            // literal constants such as YES must be printed
+                            if (Fakedex[currMon].nCaught == 1)  
+                                fprintf(fptr, "CAUGHT: YES\n");
+                            if (Fakedex[currMon].nCaught == 0)  
+                                fprintf(fptr, "CAUGHT: NO\n");
+
+                            fprintf(fptr, "\n");
+                        }
+                        fprintf(fptr, "--------- DEX END ---------\n");
+
+                        fclose(fptr);
+
+                        // makes sure that the loop breaks and that the function exits
+                        Input_Fail = 0;
+                        isDeleting = 0;
+                        isOverwriting = 0;
+                        snprintf(sMessage, STR_MSG_SIZE, "File saved!");
+                    }
+                }
+            }
+            
+        }
+
+    } while ((Input_Fail || isDeleting || isOverwriting) && !(toCancel));
 
 }
 
@@ -905,8 +1062,8 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
 
     // file name has the maximum input of FILE_NAME_LEN characters (including .txt), so this space 
     // would not be a problem
-    // STR_MARGIN is used so that there is a secured null byte
-    char pathBuffer[FILE_NAME_LEN + STR_MARGIN] = "";
+    // The literal 6 is used for the "sav\\"
+    char pathBuffer[nInputSize + 6];
 
     // variable used to know if the user confirmed to overwrite the file. deafult to no
     int isConfirmed = 0;
@@ -994,7 +1151,7 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                 else
                 {
                     // put the file name to the pathBuffer
-                    snprintf(pathBuffer, STR_INPUT_STD + 5, "sav\\%s", sInput);
+                    snprintf(pathBuffer, nInputSize + 6, "sav\\%s", sInput);
                     fptr = fopen(pathBuffer, "r");  // open file in read mode
                     isOpened = 1;   // set to yes. 
 
