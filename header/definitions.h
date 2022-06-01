@@ -15,6 +15,7 @@ the program needs.
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "array_sizes.h"
 #include "../configurations.h"

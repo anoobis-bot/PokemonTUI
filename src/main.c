@@ -27,6 +27,10 @@ int main(void)
     stringChoice sViewMonDexChoices[VIEWMONDEXCHOICES_SIZE] = {"Cancel"};
     // Settings choice
     stringChoice sSettingChoices[SETTINGCHOICES_SIZE] = {"Save", "Load", "Cancel"};
+    // Exploration Choices
+    stringChoice sExplorationChoices[EXPLORATIONCHOICES_SIZE] = {"FORWARD", "BACKWARD", "Cancel"};
+    // Encounter Fakemon choices
+    stringChoice sEncounterChoices[] = {"CATCH", "RUN"}; 
 
     
     // initialize dex and make all members equal to 0
@@ -50,6 +54,12 @@ int main(void)
 
     // used to catch the return value of functions whether the operation was succesful or not. default to no
     int isSucces = 0;
+
+    // variable used to keep track of the position of the player (Exploration Mode)
+    int ActiveCell = 0;
+
+    // seeding the rand() function
+    srand(time(0));
 
     do {
         // main menu screen
@@ -94,9 +104,28 @@ int main(void)
                     removeDex(sInput, FULL_NAME_SIZE + STR_MARGIN, FakeDex, &nMonCreated, sMessage);
                 }
 
-            } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); // while the user has not typed "Cancel"
+            } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); 
+            // while the user has not typed "Cancel"
         }
         
+        // Exploration
+        else if (strcmp(sInput, sMainChoices[1]) == 0)
+        {
+            do 
+            {
+                exploration(sInput, STR_INPUT_STD + STR_MARGIN, sExplorationChoices, EXPLORATIONCHOICES_SIZE, 
+                                &ActiveCell, sMessage);
+
+                // if the user has not typed "Cancel"
+                if (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0)
+                {
+                    // encounter
+                }                    
+
+            } while (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0);
+            // while the user has not typed cancel
+        }
+
         // Settings
         else if (strcmp(sInput, sMainChoices[3]) == 0)
         {

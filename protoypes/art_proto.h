@@ -13,6 +13,12 @@ of the functions in art.c file
 
 #include "../configurations.h"
 
-void displayPokeball(char sPokeBallArt[][WIDTH], int *currRow);
+void colorReset();
+void forgroundGreen();
+void foregroundRed();
+void foregroundBrown();
+
+void displayArt(char sArt[][WIDTH], int nArtHeight,int *currRow);
+void printGrass(int ActiveCell, int *currRow);
 
 #endif

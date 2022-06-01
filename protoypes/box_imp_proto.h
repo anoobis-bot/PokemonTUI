@@ -22,6 +22,8 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
                 stringMsg sMessage);
 void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, stringMsg sMessage);
 int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage);
+void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[], int nExploreChoicesSize, 
+                    int *ActiveCell ,stringMsg sMessage);
 void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
                         stringMsg sMessage);
 void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], stringMsg sMessage);

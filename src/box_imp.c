@@ -50,7 +50,7 @@ void mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int 
         printFillerLines(HEIGHT / 10, &currRow);
         printText("Welcome to the Fakedex game, trainer!", 'c', &currRow);
         printFillerLines(1, &currRow);              // prints lines 1/8 of the HEIGHT
-        displayPokeball(ART_Pokeball, &currRow);    // dipalys the pokeball art
+        displayArt(ART_Pokeball, 9,&currRow);    // dipalys the pokeball art
         printFillerLines(1, &currRow);
         printChoices(sMainChoices, nMainChoicesSize, 3, 2, 'c', &currRow); // prints the possible choices fot main menu
         
@@ -81,7 +81,8 @@ void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoi
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
     if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
-        strcpy(sMessage, "Welcome to the Fakedex Database!"); // message that would be sent to the user at the bottom screen
+        strcpy(sMessage, "Welcome to the Fakedex Database!"); 
+        // message that would be sent to the user at the bottom screen
     
     do {
         printf(CLEAR);  // clears the screen
@@ -1016,6 +1017,103 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
     }                       // other functions. that is why after typing, sInput is cleaned.
 
     return mon_Sel;
+}
+
+void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[], int nExploreChoicesSize, 
+                    int *ActiveCell ,stringMsg sMessage)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+    if (sMessage[0] == '\0')   // if the sMessage is empty (no message from other functions)
+        strcpy(sMessage, "Type out instructions and explore all you want!"); 
+        // message that would be sent to the user at the bottom screen
+
+    // used to know if an encounter is possible. default to no since it should be impossible to get an 
+    // encounter on the first appearance
+    int toEncounter = 0;
+
+    // used to know if the trainer has encountered a fakemon
+    int Encountered = 0;
+
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_EXPLORATION);
+
+        // displays the tree art
+        displayArt(ART_TREE, 10, &currRow);
+        // prints the grass tiles based in the ActiveCell(position)
+        printGrass(*ActiveCell, &currRow);
+        // this will only trigger if the user has succesfully issued a FORWARD or BACHWARD command
+        if (toEncounter)
+        {
+            // rand() % 100 generates a pseudo-random number with a range of [0, 99]
+            // generating a number that is less than 40 (meaning [0, 39]) means that 40 of the 100
+            // numbers would return true. that is a 40% chance to be true.
+            if ((rand() % 100) < 40)
+                Encountered = 1;
+
+            // resets it back to 0 to make sure that this if statement will only trigger
+            // on a succesful FORWARD or BACKWARD command 
+            toEncounter = 0;
+        }
+        printFillerLines(1, &currRow);
+        // FORWARD, BACKWARD, CANCEL
+        printChoices(sExploreChoices, nExploreChoicesSize, nExploreChoicesSize, 1, 'c', &currRow);
+
+        printBottomRemain(currRow);
+
+
+        // prints bottom part of the box and the system message too, if there are any.
+        printRemark(sMessage);
+        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+        // if the user has already encountered a fakemon, there is no need to get input once again
+        if (!Encountered)
+        {
+            // getInput returns if the user input is valid or not.
+            // refer to getInput implementation (util.c) for the list of possible error msg returns
+            // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+            Input_Fail = getInput(sInput, nInputSize, sExploreChoices, nExploreChoicesSize, sMessage);
+            // if the input fails, it will prompt the user to type an input again
+            // only valid inputs will be returned (sInput)
+
+
+            // FORWARD
+            if (strcmp(sInput, sExploreChoices[0]) == 0)
+            {
+                // if not at the boundary
+                if (*(ActiveCell) < EXPLORE_COLUMN - 1)
+                {
+                    (*ActiveCell)++;
+                    toEncounter = 1;
+                    sInput[0] = '\0';
+                    snprintf(sMessage, STR_MSG_SIZE, "Moved %s", sExploreChoices[0]);
+                }
+            }
+            // BACKWARD
+            else if (strcmp(sInput, sExploreChoices[1]) == 0)
+            {
+                // if not at the boundary
+                if (ActiveCell > 0)
+                {
+                    (*ActiveCell)--;
+                    toEncounter = 1;
+                    sInput[0] = '\0';
+                    snprintf(sMessage, STR_MSG_SIZE, "Moved %s", sExploreChoices[1]);
+                }
+            }
+        }
+
+    } while ((Input_Fail || (strcmp(sInput, sExploreChoices[nExploreChoicesSize - 1] ) != 0)) && !(Encountered));
+    // loop if there are input errors, if the input is not cancel, or the user has not encountered any fakemon
+    
 }
 
 void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
