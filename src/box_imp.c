@@ -115,8 +115,8 @@ void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoi
     } while (Input_Fail);
 }
 
-void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoicesSize, mon_type *Fakedex, int nMonEntry, 
-                stringMsg sMessage)
+void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoicesSize, mon_type *Fakedex, 
+                int nMonEntry, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -1019,6 +1019,77 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
     return mon_Sel;
 }
 
+int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[], int nEncounterChoicesSize, 
+                mon_type *Fakedex, int nMonCreated, stringMsg sMessage)
+{
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+
+    if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
+        strcpy(sMessage, "What would you like to do?");   // message that would be sent to the user at the bottom screen.
+    
+    // buffer that will be printed out in printText function.
+    // 30 is for the "A wild _ has appeared!"
+    char outputBuffer[30 + FULL_NAME_SIZE] = "";
+
+    // the randomly selected fakemon.
+    int nChosenMon = rand() % nMonCreated;
+
+    do {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_Encounter);
+
+        printFillerLines(HEIGHT / 4, &currRow);
+        snprintf(outputBuffer, 30 + FULL_NAME_SIZE, "A wild %s has appeared!", Fakedex[nChosenMon].sFull_Name);
+        printText(outputBuffer, 'c', &currRow);
+        printFillerLines(1, &currRow);
+        displayArt(ART_Mon_Sprite, 7, &currRow);
+        printFillerLines(2, &currRow);
+        printChoices(sEncounterChoices, nEncounterChoicesSize, nEncounterChoicesSize, 1, 'c', &currRow);
+
+        printBottomRemain(currRow);
+
+        // prints bottom part of the box and the system message too, if there are any.
+        printRemark(sMessage);
+        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+        // getInput returns if the user input is valid or not.
+        // refer to getInput implementation (util.c) for the list of possible error msg returns
+        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+        Input_Fail = getInput(sInput, nInputSize, sEncounterChoices, nEncounterChoicesSize, sMessage);
+        // if the input fails, it will prompt the user to type an input again
+        // only valid inputs will be returned (sInput)
+    } while (Input_Fail);
+
+    // if they decided to catch
+    if (strcmp(sInput, sEncounterChoices[0]) == 0)
+    {
+        // 80% chance to catch
+        if ((rand() % 100) < 80)
+        {
+            snprintf(sMessage, STR_MSG_SIZE, "Fakemon Caught!");
+            return nChosenMon;
+        }
+        else
+        {
+            snprintf(sMessage, STR_MSG_SIZE, "Fakemon got away!");
+            return -1;
+        }
+    }
+    else 
+    {
+        snprintf(sMessage, STR_MSG_SIZE, "Succesfully ran away");
+        return -1;
+    }
+}
+
 void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[], int nExploreChoicesSize, 
                     int *ActiveCell ,stringMsg sMessage)
 {
@@ -1047,7 +1118,7 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
         printHeader(HDR_EXPLORATION);
 
         // displays the tree art
-        displayArt(ART_TREE, 10, &currRow);
+        displayArt(ART_Tree, 10, &currRow);
         // prints the grass tiles based in the ActiveCell(position)
         printGrass(*ActiveCell, &currRow);
         // this will only trigger if the user has succesfully issued a FORWARD or BACHWARD command

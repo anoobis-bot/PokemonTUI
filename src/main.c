@@ -30,7 +30,7 @@ int main(void)
     // Exploration Choices
     stringChoice sExplorationChoices[EXPLORATIONCHOICES_SIZE] = {"FORWARD", "BACKWARD", "Cancel"};
     // Encounter Fakemon choices
-    stringChoice sEncounterChoices[] = {"CATCH", "RUN"}; 
+    stringChoice sEncounterChoices[ENCOUNTERCHOICES_SIZE] = {"CATCH", "RUN"}; 
 
     
     // initialize dex and make all members equal to 0
@@ -116,11 +116,18 @@ int main(void)
                 exploration(sInput, STR_INPUT_STD + STR_MARGIN, sExplorationChoices, EXPLORATIONCHOICES_SIZE, 
                                 &ActiveCell, sMessage);
 
-                // if the user has not typed "Cancel"
-                if (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0)
+                // if the fakedex is populated. (otherwise, an encounter would be impossible)
+                if (nMonCreated > 0)
                 {
-                    // encounter
-                }                    
+                    // if the user has not typed "Cancel"
+                    if (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0)
+                    {
+                        // encounter a fakemon. randomized fakemon is handled inside the function
+                        encounter(sInput, STR_INPUT_STD + STR_MARGIN, sEncounterChoices, ENCOUNTERCHOICES_SIZE, 
+                                    FakeDex, nMonCreated, sMessage);
+                    }   
+                }
+                                 
 
             } while (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0);
             // while the user has not typed cancel

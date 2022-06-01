@@ -18,6 +18,7 @@ list arrays
 #define VIEWMONDEXCHOICES_SIZE 1
 #define SETTINGCHOICES_SIZE 3
 #define EXPLORATIONCHOICES_SIZE 3
+#define ENCOUNTERCHOICES_SIZE 2
 
 
 // sizes for char array for strings
