@@ -1204,8 +1204,6 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     // variables used for page display functions
     int currPage = 0;
     int nMaxPage;
-    // used to display the index number of fakemon in the box
-    int currMon = 0;
 
     // initializinf the max page (based on the number of elements that are in Fakedex[] already)
     nMaxPage = nCapturedMons / BOX_MON_PAGE;
@@ -1214,24 +1212,42 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     if (nMaxPage == 0)
         nMaxPage = 1;
     
-    // temporary max page for when searching algorithms comes into place.
+    // temporary max page for when searching algorithms comes into place. 
+    // nMax page will change if search algorithm is done
     // initialized to nMaxPage since at loadup, it is not yes on search mode
     int nTempMaxPage = nMaxPage;
+
+    // number of cells per page
+    int cellPerPage = NUM_BOX_COLUMN * NUM_BOX_ROW;
 
     // it is the index of the fakemon in Fakedex[]
     int mon_Sel = -1; 
 
+    // used in select mode to know if a fakemon is found
+    int isFound = 0;
+
     // 3 modes. 
     // 0 = selecting whether they would like to go back, navigate, or select a fakemon
-    // 1 = navigate (change page) 
+    // 1 = navigate (change page)
     // 2 = select a fakemon
     // 3 = Search by full name
     // 4 = search by short name
     // 5 = sort
     int Mode = 0;
 
-    // // these variables are used to format the diplay TUI of this page -----
-    // const int nSpaceBetween = 3;    // space between the name and description
+    // variable used to determine if in search opeartion
+    // 1 if search mode for full name
+    // 2 if search mode for short name
+    int isSearchMode = 0;
+
+    // variable used to determine which fakemons are searched
+    box_type searchedCaughtMons[BOX_MAX] = {0};
+
+    // how many vaelements in searchedCaughtMons
+    int searchedQty;
+
+    // used in for loops for checking if input is valid / is in the page
+    int currMon;
     
     // since printText function cannot handle variable outputs (i.e. %d place holders and %s)
     // strcat() is used to place the contents of each line to the outputBuffer. After placing all the contents
@@ -1241,8 +1257,6 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     const int OutputBufMax = WIDTH;
     char outputBuffer[OutputBufMax];
 
-    // // buffer used to print the current number of the fakemon <number>.
-    // char sNumHolder[4];
     
     do
     {
@@ -1255,24 +1269,165 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
 
         // main content
         printText("Welcome to your box! Here lies your caught Fakemons.", 'c', &currRow);
-        snprintf(outputBuffer, OutputBufMax, "%d of %d", (currPage+ 1), nTempMaxPage);
+        snprintf(outputBuffer, OutputBufMax, "%d of %d", (currPage + 1), nTempMaxPage);
         printText(outputBuffer, 'c', &currRow);
         printFillerLines(1, &currRow);
+
         printCaughtMons(caughtMons, nCapturedMons, currPage, &currRow);
-        printChoices(sModeChoices, nModeChoicesSize, nModeChoicesSize / 2, 2, 'c', &currRow);
 
-        printBottomRemain(currRow);
+        // Picking type mode
+        if (Mode == 0)
+        {
+            printChoices(sModeChoices, nModeChoicesSize, nModeChoicesSize / 2, 2, 'c', &currRow);
+            printBottomRemain(currRow);
 
-        // prints bottom part of the box and the system message too, if there are any.
-        printRemark(sMessage);
-        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
-        // getInput returns if the user input is valid or not.
-        // refer to getInput implementation (util.c) for the list of possible error msg returns
-        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
-        Input_Fail = getInput(sInput, nInputSize, sModeChoices, nModeChoicesSize, sMessage);
-        // if the input fails, it will prompt the user to type an input again
-        // only valid inputs will be returned (sInput)
+            Input_Fail = getInput(sInput, nInputSize, sModeChoices, nModeChoicesSize, sMessage);
+
+            // if the user input is valid
+            if (!(Input_Fail))
+            {
+                // Navigate
+                if (strcmp(sInput, sModeChoices[0]) == 0)
+                {
+                    Mode = 1;
+                    snprintf(sMessage, STR_MSG_SIZE, "What page would you like to go? Type -1 to Cancel");
+                }
+                // Select
+                else if (strcmp(sInput, sModeChoices[1]) == 0)
+                {
+                    Mode = 2;
+                    snprintf(sMessage, STR_MSG_SIZE, "Which fakemon would you like to pick?");
+                }
+                // Full Name Search
+                else if (strcmp(sInput, sModeChoices[2]) == 0)
+                {
+                    Mode = 3;
+                    snprintf(sMessage, STR_MSG_SIZE, "Enter your fakemon's full name");
+                }
+                // Short Name Search
+                else if (strcmp(sInput, sModeChoices[2]) == 0)
+                {
+                    Mode = 4;
+                    snprintf(sMessage, STR_MSG_SIZE, "Enter your fakemon's short name");
+                }
+                // Sort
+                else if (strcmp(sInput, sModeChoices[2]) == 0)
+                {
+                    Mode = 5;
+                    snprintf(sMessage, STR_MSG_SIZE, "Which sort mode would you like to do?");
+                }
+            }
+        }
+        
+        // Navigate mode
+        else if (Mode == 1)
+        {            
+            // prints bottom part of the box and the system message too, if there are any.
+            printBottomRemain(currRow);
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            // since sInput will return a string and the required data is int, sInput is turned into int using strtoll
+            getInput(sInput, nInputSize, NULL, 0, sMessage);
+            nIntIn = strtoll(sInput, NULL, 10); // strtoll returns 0 if conversion is unsuccesful
+            if ((nIntIn < 1 && nIntIn != -1) || nIntIn > nTempMaxPage)  // if strtoll returned error or the input is not in range
+            {                                                       // but excluding -1 (for escape function)
+                snprintf(sMessage, STR_MSG_SIZE, "Only input the avaialble page number or -1.");
+                sInput[0] = '\0';
+            }
+            else if (nIntIn == -1)  // escape function. returns to mode 0
+            {
+                Mode = 0;
+                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+            }
+            else    // or if the user inputted a valid number, page is set to that and mode returns to 0
+            {
+                currPage = nIntIn - 1;  // currPage starts at index 0
+                Mode = 0;
+                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+            }
+        }
+
+        // Select Mode
+        else if (Mode == 2)
+        {
+            // prints bottom part of the box and the system message too, if there are any.
+            printBottomRemain(currRow);
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            // since sInput will return a string and the required data is int, sInput is turned into int using strtoll
+            getInput(sInput, nInputSize, NULL, 0, sMessage);
+            nIntIn = strtoll(sInput, NULL, 10); // strtoll returns 0 if conversion is unsuccesful
+
+            if (nIntIn == 0)
+            {
+                snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
+                sInput[0] = '\0';
+            }
+            else
+            {
+                if (isSearchMode)
+                {
+                    if (nIntIn == -1)
+                    {
+                        Mode = isSearchMode;
+                        snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                    }
+                    else
+                    {
+                        for (currMon = currPage * cellPerPage; 
+                            currMon < (currPage * cellPerPage) + cellPerPage && currMon < searchedQty; 
+                            currMon++)
+                        {
+                            if (searchedCaughtMons[currMon].nSlot == (nIntIn - 1))
+                            {
+                                mon_Sel = searchedCaughtMons[currMon].nSlot;
+                                isFound = 1;
+                            }
+                        }
+                        if (!isFound)
+                        {
+                            snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
+                            sInput[0] = '\0';
+                        }
+                    }
+                    
+
+                }
+                else if (!isSearchMode)
+                {
+                    if (nIntIn == -1)
+                    {
+                        Mode = 0;
+                        snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                    }
+                    else
+                    {
+                        for (currMon = currPage * cellPerPage; 
+                            currMon < (currPage * cellPerPage) + cellPerPage && currMon < nCapturedMons; 
+                            currMon++)
+                        {
+                            if (caughtMons[currMon].nSlot == (nIntIn - 1))
+                            {
+                                mon_Sel = caughtMons[currMon].nSlot;
+                                isFound = 1;
+                            }
+                        }
+                        if (!isFound)
+                        {
+                            snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
+                            sInput[0] = '\0';
+                        }
+                    }
+                    
+                }
+            }
+        }
 
     } while (Input_Fail || strcmp(sInput, sModeChoices[nModeChoicesSize - 1]) != 0);
 }
