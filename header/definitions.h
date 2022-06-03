@@ -48,5 +48,10 @@ typedef struct
     short nCaught;
 } mon_type;
 
+typedef struct
+{
+    int nSlot;
+    stringSName sShort_Name;
+} box_type;
 
 #endif

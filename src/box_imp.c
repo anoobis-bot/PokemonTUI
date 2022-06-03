@@ -1187,6 +1187,96 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
     
 }
 
+void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int nModeChoicesSize, 
+                mon_type *Fakedex, box_type caughtMons[], int nCapturedMons, stringMsg sMessage)
+{
+    int nIntIn;     // since the input that would be used here is integers, this would be the buffer for it
+
+    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+                    // this so that the height of the content is consistent to the macro HEIGHT
+
+    int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
+
+    if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
+        snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");   // message that would be sent to the user
+
+
+    // variables used for page display functions
+    int currPage = 0;
+    int nMaxPage;
+    // used to display the index number of fakemon in the box
+    int currMon = 0;
+
+    // initializinf the max page (based on the number of elements that are in Fakedex[] already)
+    nMaxPage = nCapturedMons / BOX_MON_PAGE;
+    if ((nCapturedMons % BOX_MAX) != 0)   // ceiling operation. (if there is a decimal in the quotient, round it up always)
+        nMaxPage++;
+    if (nMaxPage == 0)
+        nMaxPage = 1;
+    
+    // temporary max page for when searching algorithms comes into place.
+    // initialized to nMaxPage since at loadup, it is not yes on search mode
+    int nTempMaxPage = nMaxPage;
+
+    // it is the index of the fakemon in Fakedex[]
+    int mon_Sel = -1; 
+
+    // 3 modes. 
+    // 0 = selecting whether they would like to go back, navigate, or select a fakemon
+    // 1 = navigate (change page) 
+    // 2 = select a fakemon
+    // 3 = Search by full name
+    // 4 = search by short name
+    // 5 = sort
+    int Mode = 0;
+
+    // // these variables are used to format the diplay TUI of this page -----
+    // const int nSpaceBetween = 3;    // space between the name and description
+    
+    // since printText function cannot handle variable outputs (i.e. %d place holders and %s)
+    // strcat() is used to place the contents of each line to the outputBuffer. After placing all the contents
+    // of a singe line to the outputBuffer, it is printf()ed to the output screen. 
+    // snprintf could be used, but it would still need to use strcat(). for uniformity, strcat was used to
+    // create the single line in a buffer, which is then printed out.
+    const int OutputBufMax = WIDTH;
+    char outputBuffer[OutputBufMax];
+
+    // // buffer used to print the current number of the fakemon <number>.
+    // char sNumHolder[4];
+    
+    do
+    {
+        printf(CLEAR);  // clears the screen
+        printf("\n");   // and creates new line for the margin
+        currRow = 0;    // sets row to 0 again
+
+        // prints the header of the TUI
+        printHeader(HDR_Box); 
+
+        // main content
+        printText("Welcome to your box! Here lies your caught Fakemons.", 'c', &currRow);
+        snprintf(outputBuffer, OutputBufMax, "%d of %d", (currPage+ 1), nTempMaxPage);
+        printText(outputBuffer, 'c', &currRow);
+        printFillerLines(1, &currRow);
+        printCaughtMons(caughtMons, nCapturedMons, currPage, &currRow);
+        printChoices(sModeChoices, nModeChoicesSize, nModeChoicesSize / 2, 2, 'c', &currRow);
+
+        printBottomRemain(currRow);
+
+        // prints bottom part of the box and the system message too, if there are any.
+        printRemark(sMessage);
+        sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+        // getInput returns if the user input is valid or not.
+        // refer to getInput implementation (util.c) for the list of possible error msg returns
+        // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
+        Input_Fail = getInput(sInput, nInputSize, sModeChoices, nModeChoicesSize, sMessage);
+        // if the input fails, it will prompt the user to type an input again
+        // only valid inputs will be returned (sInput)
+
+    } while (Input_Fail || strcmp(sInput, sModeChoices[nModeChoicesSize - 1]) != 0);
+}
+
 void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
                         stringMsg sMessage)
 {

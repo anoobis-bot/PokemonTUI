@@ -31,20 +31,34 @@ int main(void)
     stringChoice sExplorationChoices[EXPLORATIONCHOICES_SIZE] = {"FORWARD", "BACKWARD", "Cancel"};
     // Encounter Fakemon choices
     stringChoice sEncounterChoices[ENCOUNTERCHOICES_SIZE] = {"CATCH", "RUN"}; 
+    // mode choices for the viewBox
+    stringChoice sBoxChoices[BOXCHOICES_SIZE] = {"Navigate", "Select", "Full Name Search", "Short Name Search", 
+                                                    "Sort", "Cancel"};
 
     
     // initialize dex and make all members equal to 0
     mon_type FakeDex[DEX_MAX] = {{{0}}};
 
+    // sizes of each member in the FakeDex struct (mon_type)
+    int nDatabase_In_Sizes[STRUCT_IN_NUM] = {FULL_NAME_SIZE + STR_MARGIN, SHORT_NAME_SIZE + STR_MARGIN, DESCRIPTION_SIZE + STR_MARGIN, 
+                                    1 + STR_MARGIN};
+
     // number of Fakemon already created
     int nMonCreated = 0;
+
+    // array of box_type that tell which fakemon are already caught. the number of each element identifies to
+    // which fakemon it is based on the index number of the fakemon in Fakedex[].
+    // if caughtMons[0] = 1. then that means that the trainer has the fakemon of fakedex's index 1.
+    box_type caughtMons[BOX_MAX] = {0};
+
+    // number of mons already in the box (caught mons)
+    int nCapturedMons = 0;
 
     // selected fakemon in the Fakdex database
     int mon_Sel = -1;
 
-    // sizes of each member in the FakeDex struct (mon_type)
-    int nDatabase_In_Sizes[STRUCT_IN_NUM] = {FULL_NAME_SIZE + STR_MARGIN, SHORT_NAME_SIZE + STR_MARGIN, DESCRIPTION_SIZE + STR_MARGIN, 
-                                    1 + STR_MARGIN};
+    // variable used to keep track of the position of the player (Exploration Mode)
+    int ActiveCell = 0;
 
     // sInput is the variable that will hold the user inputt
     stringIn sInput;
@@ -55,8 +69,7 @@ int main(void)
     // used to catch the return value of functions whether the operation was succesful or not. default to no
     int isSucces = 0;
 
-    // variable used to keep track of the position of the player (Exploration Mode)
-    int ActiveCell = 0;
+
 
     // seeding the rand() function
     srand(time(0));
@@ -130,6 +143,17 @@ int main(void)
                                  
 
             } while (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0);
+            // while the user has not typed cancel
+        }
+
+        // Box
+        else if (strcmp(sInput, sMainChoices[2]) == 0)
+        {
+            do
+            {
+                viewBox(sInput, STR_INPUT_STD + STR_MARGIN, sBoxChoices, BOXCHOICES_SIZE, FakeDex, 
+                            caughtMons, nCapturedMons, sMessage);
+            } while (strcmp(sInput, sBoxChoices[BOXCHOICES_SIZE - 1]) != 0);
             // while the user has not typed cancel
         }
 

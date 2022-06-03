@@ -27,5 +27,6 @@ void printText(char *sTempText, char format, int *currRow);
 int printFileNames(char *path, int *currRow);
 int fileExists(const char *fname);
 int deleteSav(char *fname);
+void printFormatNum(int nNum);
 
 #endif

@@ -19,12 +19,13 @@ list arrays
 #define SETTINGCHOICES_SIZE 3
 #define EXPLORATIONCHOICES_SIZE 3
 #define ENCOUNTERCHOICES_SIZE 2
+#define BOXCHOICES_SIZE 6
 
 
 // sizes for char array for strings
 // refer to definitions.h, this is the size of the strings          
 #define STR_MSG_SIZE 65
-#define STR_CHOICES_SIZE 15
+#define STR_CHOICES_SIZE 20
 #define STR_INPUT_STD 400
 
 // this margin is used for error checking. the first one is for checking if the input has 

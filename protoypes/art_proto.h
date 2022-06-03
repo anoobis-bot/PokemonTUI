@@ -20,5 +20,6 @@ void foregroundBrown();
 
 void displayArt(char sArt[][WIDTH], int nArtHeight,int *currRow);
 void printGrass(int ActiveCell, int *currRow);
+void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, int currPage, int *currRow);
 
 #endif

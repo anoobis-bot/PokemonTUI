@@ -82,6 +82,13 @@ char HDR_EXPLORATION[ART_TEXT_HEIGHT][WIDTH] =
     {"|_|__ /_/ \\ |_|   |_|__ \\_\\_/ |_| \\ /_/--\\  |_|  |_| \\_\\_/ |_| \\| "},
 };
 
+char HDR_Box[ART_TEXT_HEIGHT][WIDTH] = 
+{
+    {" ___   ___   _    "},
+    {"| |_) / / \\ \\ \\_/ "},
+    {"|_|_) \\_\\_/ /_/ \\ "},
+};
+
 char HDR_Settings[ART_TEXT_HEIGHT][WIDTH] = 
 {
     {" __   ____ _____ _____  _   _      __    __ "}, 

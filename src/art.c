@@ -10,6 +10,7 @@ for printing the 2d array art in art.h
 
 #include "../configurations.h"
 #include "../protoypes/util_proto.h"
+#include "../header/definitions.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -201,4 +202,268 @@ void printGrass(int ActiveCell, int *currRow)
 
     // update the currRow
     (*currRow) += cellHeight;
+}
+
+void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, int currPage, int *currRow)
+{
+    // dimensions of a cell
+    const int cellWidth = 7;
+    const int cellHeight = 5;
+    // the space between the cells
+    const int spaceBetween = 1;
+
+    // the length if every width of the cell is added, plus the spaces between them.
+    // the literal 2 is because of the corner characters. they are not included in the cellWidth
+    const int boxRowWidthLen = (cellWidth * NUM_BOX_COLUMN) + (2 * NUM_BOX_COLUMN) + (spaceBetween * (NUM_BOX_COLUMN));
+    // which position to start printing the grass tiles if they were to be printed at the middle
+    const int centerStartPosPrint = (WIDTH / 2) - (boxRowWidthLen / 2);
+
+    // row of the cell in which the sprite is to be printed (center of the cell)
+    int rowPrintSprite = cellHeight / 2;
+    if (cellHeight % 2 == 0)    // if the cell height is even, print sprite at a higher-middle position
+        rowPrintSprite--;
+
+    // column of center of the cell
+    int columnCenter = cellWidth / 2;
+    if (cellWidth % 2 == 0)     // if the cell width is even, print sprite at a left-middle position
+        columnCenter--;
+
+    // variables used in for loops
+    int printRowCell;
+    int printColumnCell;
+    int currCellRow;
+    int currCellColumn;
+
+    // tracks to which index of the IndexMonDisplay will be used
+    int currMonIndex;
+
+    // counter for how many displayed fakemon already in the row (the limit is nIndexMonsDisplay_Size)
+    int nNumDisplayed = 0;
+
+    // cummulutive counter on the true how many fakemons have been displayed
+    int nCummulativeDisplayed = 0;
+
+    // padding needed for the name
+    int nNamePadding = SHORT_NAME_SIZE / 2;
+    if (SHORT_NAME_SIZE % 2 == 0)   // to make it center only make the paddings odd number
+        nNamePadding--;
+
+    // buffer used for printing the fakemon names
+    // plus 1 is for the NULL Byte
+    char sNameBuffer[SHORT_NAME_SIZE + 1] = "";
+
+    // variable used to determine the number of spaces to be printed while displaying the short name
+    int nNameSpaceRemain;
+
+    // used in for loops
+    int currPad;
+
+
+    for (currCellRow = 0; currCellRow < NUM_BOX_ROW; currCellRow++)
+    {
+        for (printRowCell = 0; printRowCell < cellHeight; printRowCell++)
+        {
+            // Since nNumDiplay is used with the slot number and thename, it needs to be reset
+            nNumDisplayed = nCummulativeDisplayed;
+
+            // at the start of the row, print these
+            printLeftStart();
+            printSpace(centerStartPosPrint);
+
+            // in cell, print the specifics of it in the current printRow
+            for (currCellColumn = 0; currCellColumn < NUM_BOX_COLUMN; currCellColumn++)
+            {
+                currMonIndex = currCellColumn + (currCellRow * NUM_BOX_COLUMN) + 
+                                (currPage * NUM_BOX_COLUMN * NUM_BOX_ROW);
+
+                // if there are still fakemons to print
+                if (nNumDisplayed < nIndexMonsDisplay_Size)
+                {
+                    // if printing the first row of the cell
+                    if (printRowCell == 0)
+                    {
+                        // print the upper left corner
+                        printf("%c", BOX_TILE_UP_LEFT);
+
+                        for (printColumnCell = 0; printColumnCell < cellWidth; printColumnCell++)
+                        {
+                            // - 1 since there are 3 digits. it shifts the starting position of the printing
+                            // of the digits 1 unit to the left
+                            if (printColumnCell == (columnCenter - 1))
+                            {
+                                // print the formatted number
+                                printFormatNum(IndexMonsDisplay[currMonIndex].nSlot);
+                                // += 2 since the formatted number, 000 takes 3 character spaces. + 1 will 
+                                // be incremented at every iteration of for loop
+                                printColumnCell += 2;
+                            }
+                            else 
+                            {
+                                printf("%c", BOX_TILE_H_LINE);
+                            }
+                        }
+                        // print the upper right corner
+                        printf("%c", BOX_TILE_UP_RIGHT);
+
+                    }
+
+                    // if printing at the row where the names are being printed
+                    else if (printRowCell == rowPrintSprite)
+                    {
+                        // print the left boarder
+                        printf("%c", BOX_TILE_V_LINE);
+                        for (printColumnCell = 0; printColumnCell < cellWidth; printColumnCell++)
+                        {
+                            // if at the column in which the name starts to be printed
+                            if (printColumnCell == (columnCenter - (nNamePadding)))
+                            {
+                                // strcat will be used
+                                sNameBuffer[0] = '\0'; // making sure the the buffer is clean
+
+                                // print the short name of the fakemon
+                                nNameSpaceRemain = SHORT_NAME_SIZE - 
+                                                    strlen(IndexMonsDisplay[currMonIndex].sShort_Name);
+
+                                // printing the necessary spaces
+                                if (nNameSpaceRemain > 0)
+                                {
+                                    if (nNameSpaceRemain % 2 == 0)
+                                    {
+                                        for (currPad = 0; currPad < nNameSpaceRemain; currPad++)
+                                            strcat(sNameBuffer, " ");
+                                    }
+                                    else if (nNameSpaceRemain % 2 != 0)
+                                    {
+                                        for (currPad = 0; currPad < nNameSpaceRemain - 1; currPad++)
+                                            strcat(sNameBuffer, " ");
+                                    }
+                                }
+                                
+                                // putting the name to the buffer
+                                strcat(sNameBuffer, IndexMonsDisplay[currMonIndex].sShort_Name);
+
+                                // printing the necessary spaces
+                                for (currPad = 0; currPad < nNameSpaceRemain; currPad++)
+                                    strcat(sNameBuffer, " ");
+                                
+                                printf("%s", sNameBuffer);
+
+                                // updating the cursor to which to printing head is
+                                // - 1 since it will be incremeneted by the end
+                                printColumnCell += (SHORT_NAME_SIZE - 1);
+                            }
+                            else
+                                printf("%c", BOX_TILE_OCCUPY);
+                        }
+                        // and print the right border of the cell
+                        printf("%c", BOX_TILE_V_LINE);
+                    }
+
+                    // just print the tile occupy sprite in any other rows
+                    else if (!(printRowCell == cellHeight - 1))
+                    {
+                        // print the left boarder
+                        printf("%c", BOX_TILE_V_LINE);
+                        for (printColumnCell = 0; printColumnCell < cellWidth; printColumnCell++)
+                        {
+                            printf("%c", BOX_TILE_OCCUPY);
+                        }
+                        // and print the right border of the cell
+                        printf("%c", BOX_TILE_V_LINE);
+                    }
+
+                    // Either situation, increment nNumDisplayed
+                    nNumDisplayed++;
+                }
+                
+                // if there aren't anymore fakemons to print (just print empty in the cell)
+                else if (nNumDisplayed >= nIndexMonsDisplay_Size)
+                {
+                    // if printing the first row of the cell
+                    if (printRowCell == 0)
+                    {
+                        // print the upper left corner
+                        printf("%c", BOX_TILE_UP_LEFT);
+
+                        // print the horizontal bars all the way. no digits needed
+                        for (printColumnCell = 0; printColumnCell < cellWidth; printColumnCell++)
+                        {
+                            printf("%c", BOX_TILE_H_LINE);
+                        }
+
+                        // and print the right border of the cell
+                        printf("%c", BOX_TILE_UP_RIGHT);
+                    }
+
+                    // if printing at the row where the names are being printed
+                    else if (printRowCell == rowPrintSprite)
+                    {
+                        // print the left boarder
+                        printf("%c", BOX_TILE_V_LINE);
+                        for (printColumnCell = 0; printColumnCell < cellWidth; printColumnCell++)
+                        {
+                            // if at the column in which the name starts to be printed
+                            if (printColumnCell == (columnCenter - (nNamePadding)))
+                            {
+                                printf("EMPTY");
+
+                                // updating the cursor to which to printing head is
+                                // - 1 since it will be incremeneted by the end
+                                printColumnCell += (strlen("EMPTY") - 1);
+                            }
+                            else
+                                printf(" ");
+                        }
+                        // and print the right border of the cell
+                        printf("%c", BOX_TILE_V_LINE);
+                    }
+
+                    // just print the tile occupy sprite in any other rows
+                    else if (!(printRowCell == cellHeight - 1))
+                    {
+                        // print the left boarder
+                        printf("%c", BOX_TILE_V_LINE);
+                        for (printColumnCell = 0; printColumnCell < cellWidth; printColumnCell++)
+                        {
+                            printf(" ");
+                        }
+                        // and print the right border of the cell
+                        printf("%c", BOX_TILE_V_LINE);
+                    }
+                }
+
+                // if printing the lower border of the cell. since all of them, either empty or occupied
+                // have the same bottom border
+                if (printRowCell == cellHeight - 1)
+                {
+                    // print the border
+                    printf("%c", BOX_TILE_DOWN_LEFT);
+                    for (printColumnCell = 0; printColumnCell < cellWidth; printColumnCell++)
+                    {
+                        printf("%c", BOX_TILE_H_LINE);
+                    }
+                    printf("%c", BOX_TILE_DOWN_RIGHT);
+
+                    // since this is the last row of the cell, this can be the only time that
+                    // this may be safely incremented
+                    if (nCummulativeDisplayed < nIndexMonsDisplay_Size)
+                        nCummulativeDisplayed++;
+                }
+
+                // psace between columns of cells
+                printSpace(spaceBetween);
+
+            }
+            printRightRemain(centerStartPosPrint + boxRowWidthLen);
+
+            
+        }
+        // incrementes currRow to be updated in the box_imp
+        (*currRow) += cellHeight;
+
+        // prints the number of space between rows of cells
+        printFillerLines(spaceBetween, currRow);
+    }
+
+
 }

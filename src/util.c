@@ -520,3 +520,22 @@ int deleteSav(char *fname)
     
     return remove(pathBuffer);
 }
+
+/* Formats level to 000 format
+    PARAMETERS:
+    - nNum: input number to be formatter  */
+void printFormatNum(int nNum) 
+{
+    if (nNum < 10) 
+    {
+		printf("00%d", nNum);
+	}
+    else if (nNum < 100)
+    {
+        printf("0%d", nNum);
+    }
+	else 
+    {
+		printf("%d", nNum);
+	}
+}
