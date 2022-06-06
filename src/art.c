@@ -237,12 +237,6 @@ void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, in
     // tracks to which index of the IndexMonDisplay will be used
     int currMonIndex;
 
-    // counter for how many displayed fakemon already in the row (the limit is nIndexMonsDisplay_Size)
-    int nNumDisplayed = 0;
-
-    // cummulutive counter on the true how many fakemons have been displayed
-    int nCummulativeDisplayed = 0;
-
     // padding needed for the name
     int nNamePadding = SHORT_NAME_SIZE / 2;
     if (SHORT_NAME_SIZE % 2 == 0)   // to make it center only make the paddings odd number
@@ -263,9 +257,6 @@ void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, in
     {
         for (printRowCell = 0; printRowCell < cellHeight; printRowCell++)
         {
-            // Since nNumDiplay is used with the slot number and thename, it needs to be reset
-            nNumDisplayed = nCummulativeDisplayed;
-
             // at the start of the row, print these
             printLeftStart();
             printSpace(centerStartPosPrint);
@@ -277,7 +268,7 @@ void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, in
                                 (currPage * NUM_BOX_COLUMN * NUM_BOX_ROW);
 
                 // if there are still fakemons to print
-                if (nNumDisplayed < nIndexMonsDisplay_Size)
+                if (currMonIndex < nIndexMonsDisplay_Size)
                 {
                     // if printing the first row of the cell
                     if (printRowCell == 0)
@@ -292,7 +283,7 @@ void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, in
                             if (printColumnCell == (columnCenter - 1))
                             {
                                 // print the formatted number
-                                printFormatNum(IndexMonsDisplay[currMonIndex].nSlot);
+                                printFormatNum(IndexMonsDisplay[currMonIndex].nSlot + 1);
                                 // += 2 since the formatted number, 000 takes 3 character spaces. + 1 will 
                                 // be incremented at every iteration of for loop
                                 printColumnCell += 2;
@@ -329,12 +320,12 @@ void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, in
                                 {
                                     if (nNameSpaceRemain % 2 == 0)
                                     {
-                                        for (currPad = 0; currPad < nNameSpaceRemain; currPad++)
+                                        for (currPad = 0; currPad < nNameSpaceRemain / 2; currPad++)
                                             strcat(sNameBuffer, " ");
                                     }
                                     else if (nNameSpaceRemain % 2 != 0)
                                     {
-                                        for (currPad = 0; currPad < nNameSpaceRemain - 1; currPad++)
+                                        for (currPad = 0; currPad < (nNameSpaceRemain - 1) / 2; currPad++)
                                             strcat(sNameBuffer, " ");
                                     }
                                 }
@@ -343,8 +334,16 @@ void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, in
                                 strcat(sNameBuffer, IndexMonsDisplay[currMonIndex].sShort_Name);
 
                                 // printing the necessary spaces
-                                for (currPad = 0; currPad < nNameSpaceRemain; currPad++)
-                                    strcat(sNameBuffer, " ");
+                                if (nNameSpaceRemain % 2 == 0)
+                                    {
+                                        for (currPad = 0; currPad < nNameSpaceRemain / 2; currPad++)
+                                            strcat(sNameBuffer, " ");
+                                    }
+                                    else if (nNameSpaceRemain % 2 != 0)
+                                    {
+                                        for (currPad = 0; currPad < (nNameSpaceRemain / 2) + 1; currPad++)
+                                            strcat(sNameBuffer, " ");
+                                    }
                                 
                                 printf("%s", sNameBuffer);
 
@@ -371,13 +370,10 @@ void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, in
                         // and print the right border of the cell
                         printf("%c", BOX_TILE_V_LINE);
                     }
-
-                    // Either situation, increment nNumDisplayed
-                    nNumDisplayed++;
                 }
                 
                 // if there aren't anymore fakemons to print (just print empty in the cell)
-                else if (nNumDisplayed >= nIndexMonsDisplay_Size)
+                else if (currMonIndex >= nIndexMonsDisplay_Size)
                 {
                     // if printing the first row of the cell
                     if (printRowCell == 0)
@@ -443,11 +439,6 @@ void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, in
                         printf("%c", BOX_TILE_H_LINE);
                     }
                     printf("%c", BOX_TILE_DOWN_RIGHT);
-
-                    // since this is the last row of the cell, this can be the only time that
-                    // this may be safely incremented
-                    if (nCummulativeDisplayed < nIndexMonsDisplay_Size)
-                        nCummulativeDisplayed++;
                 }
 
                 // psace between columns of cells

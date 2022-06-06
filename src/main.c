@@ -49,7 +49,7 @@ int main(void)
     // array of box_type that tell which fakemon are already caught. the number of each element identifies to
     // which fakemon it is based on the index number of the fakemon in Fakedex[].
     // if caughtMons[0] = 1. then that means that the trainer has the fakemon of fakedex's index 1.
-    box_type caughtMons[BOX_MAX] = {0};
+    box_type caughtMons[BOX_MAX] = {{0}};
 
     // number of mons already in the box (caught mons)
     int nCapturedMons = 0;
@@ -137,7 +137,7 @@ int main(void)
                     {
                         // encounter a fakemon. randomized fakemon is handled inside the function
                         encounter(sInput, STR_INPUT_STD + STR_MARGIN, sEncounterChoices, ENCOUNTERCHOICES_SIZE, 
-                                    FakeDex, nMonCreated, sMessage);
+                                    FakeDex, nMonCreated, caughtMons, &nCapturedMons, sMessage);
                     }   
                 }
                                  
@@ -152,7 +152,7 @@ int main(void)
             do
             {
                 viewBox(sInput, STR_INPUT_STD + STR_MARGIN, sBoxChoices, BOXCHOICES_SIZE, FakeDex, 
-                            caughtMons, nCapturedMons, sMessage);
+                            caughtMons, &nCapturedMons, sMessage);
             } while (strcmp(sInput, sBoxChoices[BOXCHOICES_SIZE - 1]) != 0);
             // while the user has not typed cancel
         }
@@ -167,12 +167,14 @@ int main(void)
                 // save
                 if (strcmp(sInput, sSettingChoices[0]) == 0)
                 {
-                    save(sInput, FILE_NAME_LEN + STR_MARGIN, nMonCreated, FakeDex, sMessage); // save TUI
+                    save(sInput, FILE_NAME_LEN + STR_MARGIN, nMonCreated, FakeDex, caughtMons, 
+                            nCapturedMons, sMessage); // save TUI
                 }
                 // load
                 else if (strcmp(sInput, sSettingChoices[1]) == 0)
                 {
-                    load(sInput, FILE_NAME_LEN + STR_MARGIN, &nMonCreated, FakeDex, sMessage);
+                    load(sInput, FILE_NAME_LEN + STR_MARGIN, &nMonCreated, FakeDex, caughtMons, 
+                            &nCapturedMons, sMessage);
                 }
 
             } while (strcmp(sInput, sSettingChoices[SETTINGCHOICES_SIZE - 1]) != 0); 

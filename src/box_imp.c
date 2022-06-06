@@ -1020,7 +1020,7 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
 }
 
 int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[], int nEncounterChoicesSize, 
-                mon_type *Fakedex, int nMonCreated, stringMsg sMessage)
+                mon_type *Fakedex, int nMonCreated, box_type caughtMons[], int *nCapturedMons, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -1075,6 +1075,13 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
         if ((rand() % 100) < 80)
         {
             snprintf(sMessage, STR_MSG_SIZE, "Fakemon Caught!");
+            // assignin appropriate data to each member of the element in captured mons
+            caughtMons[*nCapturedMons].nSlot = *nCapturedMons;
+            strcpy(caughtMons[*nCapturedMons].sShort_Name, Fakedex[nChosenMon].sShort_Name);
+            caughtMons[*nCapturedMons].index_Dex = nChosenMon;
+
+            (*nCapturedMons)++;
+
             return nChosenMon;
         }
         else
@@ -1188,9 +1195,9 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
 }
 
 void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int nModeChoicesSize, 
-                mon_type *Fakedex, box_type caughtMons[], int nCapturedMons, stringMsg sMessage)
+                mon_type *Fakedex, box_type caughtMons[], int *nCapturedMons, stringMsg sMessage)
 {
-    int nIntIn;     // since the input that would be used here is integers, this would be the buffer for it
+    int nIntIn = 0;     // since the input that would be used here is integers, this would be the buffer for it
 
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -1206,8 +1213,9 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     int nMaxPage;
 
     // initializinf the max page (based on the number of elements that are in Fakedex[] already)
-    nMaxPage = nCapturedMons / BOX_MON_PAGE;
-    if ((nCapturedMons % BOX_MAX) != 0)   // ceiling operation. (if there is a decimal in the quotient, round it up always)
+    nMaxPage = *nCapturedMons / BOX_MON_PAGE;
+    // ceiling operation. (if there is a decimal in the quotient, round it up always)
+    if ((*nCapturedMons % BOX_MON_PAGE) != 0)  
         nMaxPage++;
     if (nMaxPage == 0)
         nMaxPage = 1;
@@ -1233,18 +1241,33 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     // 3 = Search by full name
     // 4 = search by short name
     // 5 = sort
+    // 6 = fakemon has been selected. 
+    // 7 = release mode. confirm if they want to release
     int Mode = 0;
 
+    // for mode = 6
+    stringChoice selectedChoices[3] = {"View Entry", "Release", "Cancel"};
+
+    // choices for viewMon
+    stringChoice viewMonChoice[1] = {"Cancel"};
+
+    // choices for release
+    stringChoice releaseConfirmChoices[2] = {"Yes", "No"};
+
+    // choices when in search mode and selecting mode (Mode = 0)
+    // Navigate, Select, and Cancel
+    stringChoice sRestrictModeChoices[3] = {"Navigate", "Select", "Cancel"};
+
     // variable used to determine if in search opeartion
-    // 1 if search mode for full name
-    // 2 if search mode for short name
+    // 3 if search mode for full name
+    // 4 if search mode for short name
     int isSearchMode = 0;
 
-    // variable used to determine which fakemons are searched
-    box_type searchedCaughtMons[BOX_MAX] = {0};
+    // arrays that store which fakemons are searched
+    box_type searchedCaughtMons[BOX_MAX] = {{0}};
 
     // how many vaelements in searchedCaughtMons
-    int searchedQty;
+    int searchedQty = 0;
 
     // used in for loops for checking if input is valid / is in the page
     int currMon;
@@ -1272,20 +1295,40 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
         snprintf(outputBuffer, OutputBufMax, "%d of %d", (currPage + 1), nTempMaxPage);
         printText(outputBuffer, 'c', &currRow);
         printFillerLines(1, &currRow);
-
-        printCaughtMons(caughtMons, nCapturedMons, currPage, &currRow);
+        
+        // if in search mode, print the only searched fakemons
+        if (isSearchMode)
+            printCaughtMons(searchedCaughtMons, searchedQty, currPage, &currRow);
+        else if (!isSearchMode)
+            printCaughtMons(caughtMons, *nCapturedMons, currPage, &currRow);
 
         // Picking type mode
         if (Mode == 0)
         {
-            printChoices(sModeChoices, nModeChoicesSize, nModeChoicesSize / 2, 2, 'c', &currRow);
-            printBottomRemain(currRow);
+            if (!isSearchMode)
+            {
+                printChoices(sModeChoices, nModeChoicesSize, nModeChoicesSize / 2, 2, 'c', &currRow);
+                printBottomRemain(currRow);
 
-            // prints bottom part of the box and the system message too, if there are any.
-            printRemark(sMessage);
-            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+                // prints bottom part of the box and the system message too, if there are any.
+                printRemark(sMessage);
+                sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
-            Input_Fail = getInput(sInput, nInputSize, sModeChoices, nModeChoicesSize, sMessage);
+                Input_Fail = getInput(sInput, nInputSize, sModeChoices, nModeChoicesSize, sMessage);
+            }
+            // serach mode has restricted choices. only navigate, select, and cancel
+            else if (isSearchMode)
+            {
+                printChoices(sRestrictModeChoices, 3, 3, 1, 'c', &currRow);
+                printBottomRemain(currRow);
+                // prints bottom part of the box and the system message too, if there are any.
+                printRemark(sMessage);
+                sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+                Input_Fail = getInput(sInput, nInputSize, sRestrictModeChoices, 3, sMessage);
+            }
+            
+            
 
             // if the user input is valid
             if (!(Input_Fail))
@@ -1306,19 +1349,42 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 else if (strcmp(sInput, sModeChoices[2]) == 0)
                 {
                     Mode = 3;
-                    snprintf(sMessage, STR_MSG_SIZE, "Enter your fakemon's full name");
+                    snprintf(sMessage, STR_MSG_SIZE, "Enter your fakemon's full name or type Cancel");
                 }
                 // Short Name Search
-                else if (strcmp(sInput, sModeChoices[2]) == 0)
+                else if (strcmp(sInput, sModeChoices[3]) == 0)
                 {
                     Mode = 4;
-                    snprintf(sMessage, STR_MSG_SIZE, "Enter your fakemon's short name");
+                    snprintf(sMessage, STR_MSG_SIZE, "Enter your fakemon's short name or type Cancel");
                 }
                 // Sort
-                else if (strcmp(sInput, sModeChoices[2]) == 0)
+                else if (strcmp(sInput, sModeChoices[4]) == 0)
                 {
                     Mode = 5;
                     snprintf(sMessage, STR_MSG_SIZE, "Which sort mode would you like to do?");
+                }
+                // user typed cancel while in search mode. will returnj to mode select
+                // but not in search mode anymore
+                else if (strcmp(sInput, sModeChoices[5]) == 0 && isSearchMode)
+                {
+                    Mode = 0;
+                    isSearchMode = 0;
+                    // since the sInput still has "Cancel" it will stop the loop
+                    // that is why it is necessary to clean it
+                    sInput[0] = '\0';
+                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+
+                    // since it might be used again, the searchedCaughtMons is reseted
+                    for (currMon = 0; currMon < searchedQty; currMon++)
+                    {
+                        searchedCaughtMons[currMon].nSlot = 0;
+                        searchedCaughtMons[currPage].index_Dex = 0;
+                        searchedCaughtMons[currMon].sShort_Name[0] = '\0';
+                    }
+                    searchedQty = 0;
+
+                    // reset the number of page to original
+                    nTempMaxPage = nMaxPage;
                 }
             }
         }
@@ -1373,23 +1439,32 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
             {
                 if (isSearchMode)
                 {
+                    // if the user decided not to select a fakemon
                     if (nIntIn == -1)
                     {
-                        Mode = isSearchMode;
+                        // turns back to mod e select, but searchMode is still active
+                        Mode = 0;
                         snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
                     }
+                    // if the user typed the short name
                     else
                     {
+                        // search every fakemon's short name only in the current page in searchedCaughtMons
                         for (currMon = currPage * cellPerPage; 
                             currMon < (currPage * cellPerPage) + cellPerPage && currMon < searchedQty; 
                             currMon++)
                         {
+                            // if found
                             if (searchedCaughtMons[currMon].nSlot == (nIntIn - 1))
                             {
                                 mon_Sel = searchedCaughtMons[currMon].nSlot;
                                 isFound = 1;
+                                Mode = 6;
+                                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
+                                            caughtMons[mon_Sel].nSlot + 1);
                             }
                         }
+                        // if not found
                         if (!isFound)
                         {
                             snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
@@ -1408,16 +1483,22 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     }
                     else
                     {
+                        // search every fakemon's short name only in the current page
                         for (currMon = currPage * cellPerPage; 
-                            currMon < (currPage * cellPerPage) + cellPerPage && currMon < nCapturedMons; 
+                            currMon < (currPage * cellPerPage) + cellPerPage && currMon < *nCapturedMons; 
                             currMon++)
                         {
+                            // if found
                             if (caughtMons[currMon].nSlot == (nIntIn - 1))
                             {
                                 mon_Sel = caughtMons[currMon].nSlot;
                                 isFound = 1;
+                                Mode = 6;
+                                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
+                                            caughtMons[mon_Sel].nSlot + 1);
                             }
                         }
+                        // if not found
                         if (!isFound)
                         {
                             snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
@@ -1425,6 +1506,216 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         }
                     }
                     
+                }
+            }
+        }
+        
+        // search by full name
+        else if (Mode == 3)
+        {
+            
+        }
+
+        // search by short name
+        else if (Mode == 4)
+        {
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
+
+            // if the user input is valid
+            if (!(Input_Fail))
+            {
+                if (strcmp(sInput, "Cancel") == 0)
+                {
+                    sInput[0] = '\0';
+                    Mode = 0;
+                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                }
+                // if the user did not type cancel, loop through every fakemon in your box and 
+                // see if it matches to any of the name
+                else
+                {
+                    for (currMon = 0; currMon < *nCapturedMons; currMon++)
+                    {
+                        // if it matches, appeand the member's contents to the searchCaughtMon's 
+                        if (strcmp(caughtMons[currMon].sShort_Name, sInput) == 0)
+                        {
+                            isSearchMode = 4;
+                            searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
+                            searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
+                            strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
+                            searchedQty++;
+                        }
+                    }
+
+                    // if a fakemon was searched
+                    if (isSearchMode)
+                    {
+                        // setting the right page number since the fakemon searched
+                        // is lower than the whole box population
+                        nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
+                        if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
+                            nTempMaxPage++;
+                        
+                        snprintf(sMessage, STR_MSG_SIZE, "Found some fakemon!");
+                    }
+                    else if (!isSearchMode)
+                    {
+                        snprintf(sMessage, STR_MSG_SIZE, "No Fakemon found.");
+                    }
+                    Mode = 0;
+                    sInput[0] = '\0';
+                }
+            }
+        }
+
+        // what to do with the selected fakemon
+        else if (Mode == 6)
+        {
+            // NOTE: mon_Sel is already defined in Mode = 2
+            // the only way to get here is if the user succesfully selected a fakemon
+            // mon_Sel is the slot number of the fakemon in box struct array
+
+            // resetting the value for future use
+            isFound = 0;
+
+            printChoices(selectedChoices, 3, 3, 1, 'c', &currRow);
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            Input_Fail = getInput(sInput, nInputSize, selectedChoices, 3, sMessage);
+
+            if (!Input_Fail)
+            {
+                // mon_Sel has already been defined
+
+                // Cancel
+                if (strcmp(sInput, selectedChoices[2]) == 0)
+                {
+                    sInput[0] = '\0';
+                    Mode = 0;
+                    mon_Sel = -1;
+                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                }
+                // View Entry
+                else if (strcmp(sInput, selectedChoices[0]) == 0)
+                {
+                    // makes sure that input buffer is clear
+                    sInput[0] = '\0';
+                    viewMon(sInput, nInputSize, viewMonChoice, 1, Fakedex, caughtMons[mon_Sel].index_Dex, 
+                                sMessage);
+                    // since Cancel will be typed in the view mon, it needs to be cleaned or else, this loop
+                    // will end
+                    sInput[0] = '\0';
+                    // since it will loop back to the same fakemon, it is repeated.
+                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
+                        caughtMons[mon_Sel].nSlot + 1);
+                }
+                // Release
+                else if (strcmp(sInput, selectedChoices[1]) == 0)
+                {
+                    Mode = 7;
+                    sInput[0] = '\0';
+                    snprintf(sMessage, STR_MSG_SIZE, "Are you sure you want to release SLOT: %d?", 
+                        caughtMons[mon_Sel].nSlot + 1);
+                }
+            }
+        }
+
+        // release mode (confirmation)
+        else if (Mode == 7)
+        {
+            // NOTE: mon_Sel has already been defined
+
+            printChoices(releaseConfirmChoices, 2, 2, 1, 'c', &currRow);
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            Input_Fail = getInput(sInput, nInputSize, releaseConfirmChoices, 2, sMessage);
+
+            if (!Input_Fail)
+            {
+                // if no
+                if (strcmp(sInput, releaseConfirmChoices[1]) == 0)
+                {
+                    snprintf(sMessage, STR_MSG_SIZE, "Release Cancelled");
+                    sInput[0] = '\0';
+                    // go back to the choices on what to do.
+                    Mode = 6;
+                }
+                // if yes. release fakemon and adjust the caughtMons array
+                else if (strcmp(sInput, releaseConfirmChoices[0]) == 0)
+                {
+                    // currMon represents the slot in the caughtMons array
+                    // since the index of the caughtMons is = its nSlot, we can have this operation
+                    for (currMon = caughtMons[mon_Sel].nSlot; currMon < (*nCapturedMons) - 1; currMon++)
+                    {
+                        // shifting to the left
+                        // only the names and the indexDex will move, not the slot.
+                        strcpy(caughtMons[currMon].sShort_Name, caughtMons[currMon + 1].sShort_Name);
+                        caughtMons[currMon].index_Dex = caughtMons[currMon + 1].index_Dex;
+                    }
+                    // cleaning the last content of caughtMons, since it would be redundant 
+                    // (plus, it will not be counted)
+                    caughtMons[(*nCapturedMons) - 1].nSlot = 0;
+                    (caughtMons[(*nCapturedMons) - 1].sShort_Name)[0] = '\0';
+                    caughtMons[(*nCapturedMons) - 1].index_Dex = 0;
+
+                    // decrementing captured mons counter
+                    (*nCapturedMons)--;
+
+                    // since search set of fakemons have a different array, it needs to be updated too
+                    if (isSearchMode)
+                    {
+                        // finding the fakemon to be deleted in the searchedCaughtMons array
+                        currMon = 0;
+                        while (searchedCaughtMons[currMon].nSlot != caughtMons[mon_Sel].nSlot)
+                        {
+                            currMon++;
+                        }
+                        for (; currMon < searchedQty - 1; currMon++)
+                        {
+                            // this time, every member will be shifted
+                            searchedCaughtMons[currMon].nSlot = searchedCaughtMons[currMon + 1].nSlot;
+                            searchedCaughtMons[currMon].index_Dex = searchedCaughtMons[currMon + 1].index_Dex;
+                            strcpy(searchedCaughtMons[currMon].sShort_Name, searchedCaughtMons[currMon + 1].sShort_Name);
+                        }
+                    }
+                    // cleaning the last content of searcgedCaughtMons, since it would be redundant 
+                    // (plus, it will not be counted)
+                    searchedCaughtMons[searchedQty - 1].nSlot = 0;
+                    (searchedCaughtMons[searchedQty - 1].sShort_Name)[0] = '\0';
+                    searchedCaughtMons[searchedQty - 1].index_Dex = 0;
+
+                    // decrementing searchedMon counter (searched Qty)
+                    searchedQty--;
+
+                    snprintf(sMessage, STR_MSG_SIZE, "Released Fakemon.");
+                    sInput[0] = '\0';
+                    // go back to main menu
+                    Mode = 0;
+                    mon_Sel = -1;
+
+                    // recalculate nMaxPage since number of fakemon has been subtracted
+                    nMaxPage = *nCapturedMons / BOX_MON_PAGE;
+                    // ceiling operation. (if there is a decimal in the quotient, round it up always)
+                    if ((*nCapturedMons % BOX_MON_PAGE) != 0)   
+                        nMaxPage++;
+                    if (nMaxPage == 0)
+                        nMaxPage = 1;
+
+                    nTempMaxPage = nMaxPage;
                 }
             }
         }
@@ -1478,7 +1769,8 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
     } while (Input_Fail);
 }
 
-void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], stringMsg sMessage)
+void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], box_type caughtMons[], 
+            int nCapturedMons, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -1756,6 +2048,17 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                             fprintf(fptr, "\n");
                         }
                         fprintf(fptr, "--------- DEX END ---------\n");
+                        fprintf(fptr, "NUMBER OF CAUGHT: %d\n", nCapturedMons);
+                        fprintf(fptr, "\n");
+                        for (currMon = 0; currMon < nCapturedMons; currMon++)
+                        {
+                            fprintf(fptr, "SLOT: %d\n", caughtMons[currMon].nSlot);
+                            fprintf(fptr, "SHORT NAME: %s\n", caughtMons[currMon].sShort_Name);
+                            fprintf(fptr, "INDEX FROM DEX: %d\n", caughtMons[currMon].index_Dex);
+
+                            fprintf(fptr, "\n");
+                        }
+                        fprintf(fptr, "--------- BOX END ---------\n");
 
                         fclose(fptr);
 
@@ -1774,7 +2077,8 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
 
 }
 
-void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[], stringMsg sMessage)
+void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[], box_type caughtMons[], 
+            int *nCapturedMons, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -1920,6 +2224,12 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                         Fakedex[currMon].cGender = 0;
                         Fakedex[currMon].nCaught = 0;
                     }
+                    for (currMon = 0; currMon < *nCapturedMons; currMon++)
+                    {
+                        caughtMons[currMon].nSlot = 0;
+                        (caughtMons[currMon].sShort_Name)[0] = '\0';
+                        caughtMons[currMon].index_Dex = 0;
+                    }
 
                     // PRELIMINARY INFO
                     // asterisk (*) is used to discard information that are not needed.
@@ -1970,8 +2280,33 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                         else if (strcmp(stringBuffer, "NO") == 0)
                             Fakedex[currMon].nCaught = 0;
                         
-                        snprintf(sMessage, STR_MSG_SIZE, "File succesfully loaded!");
                     }
+
+                    // BOX PART
+                    // discarding the header
+                    fscanf(fptr, " %*s %*s %*s %*s");  
+
+                    // PRELIMINARY INFO
+                    // such as, FULL NAME:, SHORT NAME:, etc. only the important data are gathered 
+                    fscanf(fptr, " %*s %*s %*s %d", nCapturedMons);   // sets how many capture fakemon fakemon
+
+                    for (currMon = 0; currMon < *(nCapturedMons); currMon++)
+                    {
+                        // SLOT NUMBER
+                        fscanf(fptr, " %*s %d", &(caughtMons[currMon].nSlot));
+
+                        // SHORT NAME
+                        fscanf(fptr, " %*s %*s ");
+                        fgets(caughtMons[currMon].sShort_Name, SHORT_NAME_SIZE + STR_MARGIN, fptr);
+                        // removes new line character
+                        caughtMons[currMon].sShort_Name[strcspn(caughtMons[currMon].sShort_Name, "\n")] = 0;
+
+                        // INDEX FROM DEX
+                        fscanf(fptr, " %*s %*s %*s %d", &(caughtMons[currMon].index_Dex));
+                    }
+                    
+
+                    snprintf(sMessage, STR_MSG_SIZE, "File succesfully loaded!");
                 }
                 // if they do not want to overwrite and load anymore
                 else if (!(isConfirmed))
