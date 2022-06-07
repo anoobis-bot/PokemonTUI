@@ -179,14 +179,15 @@ void printRemark(char *sMessage)
     - sErrorFeedback: put sMessage here.
     ERROR CODES:
     0: succesful input
-    1: The input is too long and exceeds sInputSize
+    1: The input is too long and exceeds nInputSize
     2: The input entered is not in the list of input                     
     3: Duplicate input from the database
     4: Input is empty                                                                                       
     5: Invalid file type
     6: File name taken
     7: Too many save files
-    8: file name does not exist                                                                                 */
+    8: file name does not exist
+    9: input format not followed                                                                           */
 int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], int nChoicesSize, char *sErrorFeedBack)
 {
     int nErrorMsg = 0;  // error code
@@ -538,4 +539,45 @@ void printFormatNum(int nNum)
     {
 		printf("%d", nNum);
 	}
+}
+
+/* This function checks if the word only has letters in it 
+    PARAMETERS: 
+    - sWord: string input
+    - nWordLen: length of the string
+    RETURN
+    - 1 if it is only letters
+    - 0 if it encountered a character that is not a letter                     */
+int onlyLetters(const char *sWord, const int nWordLen)
+{
+    int isOnlyLetter = 1;
+    int nCurrLetter;
+    for (nCurrLetter = 0; nCurrLetter < nWordLen && isOnlyLetter; nCurrLetter++)
+    {
+        if ((sWord[nCurrLetter] < 'A' || sWord[nCurrLetter] > 'Z') &&
+            (sWord[nCurrLetter] < 'a' || sWord[nCurrLetter] > 'z'))
+                isOnlyLetter = 0;
+    }
+
+    return isOnlyLetter;
+}
+
+/* This function converts all letters in a word into uppercase
+    PARAMETERS: 
+    - sWord: string input. make sure it is an array, not a constant literal
+    - nLen: length of the string 
+    NOTE:
+    - if a character is not a lower case letter (symbol), it will not do anything        */
+void toUpperWord(char sWord[], const int nWordLen)
+{
+    int nCurrLetter;
+    for (nCurrLetter = 0; nCurrLetter < nWordLen; nCurrLetter++)
+    {
+        if (sWord[nCurrLetter] >= 'a' && sWord[nCurrLetter] <= 'z')
+        {
+            // based on the ascii table, to turn a letter to uppercase, shift the value
+            // by 32 to the left
+            sWord[nCurrLetter] -= 32;
+        }
+    }
 }

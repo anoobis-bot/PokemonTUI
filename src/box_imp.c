@@ -327,7 +327,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             if (currQuestion == 0)
                 strcpy(sMessage, "Input your Fakemon's full name.");
             else if (currQuestion == 1)
-                strcpy(sMessage, "Input your Fakemon's short name. Capital Letters only.");
+                strcpy(sMessage, "Input your Fakemon's short name. 5 Letters. Will be capitalized");
             else if (currQuestion == 2)
                 strcpy(sMessage, "Input your Fakemon's description.");
             else if (currQuestion == 3)
@@ -377,7 +377,35 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                 if (currQuestion == 0)
                     strcpy(tempMon.sFull_Name, sInput);
                 else if (currQuestion == 1)
-                    strcpy(tempMon.sShort_Name, sInput);
+                {
+                    // checks if the short name input is valid
+                    // if it has SHORT_NAME_SIZE characters
+                    if (strlen(sInput) == SHORT_NAME_SIZE)
+                    {
+                        // if there is only letters in the input (no symbols)
+                        if (onlyLetters(sInput, SHORT_NAME_SIZE))
+                        {
+                            // convert it to upper case and assign it
+                            toUpperWord(sInput, SHORT_NAME_SIZE);
+                            strcpy(tempMon.sShort_Name, sInput);
+                        }
+                        else
+                        {
+                            Input_Fail = 9;
+                            sInput[0] = '\0';
+                            snprintf(sMessage, STR_MSG_SIZE, "Only input letters in the English alphabet");
+                        }
+                        
+                    }
+                    else
+                    {
+                        // this will prompt the user to type a valid input
+                        Input_Fail = 9;
+                        sInput[0] = '\0';
+                        snprintf(sMessage, STR_MSG_SIZE, "Please enter exactly %d Letters. Letters wil be capitalized.", 
+                                    SHORT_NAME_SIZE);
+                    }
+                }
                 else if (currQuestion == 2)
                     strcpy(tempMon.sDescript, sInput);
                 
@@ -429,26 +457,57 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                 
                 else if (currQuestion == 1)
                 {
-                    // checks if there are any duplicates of the Short Name in the database
-                    for (compMon = 0; compMon < nMonCreated && !(isDuplicate); compMon++)
+                    // checks if the short name input's format is valid
+                    // if it has SHORT_NAME_SIZE characters
+                    if (strlen(sInput) == SHORT_NAME_SIZE)
                     {
-                        // if in the updateDex function, we wouldnt want to trigger a isDuplicate, if the sInput
-                        // is its own data (if they do not want to change the contents)
-                        if (compMon != nCurrMon)
+                        // if there is only letters in the input (no symbols)
+                        if (!onlyLetters(sInput, SHORT_NAME_SIZE))
                         {
-                            if (strcmp(sInput, dex_Database[compMon].sShort_Name) == 0)
-                            {
-                                Input_Fail = 3;
-                                snprintf(sMessage, STR_MSG_SIZE, 
-                                            "Duplicate short name in the database! Enter a unique short name.");
-                            }
+                            Input_Fail = 9;
+                            sInput[0] = '\0';
+                            snprintf(sMessage, STR_MSG_SIZE, "Only input letters in the English alphabet");
                         }
-                        
                     }
+                    // if it does not meet the specified length
+                    else
+                    {
+                        // this will prompt the user to type a valid input
+                        Input_Fail = 9;
+                        sInput[0] = '\0';
+                        snprintf(sMessage, STR_MSG_SIZE, "Please enter exactly %d Letters. Letters wil be capitalized.", 
+                                    SHORT_NAME_SIZE);
+                    }
+                    
+                    // if it did not get an error for format
+                    if (!Input_Fail)
+                    {
+                        // checks if there are any duplicates of the Short Name in the database
+                        for (compMon = 0; compMon < nMonCreated && !(isDuplicate); compMon++)
+                        {
+                            // if in the updateDex function, we wouldnt want to trigger a isDuplicate, if the sInput
+                            // is its own data (if they do not want to change the contents)
+                            if (compMon != nCurrMon)
+                            {
+                                if (strcmp(sInput, dex_Database[compMon].sShort_Name) == 0)
+                                {
+                                    Input_Fail = 3;
+                                    snprintf(sMessage, STR_MSG_SIZE, 
+                                                "Duplicate short name in the database! Enter a unique short name.");
+                                }
+                            }
+                            
+                        }
+                    }
+                    
 
-                    // if there are no duplicates, assign the short name
+                    // if there are no other errors, asssign it. 
                     if (!(Input_Fail))
+                    {
+                        // convert it to upper case and assign it
+                        toUpperWord(sInput, SHORT_NAME_SIZE);
                         strcpy(dex_Database[nCurrMon].sShort_Name, sInput);
+                    }
                 }
                 
                 else if (currQuestion == 2)

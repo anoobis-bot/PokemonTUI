@@ -28,5 +28,7 @@ int printFileNames(char *path, int *currRow);
 int fileExists(const char *fname);
 int deleteSav(char *fname);
 void printFormatNum(int nNum);
+int onlyLetters(const char *sWord, const int nWordLen);
+void toUpperWord(char sWord[], const int nWordLen);
 
 #endif
