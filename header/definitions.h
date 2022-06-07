@@ -52,6 +52,7 @@ typedef struct
 {
     int nSlot;
     stringSName sShort_Name;
+    stringFName sFull_Name;
     int index_Dex;
 } box_type;
 

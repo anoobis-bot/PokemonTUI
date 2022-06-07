@@ -1078,9 +1078,13 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
             // assignin appropriate data to each member of the element in captured mons
             caughtMons[*nCapturedMons].nSlot = *nCapturedMons;
             strcpy(caughtMons[*nCapturedMons].sShort_Name, Fakedex[nChosenMon].sShort_Name);
+            strcpy(caughtMons[*nCapturedMons].sFull_Name, Fakedex[nChosenMon].sFull_Name);
             caughtMons[*nCapturedMons].index_Dex = nChosenMon;
 
             (*nCapturedMons)++;
+
+            // makes the fakedex entry as captured
+            Fakedex[nChosenMon].nCaught = 1;
 
             return nChosenMon;
         }
@@ -1380,6 +1384,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         searchedCaughtMons[currMon].nSlot = 0;
                         searchedCaughtMons[currPage].index_Dex = 0;
                         searchedCaughtMons[currMon].sShort_Name[0] = '\0';
+                        searchedCaughtMons[currMon].sFull_Name[0] = '\0';
                     }
                     searchedQty = 0;
 
@@ -1530,6 +1535,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
             // if the user input is valid
             if (!(Input_Fail))
             {
+                // if the user typed cancel, go back to mode select
                 if (strcmp(sInput, "Cancel") == 0)
                 {
                     sInput[0] = '\0';
@@ -1540,6 +1546,8 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 // see if it matches to any of the name
                 else
                 {
+                    // since the slot number is the same as the index, currMon can be used
+                    // as the variable to acces each element in the caughtMons array
                     for (currMon = 0; currMon < *nCapturedMons; currMon++)
                     {
                         // if it matches, appeand the member's contents to the searchCaughtMon's 
@@ -1549,6 +1557,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                             searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
                             searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
                             strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
+                            strcpy(searchedCaughtMons[searchedQty].sFull_Name, caughtMons[currMon].sFull_Name);
                             searchedQty++;
                         }
                     }
@@ -1564,10 +1573,12 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         
                         snprintf(sMessage, STR_MSG_SIZE, "Found some fakemon!");
                     }
+                    // if no fakemon was found
                     else if (!isSearchMode)
                     {
                         snprintf(sMessage, STR_MSG_SIZE, "No Fakemon found.");
                     }
+                    // either way go back to mode select choices
                     Mode = 0;
                     sInput[0] = '\0';
                 }
@@ -1610,9 +1621,10 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 {
                     // makes sure that input buffer is clear
                     sInput[0] = '\0';
+                    // index_Dex is uused in this case
                     viewMon(sInput, nInputSize, viewMonChoice, 1, Fakedex, caughtMons[mon_Sel].index_Dex, 
                                 sMessage);
-                    // since Cancel will be typed in the view mon, it needs to be cleaned or else, this loop
+                    // since Cancel will be typed in the viewMon, it needs to be cleaned or else, this loop
                     // will end
                     sInput[0] = '\0';
                     // since it will loop back to the same fakemon, it is repeated.
@@ -1664,12 +1676,14 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         // shifting to the left
                         // only the names and the indexDex will move, not the slot.
                         strcpy(caughtMons[currMon].sShort_Name, caughtMons[currMon + 1].sShort_Name);
+                        strcpy(caughtMons[currMon].sFull_Name, caughtMons[currMon + 1].sFull_Name);
                         caughtMons[currMon].index_Dex = caughtMons[currMon + 1].index_Dex;
                     }
                     // cleaning the last content of caughtMons, since it would be redundant 
                     // (plus, it will not be counted)
                     caughtMons[(*nCapturedMons) - 1].nSlot = 0;
                     (caughtMons[(*nCapturedMons) - 1].sShort_Name)[0] = '\0';
+                    (caughtMons[(*nCapturedMons) - 1].sFull_Name)[0] = '\0';
                     caughtMons[(*nCapturedMons) - 1].index_Dex = 0;
 
                     // decrementing captured mons counter
@@ -1690,12 +1704,14 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                             searchedCaughtMons[currMon].nSlot = searchedCaughtMons[currMon + 1].nSlot;
                             searchedCaughtMons[currMon].index_Dex = searchedCaughtMons[currMon + 1].index_Dex;
                             strcpy(searchedCaughtMons[currMon].sShort_Name, searchedCaughtMons[currMon + 1].sShort_Name);
+                            strcpy(searchedCaughtMons[currMon].sFull_Name, searchedCaughtMons[currMon + 1].sFull_Name);
                         }
                     }
                     // cleaning the last content of searcgedCaughtMons, since it would be redundant 
                     // (plus, it will not be counted)
                     searchedCaughtMons[searchedQty - 1].nSlot = 0;
                     (searchedCaughtMons[searchedQty - 1].sShort_Name)[0] = '\0';
+                    (searchedCaughtMons[searchedQty - 1].sFull_Name)[0] = '\0';
                     searchedCaughtMons[searchedQty - 1].index_Dex = 0;
 
                     // decrementing searchedMon counter (searched Qty)
@@ -2054,6 +2070,7 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                         {
                             fprintf(fptr, "SLOT: %d\n", caughtMons[currMon].nSlot);
                             fprintf(fptr, "SHORT NAME: %s\n", caughtMons[currMon].sShort_Name);
+                            fprintf(fptr, "FULL NAME: %s\n", caughtMons[currMon].sFull_Name);
                             fprintf(fptr, "INDEX FROM DEX: %d\n", caughtMons[currMon].index_Dex);
 
                             fprintf(fptr, "\n");
@@ -2228,6 +2245,7 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                     {
                         caughtMons[currMon].nSlot = 0;
                         (caughtMons[currMon].sShort_Name)[0] = '\0';
+                        (caughtMons[currMon].sFull_Name)[0] = '\0';
                         caughtMons[currMon].index_Dex = 0;
                     }
 
@@ -2300,6 +2318,12 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                         fgets(caughtMons[currMon].sShort_Name, SHORT_NAME_SIZE + STR_MARGIN, fptr);
                         // removes new line character
                         caughtMons[currMon].sShort_Name[strcspn(caughtMons[currMon].sShort_Name, "\n")] = 0;
+
+                        // FULL NAME
+                        fscanf(fptr, " %*s %*s ");
+                        fgets(caughtMons[currMon].sFull_Name, FULL_NAME_SIZE + STR_MARGIN, fptr);
+                        // removes new line character
+                        caughtMons[currMon].sFull_Name[strcspn(caughtMons[currMon].sFull_Name, "\n")] = 0;
 
                         // INDEX FROM DEX
                         fscanf(fptr, " %*s %*s %*s %d", &(caughtMons[currMon].index_Dex));
