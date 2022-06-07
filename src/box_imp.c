@@ -1258,6 +1258,9 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     // choices for release
     stringChoice releaseConfirmChoices[2] = {"Yes", "No"};
 
+    // choices for sort mode
+    stringChoice sSortChoices[3] = {"Ascending", "Descending", "Cancel"};
+
     // choices when in search mode and selecting mode (Mode = 0)
     // Navigate, Select, and Cancel
     stringChoice sRestrictModeChoices[3] = {"Navigate", "Select", "Cancel"};
@@ -1272,6 +1275,19 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
 
     // how many vaelements in searchedCaughtMons
     int searchedQty = 0;
+
+    // indicates what type of sort mode to use
+    // 0 = none selected yed
+    // 1 = Ascending
+    // 2 = Descending
+    int nSortMode = 0;
+
+    // variable used in a for loop to seek out the other arrays (selection sort)
+    int nSeeker;
+    // used to know which value is the lowest/highest
+    int nSwap_Slot;
+    // used as a place holder for swaping
+    box_type tempMon;
 
     // used in for loops for checking if input is valid / is in the page
     int currMon;
@@ -1365,7 +1381,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 else if (strcmp(sInput, sModeChoices[4]) == 0)
                 {
                     Mode = 5;
-                    snprintf(sMessage, STR_MSG_SIZE, "Which sort mode would you like to do?");
+                    snprintf(sMessage, STR_MSG_SIZE, "Short Name Sort. Which sort mode would you like to do?");
                 }
                 // user typed cancel while in search mode. will returnj to mode select
                 // but not in search mode anymore
@@ -1518,7 +1534,66 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
         // search by full name
         else if (Mode == 3)
         {
-            
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
+
+            // if the user input is valid (the number of chars is accepted)
+            if (!(Input_Fail))
+            {
+                // if the user typed cancel, go back to mode select
+                if (strcmp(sInput, "Cancel") == 0)
+                {
+                    sInput[0] = '\0';
+                    Mode = 0;
+                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                }
+                // if the user did not type cancel, loop through every fakemon in your box and 
+                // see if it matches to any of the name
+                else
+                {
+                    // since the slot number is the same as the index, currMon can be used
+                    // as the variable to acces each element in the caughtMons array
+                    // search the whole caughtMons array
+                    for (currMon = 0; currMon < *nCapturedMons; currMon++)
+                    {
+                        // if it matches, appeand the member's contents to the searchCaughtMon's 
+                        if (strcmp(caughtMons[currMon].sFull_Name, sInput) == 0)
+                        {
+                            isSearchMode = 3;
+                            searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
+                            searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
+                            strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
+                            strcpy(searchedCaughtMons[searchedQty].sFull_Name, caughtMons[currMon].sFull_Name);
+                            searchedQty++;
+                        }
+                    }
+
+                    // if a fakemon was searched
+                    if (isSearchMode)
+                    {
+                        // setting the right page number since the fakemon searched
+                        // is lower than the whole box population
+                        nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
+                        if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
+                            nTempMaxPage++;
+                        
+                        snprintf(sMessage, STR_MSG_SIZE, "Found some fakemon!");
+                    }
+                    // if no fakemon was found
+                    else if (!isSearchMode)
+                    {
+                        snprintf(sMessage, STR_MSG_SIZE, "No Fakemon found.");
+                    }
+                    // either way go back to mode select choices
+                    Mode = 0;
+                    sInput[0] = '\0';
+                }
+            }
         }
 
         // search by short name
@@ -1582,6 +1657,115 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     Mode = 0;
                     sInput[0] = '\0';
                 }
+            }
+        }
+
+        // sort by short name
+        else if (Mode == 5)
+        {
+
+            printChoices(sSortChoices, 3, 3, 1, 'c', &currRow);
+            printBottomRemain(currRow);
+
+            // prints bottom part of the box and the system message too, if there are any.
+            printRemark(sMessage);
+            sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
+
+            Input_Fail = getInput(sInput, nInputSize, sSortChoices, 3, sMessage);
+
+            // if the user input is valid
+            if (!(Input_Fail))
+            {
+                // if the user typed cancel, go back to mode select
+                if (strcmp(sInput, "Cancel") == 0)
+                {
+                    sInput[0] = '\0';
+                    Mode = 0;
+                    nSortMode = 0;
+                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                }
+                // check what sort mode the user has selected
+                // Ascending
+                else if (strcmp(sInput, sSortChoices[0]) == 0)
+                    nSortMode = 1;
+                // Descending
+                else if (strcmp(sInput, sSortChoices[1]) == 0)
+                    nSortMode = 2;
+
+                // if the user has already selected a sort mode
+                // Ascending
+                if (nSortMode == 1)
+                {
+                    // Selection Sort
+                    for (currMon = 0; currMon < (*nCapturedMons) - 1; currMon++)
+                    {
+                        // initializing the slot to be swapped
+                        nSwap_Slot = currMon;
+                        // checks each short name value after the currmon
+                        for (nSeeker = currMon + 1; nSeeker < *nCapturedMons; nSeeker++)
+                        {
+                            // it records which slot has the firstest letter in the alphabet
+                            if (strcmp(caughtMons[nSwap_Slot].sShort_Name, caughtMons[nSeeker].sShort_Name) > 0)
+                            {
+                                nSwap_Slot = nSeeker;
+                            }
+                        }
+                        // if it found a firster letter in the alphabe, swap it.
+                        if (nSwap_Slot > currMon)
+                        {
+                            // swap algo
+                            tempMon = caughtMons[currMon];
+                            caughtMons[currMon] = caughtMons[nSwap_Slot];
+                            caughtMons[nSwap_Slot] = tempMon;
+
+                            // retain the slot number. only swap the short name, full name, and dex index
+                            caughtMons[nSwap_Slot].nSlot = caughtMons[currMon].nSlot;
+                            caughtMons[currMon].nSlot = tempMon.nSlot;
+                        }
+
+                    }
+
+                    snprintf(sMessage, STR_MSG_SIZE, "Sorted Short Name by Ascending Order");
+                }
+                // descending
+                else if (nSortMode == 2)
+                {
+                    // Selection Sort
+                    for (currMon = 0; currMon < (*nCapturedMons) - 1; currMon++)
+                    {
+                        // initializing the slot to be swapped
+                        nSwap_Slot = currMon;
+                        // checks each short name value after the currmon
+                        for (nSeeker = currMon + 1; nSeeker < *nCapturedMons; nSeeker++)
+                        {
+                            // it records which slot has the lastest letter in the alphabet
+                            if (strcmp(caughtMons[nSwap_Slot].sShort_Name, caughtMons[nSeeker].sShort_Name) < 0)
+                            {
+                                nSwap_Slot = nSeeker;
+                            }
+                        }
+                        // if it found a lastest letter in the alphabe, swap it.
+                        if (nSwap_Slot > currMon)
+                        {
+                            // swap algo
+                            tempMon = caughtMons[currMon];
+                            caughtMons[currMon] = caughtMons[nSwap_Slot];
+                            caughtMons[nSwap_Slot] = tempMon;
+
+                            // retain the slot number. only swap the short name, full name, and dex index
+                            caughtMons[nSwap_Slot].nSlot = caughtMons[currMon].nSlot;
+                            caughtMons[currMon].nSlot = tempMon.nSlot;
+                        }
+
+                    }
+
+                    snprintf(sMessage, STR_MSG_SIZE, "Sorted Short Name by Descending Order");
+                }
+                    
+                // resetting the values because it might be used again
+                sInput[0] = '\0';
+                Mode = 0;
+                nSortMode = 0;
             }
         }
 
