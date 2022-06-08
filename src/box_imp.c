@@ -116,7 +116,7 @@ void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoi
 }
 
 void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoicesSize, mon_type *Fakedex, 
-                int nMonEntry, stringMsg sMessage)
+                int nMonEntry, int forceView, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -147,7 +147,7 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
         printText(outputBuffer, 'j', &currRow);
         printFillerLines(1, &currRow);
         // if the fakemon is caught, disclose all the fakemon's information
-        if (Fakedex[nMonEntry].nCaught)
+        if (Fakedex[nMonEntry].nCaught || forceView)
         {
             // print short name
             snprintf(outputBuffer, 500, "%s %s", "Short Name:", Fakedex[nMonEntry].sShort_Name);
@@ -459,7 +459,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                     // tell the user that there has been a duplicate
                     setMessage(sMessage, "We found a duplicate, would you like to overide this entry?");
                     // show the original entry and ask if they want to overwrite
-                    viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, compMon, sMessage);
+                    viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, compMon, 1, sMessage);
                     if (strcmp(sInput, sDuplicateChoice[0]) == 0)   // if they entered "Yes"
                     {
                         dex_Database[compMon] = tempMon;    // update the compMon(index) with its new value
@@ -665,7 +665,7 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
         {
             // confirm if they want to update this fakemon
             setMessage(sMessage, "Are you sure you want to update this fakemon's information?");
-            viewMon(sInput, nInputSizes[0], confirmChoices, 2, Fakedex, currMon, sMessage);
+            viewMon(sInput, nInputSizes[0], confirmChoices, 2, Fakedex, currMon, 1, sMessage);
             // sInputSize[0] is the size since "Yes" and "Cancel" are the only one being asked
             // the STR_FNAME_SIZE is enough for that
 
@@ -792,7 +792,7 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
             {
                 // confirm if they want to update this fakemon
                 setMessage(sMessage, "Are you sure you want to delete this fakemon");
-                viewMon(sInput, nInputSize, confirmChoices, 2, Fakedex, currMon, sMessage);
+                viewMon(sInput, nInputSize, confirmChoices, 2, Fakedex, currMon, 1, sMessage);
                 // sInputSize is the size since "Yes" and "Cancel" are the only one being asked
                 // the STR_FNAME_SIZE is enough for that
                 // that's pretty big already
@@ -834,7 +834,7 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
             {
                 toCancel = 0;
                 Mode = 1;       // repeat and get full name again
-                setMessage(sMessage, "Cannot remove caught Fakemon");
+                setMessage(sMessage, "Cannot remove caught Fakemon. Try again or type 'Cancel'");
                 sInput[0] = '\0';
             }
             
@@ -1907,8 +1907,8 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     // makes sure that input buffer is clear
                     sInput[0] = '\0';
                     // index_Dex is uused in this case
-                    viewMon(sInput, nInputSize, viewMonChoice, 1, Fakedex, caughtMons[mon_Sel].index_Dex, 
-                                sMessage);
+                    viewMon(sInput, nInputSize, viewMonChoice, 1, Fakedex, caughtMons[mon_Sel].index_Dex, 1, 
+                            sMessage);
                     // since Cancel will be typed in the viewMon, it needs to be cleaned or else, this loop
                     // will end
                     sInput[0] = '\0';

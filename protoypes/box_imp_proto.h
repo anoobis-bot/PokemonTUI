@@ -15,7 +15,7 @@ void mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int 
 void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize, 
                         stringMsg sMessage);
 void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoicesSize, mon_type *Fakedex, 
-                int nMonEntry, stringMsg sMessage);
+                int nMonEntry, int forceView, stringMsg sMessage);
 int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nMonCreated, 
             stringMsg sMessage, int nCurrMon);
 void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int nMonCreated, 

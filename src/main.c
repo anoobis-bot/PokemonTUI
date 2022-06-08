@@ -113,7 +113,7 @@ int main(void)
                         // there are no -1 in the index of the array Fakemon[]
                         if (mon_Sel != -1)  
                             viewMon(sInput, STR_INPUT_STD + STR_MARGIN, sViewMonDexChoices, VIEWMONDEXCHOICES_SIZE, 
-                                        FakeDex, mon_Sel, sMessage);
+                                        FakeDex, mon_Sel, 0,sMessage);
                     } while (mon_Sel != -1);
                 }
                 // Update Dex
