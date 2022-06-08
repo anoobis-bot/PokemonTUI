@@ -146,24 +146,46 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
         snprintf(outputBuffer, 500, "%s %s", "Full Name:", Fakedex[nMonEntry].sFull_Name);
         printText(outputBuffer, 'j', &currRow);
         printFillerLines(1, &currRow);
-        // print short name
-        snprintf(outputBuffer, 500, "%s %s", "Short Name:", Fakedex[nMonEntry].sShort_Name);
-        printText(outputBuffer, 'j', &currRow);
-        printFillerLines(1, &currRow);
-        // print desciption
-        snprintf(outputBuffer, 500, "%s %s", "Description:", Fakedex[nMonEntry].sDescript);
-        printText(outputBuffer, 'j', &currRow);
-        printFillerLines(1, &currRow);
-        // print Gender
-        // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
-        if (Fakedex[nMonEntry].cGender == 'M')  
-            snprintf(outputBuffer, 500, "%s %s", "Gender:", "MALE");
-        else if (Fakedex[nMonEntry].cGender == 'F')  
-            snprintf(outputBuffer, 500, "%s %s", "Gender:", "FEMALE");
-        else if (Fakedex[nMonEntry].cGender == 'U')  
-            snprintf(outputBuffer, 500, "%s %s", "Gender:", "UNKNOWN");
-        printText(outputBuffer, 'j', &currRow);
-        printFillerLines(1, &currRow);
+        // if the fakemon is caught, disclose all the fakemon's information
+        if (Fakedex[nMonEntry].nCaught)
+        {
+            // print short name
+            snprintf(outputBuffer, 500, "%s %s", "Short Name:", Fakedex[nMonEntry].sShort_Name);
+            printText(outputBuffer, 'j', &currRow);
+            printFillerLines(1, &currRow);
+            // print desciption
+            snprintf(outputBuffer, 500, "%s %s", "Description:", Fakedex[nMonEntry].sDescript);
+            printText(outputBuffer, 'j', &currRow);
+            printFillerLines(1, &currRow);
+            // print Gender
+            // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
+            if (Fakedex[nMonEntry].cGender == 'M')  
+                snprintf(outputBuffer, 500, "%s %s", "Gender:", "MALE");
+            else if (Fakedex[nMonEntry].cGender == 'F')  
+                snprintf(outputBuffer, 500, "%s %s", "Gender:", "FEMALE");
+            else if (Fakedex[nMonEntry].cGender == 'U')  
+                snprintf(outputBuffer, 500, "%s %s", "Gender:", "UNKNOWN");
+            printText(outputBuffer, 'j', &currRow);
+            printFillerLines(1, &currRow);
+            
+        }
+        // if not caught, only display ??? for short name, description, and gender
+        else
+        {
+            // print short name
+            snprintf(outputBuffer, 500, "%s %s", "Short Name:", "???");
+            printText(outputBuffer, 'j', &currRow);
+            printFillerLines(1, &currRow);
+            // print desciption
+            snprintf(outputBuffer, 500, "%s %s", "Description:", "???");
+            printText(outputBuffer, 'j', &currRow);
+            printFillerLines(1, &currRow);
+            // print Gender
+            snprintf(outputBuffer, 500, "%s %s", "Gender:", "???");
+            printText(outputBuffer, 'j', &currRow);
+            printFillerLines(1, &currRow);
+        }
+
         // print caught or uncaught
         // since nCaught member only has short, putting the constant CAUGHT or UNCAUGHT
         if (Fakedex[nMonEntry].nCaught == 0)  
@@ -943,10 +965,21 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             // prepping the description of the current fakemon entry. if the length of the fakemon's description exceeds 
             // the nDescNumMax - 4 (for the ...\0) it is truncated and replaced with an ellipsis ...
             // nore: snprintf only prints n-1 to buffer
-            snprintf(sDescBuffer, nDescNumMax - 3, Fakedex[currMon + (currPage * MON_PAGE)].sDescript);
-            sDescBuffer[nDescNumMax - 4] = '\0';    // since sDescBuffer is not initialized to all 0, making sure it it has null
-            if (strlen(Fakedex[currMon + (currPage * MON_PAGE)].sDescript) > nDescNumMax - 4)
-                strcat(sDescBuffer, "..."); // if it is truncated, put ellipsis on it
+            if (Fakedex[currMon + (currPage * MON_PAGE)].nCaught)
+            {
+                snprintf(sDescBuffer, nDescNumMax - 3, Fakedex[currMon + (currPage * MON_PAGE)].sDescript);
+                // since sDescBuffer is not initialized to all 0, making sure it it has null
+                // this only applies if the nDescBuffer is saturated
+                sDescBuffer[nDescNumMax - 4] = '\0';    
+                if (strlen(Fakedex[currMon + (currPage * MON_PAGE)].sDescript) > nDescNumMax - 4)
+                    strcat(sDescBuffer, "..."); // if it is truncated, put ellipsis on it
+            }
+            // if the fakemon is still uncaught, just display ??? in the description
+            else
+            {
+                snprintf(sDescBuffer, nDescNumMax, "???");
+            }
+            
             
             // this is where the printing of the line starts.
             // putting the necessary number of pad to the buffer first 
