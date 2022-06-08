@@ -85,6 +85,18 @@ void printFillerLines(int nQuantity, int *currRow)
     (*currRow) += nQuantity;
 }
 
+/* This function prints replaces the text in sMessage. it makes sure that
+    sMessage has a maximum of STR_MSG_SIZE - 1 characters to give space for
+    the null character.
+    PARAMETERS:
+    - sMessage" put sMessage string here
+    - sText: the string that you want to put in sMessage    */
+void setMessage(char *sMessage, char *sText)
+{
+    snprintf(sMessage, STR_MSG_SIZE - 1, sText);
+    sMessage[STR_MSG_SIZE - 1] = '\0';
+}
+
 /* This function prints the top bar or header of the TUI. 
     PARAMETERS:
     - sArtText: art text from art.h to be printed as the 
@@ -206,8 +218,9 @@ int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], in
 
     if (strlen(sInput) == nInputSize - 1)   // if the characters are too many for the array size 
     {
-        snprintf(sErrorFeedBack, WIDTH - STR_MARGIN, "Invalid input! You may only enter a maximum of %d characters", 
+        snprintf(sErrorFeedBack, STR_MSG_SIZE, "Invalid input! You may only enter a maximum of %d characters", 
                     nInputSize - STR_MARGIN);
+        sErrorFeedBack[STR_MSG_SIZE - 1] = '\0';
         while ( (buffer = getchar()) != '\n' && buffer != EOF );    // flushes stdin filestream 
 
         sInput[0] = '\0';   // cleans input buffer if the input was invalid.
@@ -216,7 +229,7 @@ int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], in
     }
     else if (strlen(sInput) == 0)   // if there are no inputs
     {
-        snprintf(sErrorFeedBack, WIDTH - STR_MARGIN, "You must have an input!");
+        setMessage(sErrorFeedBack, "You must have an input!");
 
         nErrorMsg = 4;
     }
@@ -237,7 +250,7 @@ int getInput(char *sInput, int nInputSize, char sChoices[][STR_CHOICES_SIZE], in
     // if there are choices in the game, start from here
     else if ((!isMatch) && (nErrorMsg == 0)) // if strcnmp did not return 0 and input is not larger that nInputSize
     {
-        snprintf(sErrorFeedBack, WIDTH - STR_MARGIN, "Your input is not in the choices. Inputs are case-sensitive.");
+        setMessage(sErrorFeedBack, "Your input is not in the choices. Inputs are case-sensitive.");
 
         sInput[0] = '\0';   // cleans the input buffer if the input was invalid
 

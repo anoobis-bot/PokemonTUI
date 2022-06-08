@@ -2,7 +2,7 @@ NUMBER OF ENTRIES: 2
 
 FULL NAME: Blastoise
 SHORT NAME: BLSTY
-DESCRIPTION: Coolest boiii in town
+DESCRIPTION: the quick brown fox jumped over the lazy dogsdf weewrer
 GENDER: MALE
 CAUGHT: YES
 

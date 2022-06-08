@@ -415,7 +415,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         {
                             Input_Fail = 9;
                             sInput[0] = '\0';
-                            snprintf(sMessage, STR_MSG_SIZE, "Only input letters in the English alphabet");
+                            setMessage(sMessage, "Only input letters in the English alphabet");
                         }
                         
                     }
@@ -426,6 +426,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         sInput[0] = '\0';
                         snprintf(sMessage, STR_MSG_SIZE, "Please enter exactly %d Letters. Letters wil be capitalized.", 
                                     SHORT_NAME_SIZE);
+                        sMessage[STR_MSG_SIZE - 1] = '\0';
                     }
                 }
                 else if (currQuestion == 2)
@@ -456,16 +457,16 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                 if (currQuestion >= nInputQty)
                 {
                     // tell the user that there has been a duplicate
-                    snprintf(sMessage, STR_MSG_SIZE, "We found a duplicate, would you like to overide this entry?");
+                    setMessage(sMessage, "We found a duplicate, would you like to overide this entry?");
                     // show the original entry and ask if they want to overwrite
                     viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, compMon, sMessage);
                     if (strcmp(sInput, sDuplicateChoice[0]) == 0)   // if they entered "Yes"
                     {
                         dex_Database[compMon] = tempMon;    // update the compMon(index) with its new value
-                        snprintf(sMessage, STR_MSG_SIZE, "Fakemon entry updated");
+                        setMessage(sMessage, "Fakemon entry updated");
                     }
                     else    // if they answered no, this function end and the tempMon was not assigned to anything
-                        snprintf(sMessage, STR_MSG_SIZE, "Fakemon entry discarded");
+                        setMessage(sMessage, "Fakemon entry discarded");
                     
                     newCreatedMon = 0;  // no new entry was made, they just updated/discarded an entry
                 }
@@ -488,7 +489,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         {
                             Input_Fail = 9;
                             sInput[0] = '\0';
-                            snprintf(sMessage, STR_MSG_SIZE, "Only input letters in the English alphabet");
+                            setMessage(sMessage, "Only input letters in the English alphabet");
                         }
                     }
                     // if it does not meet the specified length
@@ -499,6 +500,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         sInput[0] = '\0';
                         snprintf(sMessage, STR_MSG_SIZE, "Please enter exactly %d Letters. Letters wil be capitalized.", 
                                     SHORT_NAME_SIZE);
+                        sMessage[STR_MSG_SIZE - 1] = '\0';
                     }
                     
                     // if it did not get an error for format
@@ -514,7 +516,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                                 if (strcmp(sInput, dex_Database[compMon].sShort_Name) == 0)
                                 {
                                     Input_Fail = 3;
-                                    snprintf(sMessage, STR_MSG_SIZE, 
+                                    setMessage(sMessage, 
                                                 "Duplicate short name in the database! Enter a unique short name.");
                                 }
                             }
@@ -651,7 +653,7 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
 
                     if (!isMatch)
                     {
-                        snprintf(sMessage, STR_MSG_SIZE, "No fakemon found with that name! type 'Cancel' to go back.");
+                        setMessage(sMessage, "No fakemon found with that name! type 'Cancel' to go back.");
                         Input_Fail = 2;
                     }
                 }
@@ -662,7 +664,7 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
         else if (Mode == 2)
         {
             // confirm if they want to update this fakemon
-            snprintf(sMessage, STR_MSG_SIZE, "Are you sure you want to update this fakemon's information?");
+            setMessage(sMessage, "Are you sure you want to update this fakemon's information?");
             viewMon(sInput, nInputSizes[0], confirmChoices, 2, Fakedex, currMon, sMessage);
             // sInputSize[0] is the size since "Yes" and "Cancel" are the only one being asked
             // the STR_FNAME_SIZE is enough for that
@@ -672,7 +674,7 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
             {
                 if (addDex(sInput, nInputSizes, nInputQty, Fakedex, nMonCreated, sMessage, currMon))
                 {
-                    snprintf(sMessage, STR_MSG_SIZE, "Fakemon entry Updated!");
+                    setMessage(sMessage, "Fakemon entry Updated!");
                 }
                 else
                 {
@@ -681,7 +683,7 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
             }
             else
             {
-                snprintf(sMessage, STR_MSG_SIZE, "Update entry cancelled.");
+                setMessage(sMessage, "Update entry cancelled.");
             }
             // escape the function after Mode 2
             toCancel = 1;
@@ -775,8 +777,7 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
                     // if nothing matched
                     if (!isMatch)
                     {
-                        snprintf(sMessage, STR_MSG_SIZE, 
-                                    "No fakemon found with that name! Try again or type 'Cancel'.");
+                        setMessage(sMessage, "No fakemon found with that name! Try again or type 'Cancel'.");
                         Input_Fail = 2;
                     }
                 }
@@ -790,7 +791,7 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
             if (Fakedex[currMon].nCaught == 0)  // if the fakemon is not yet caught
             {
                 // confirm if they want to update this fakemon
-                snprintf(sMessage, STR_MSG_SIZE, "Are you sure you want to delete this fakemon");
+                setMessage(sMessage, "Are you sure you want to delete this fakemon");
                 viewMon(sInput, nInputSize, confirmChoices, 2, Fakedex, currMon, sMessage);
                 // sInputSize is the size since "Yes" and "Cancel" are the only one being asked
                 // the STR_FNAME_SIZE is enough for that
@@ -820,11 +821,11 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
                     Fakedex[*(nMonCreated) - 1].nCaught = 0;
                     (*nMonCreated)--;
 
-                    snprintf(sMessage, STR_MSG_SIZE, "Fakemon deleted.");
+                    setMessage(sMessage, "Fakemon deleted.");
                 }
                 else
                 {
-                    snprintf(sMessage, STR_MSG_SIZE, "Fakemon not deleted.");
+                    setMessage(sMessage, "Fakemon not deleted.");
                 }
                 // escape the function after Mode 2
                 toCancel = 1;
@@ -833,7 +834,7 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
             {
                 toCancel = 0;
                 Mode = 1;       // repeat and get full name again
-                snprintf(sMessage, STR_MSG_SIZE, "Cannot remove caught Fakemon");
+                setMessage(sMessage, "Cannot remove caught Fakemon");
                 sInput[0] = '\0';
             }
             
@@ -850,7 +851,7 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
 
 
     if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
-        snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");   // message that would be sent to the user
+        setMessage(sMessage, "What would you like to do?");   // message that would be sent to the user
 
 
     // variables used for page display functions
@@ -1033,12 +1034,12 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             if (strcmp(sInput, modeChoices[0]) == 0)    // navigate mode
             {
                 Mode = 1;
-                snprintf(sMessage, STR_MSG_SIZE, "Which Page woud you like to go? Enter -1 to cancel");
+                setMessage(sMessage, "Which Page woud you like to go? Enter -1 to cancel");
             }
             else if (strcmp(sInput, modeChoices[1]) == 0)   // select mode
             {
                 Mode = 2;
-                snprintf(sMessage, STR_MSG_SIZE, "Type the Fakemon's number you want to select. Enter -1 to cancel");
+                setMessage(sMessage, "Type the Fakemon's number you want to select. Enter -1 to cancel");
             }
             // if cancel is typed, the whole loop is stopped
         }
@@ -1054,19 +1055,19 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             nIntIn = strtoll(sInput, NULL, 10); // strtoll returns 0 if conversion is unsuccesful
             if ((nIntIn < 1 && nIntIn != -1) || nIntIn > nMaxPage)  // if strtoll returned error or the input is not in range
             {                                                       // but excluding -1 (for escape function)
-                snprintf(sMessage, STR_MSG_SIZE, "Only input the avaialble page number or -1.");
+                setMessage(sMessage, "Only input the avaialble page number or -1.");
                 sInput[0] = '\0';
             }
             else if (nIntIn == -1)  // escape function. returns to mode 0
             {
                 Mode = 0;
-                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                setMessage(sMessage, "What would you like to do?");
             }
             else    // or if the user inputted a valid number, page is set to that and mode returns to 0
             {
                 currPage = nIntIn - 1;  // currPage starts at index 0
                 Mode = 0;
-                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                setMessage(sMessage, "What would you like to do?");
             }
             
         }
@@ -1085,13 +1086,13 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             if ((nIntIn < ((currPage * MON_PAGE) + 1) && nIntIn != -1) || nIntIn > (currPage * MON_PAGE) + MON_PAGE ||
                     nIntIn > currPopulation)
             {
-                snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
+                setMessage(sMessage, "Only input the Fakemon number in this page or -1.");
                 sInput[0] = '\0';
             }
             else if (nIntIn == -1)  // escape function. returns to mode 0 
             {
                 Mode = 0;
-                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                setMessage(sMessage, "What would you like to do?");
             }
             else    // succesful input. mon_Sel is returned.
             {
@@ -1166,7 +1167,7 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
         // 80% chance to catch
         if ((rand() % 100) < 80)
         {
-            snprintf(sMessage, STR_MSG_SIZE, "Fakemon Caught!");
+            setMessage(sMessage, "Fakemon Caught!");
             // assignin appropriate data to each member of the element in captured mons
             caughtMons[*nCapturedMons].nSlot = *nCapturedMons;
             strcpy(caughtMons[*nCapturedMons].sShort_Name, Fakedex[nChosenMon].sShort_Name);
@@ -1182,13 +1183,13 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
         }
         else
         {
-            snprintf(sMessage, STR_MSG_SIZE, "Fakemon got away!");
+            setMessage(sMessage, "Fakemon got away!");
             return -1;
         }
     }
     else 
     {
-        snprintf(sMessage, STR_MSG_SIZE, "Succesfully ran away");
+        setMessage(sMessage, "Succesfully ran away");
         return -1;
     }
 }
@@ -1269,6 +1270,7 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
                     toEncounter = 1;
                     sInput[0] = '\0';
                     snprintf(sMessage, STR_MSG_SIZE, "Moved %s", sExploreChoices[0]);
+                    sMessage[STR_MSG_SIZE - 1] = '\0';
                 }
             }
             // BACKWARD
@@ -1281,6 +1283,7 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
                     toEncounter = 1;
                     sInput[0] = '\0';
                     snprintf(sMessage, STR_MSG_SIZE, "Moved %s", sExploreChoices[1]);
+                    sMessage[STR_MSG_SIZE - 1] = '\0';
                 }
             }
         }
@@ -1301,7 +1304,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
     if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
-        snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");   // message that would be sent to the user
+        setMessage(sMessage, "What would you like to do?");   // message that would be sent to the user
 
 
     // variables used for page display functions
@@ -1449,31 +1452,31 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 if (strcmp(sInput, sModeChoices[0]) == 0)
                 {
                     Mode = 1;
-                    snprintf(sMessage, STR_MSG_SIZE, "What page would you like to go? Type -1 to Cancel");
+                    setMessage(sMessage, "What page would you like to go? Type -1 to Cancel");
                 }
                 // Select
                 else if (strcmp(sInput, sModeChoices[1]) == 0)
                 {
                     Mode = 2;
-                    snprintf(sMessage, STR_MSG_SIZE, "Which fakemon would you like to pick?");
+                    setMessage(sMessage, "Which fakemon would you like to pick?");
                 }
                 // Full Name Search
                 else if (strcmp(sInput, sModeChoices[2]) == 0)
                 {
                     Mode = 3;
-                    snprintf(sMessage, STR_MSG_SIZE, "Enter your fakemon's full name or type Cancel");
+                    setMessage(sMessage, "Enter your fakemon's full name or type Cancel");
                 }
                 // Short Name Search
                 else if (strcmp(sInput, sModeChoices[3]) == 0)
                 {
                     Mode = 4;
-                    snprintf(sMessage, STR_MSG_SIZE, "Enter your fakemon's short name or type Cancel");
+                    setMessage(sMessage, "Enter your fakemon's short name or type Cancel");
                 }
                 // Sort
                 else if (strcmp(sInput, sModeChoices[4]) == 0)
                 {
                     Mode = 5;
-                    snprintf(sMessage, STR_MSG_SIZE, "Short Name Sort. Which sort mode would you like to do?");
+                    setMessage(sMessage, "Short Name Sort. Which sort mode would you like to do?");
                 }
                 // user typed cancel while in search mode. will returnj to mode select
                 // but not in search mode anymore
@@ -1484,7 +1487,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     // since the sInput still has "Cancel" it will stop the loop
                     // that is why it is necessary to clean it
                     sInput[0] = '\0';
-                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                    setMessage(sMessage, "What would you like to do?");
 
                     // since it might be used again, the searchedCaughtMons is reseted
                     for (currMon = 0; currMon < searchedQty; currMon++)
@@ -1515,19 +1518,19 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
             nIntIn = strtoll(sInput, NULL, 10); // strtoll returns 0 if conversion is unsuccesful
             if ((nIntIn < 1 && nIntIn != -1) || nIntIn > nTempMaxPage)  // if strtoll returned error or the input is not in range
             {                                                       // but excluding -1 (for escape function)
-                snprintf(sMessage, STR_MSG_SIZE, "Only input the avaialble page number or -1.");
+                setMessage(sMessage, "Only input the avaialble page number or -1.");
                 sInput[0] = '\0';
             }
             else if (nIntIn == -1)  // escape function. returns to mode 0
             {
                 Mode = 0;
-                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                setMessage(sMessage, "What would you like to do?");
             }
             else    // or if the user inputted a valid number, page is set to that and mode returns to 0
             {
                 currPage = nIntIn - 1;  // currPage starts at index 0
                 Mode = 0;
-                snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                setMessage(sMessage, "What would you like to do?");
             }
         }
 
@@ -1545,7 +1548,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
 
             if (nIntIn == 0)
             {
-                snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
+                setMessage(sMessage, "Only input the Fakemon number in this page or -1.");
                 sInput[0] = '\0';
             }
             else
@@ -1557,7 +1560,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     {
                         // turns back to mod e select, but searchMode is still active
                         Mode = 0;
-                        snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                        setMessage(sMessage, "What would you like to do?");
                     }
                     // if the user typed the short name
                     else
@@ -1575,12 +1578,13 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                                 Mode = 6;
                                 snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
                                             caughtMons[mon_Sel].nSlot + 1);
+                                sMessage[STR_MSG_SIZE - 1] = '\0';
                             }
                         }
                         // if not found
                         if (!isFound)
                         {
-                            snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
+                            setMessage(sMessage, "Only input the Fakemon number in this page or -1.");
                             sInput[0] = '\0';
                         }
                     }
@@ -1592,7 +1596,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     if (nIntIn == -1)
                     {
                         Mode = 0;
-                        snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                        setMessage(sMessage, "What would you like to do?");
                     }
                     else
                     {
@@ -1609,12 +1613,13 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                                 Mode = 6;
                                 snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
                                             caughtMons[mon_Sel].nSlot + 1);
+                                sMessage[STR_MSG_SIZE - 1] = '\0';
                             }
                         }
                         // if not found
                         if (!isFound)
                         {
-                            snprintf(sMessage, STR_MSG_SIZE, "Only input the Fakemon number in this page or -1.");
+                            setMessage(sMessage, "Only input the Fakemon number in this page or -1.");
                             sInput[0] = '\0';
                         }
                     }
@@ -1642,7 +1647,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 {
                     sInput[0] = '\0';
                     Mode = 0;
-                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                    setMessage(sMessage, "What would you like to do?");
                 }
                 // if the user did not type cancel, loop through every fakemon in your box and 
                 // see if it matches to any of the name
@@ -1674,12 +1679,12 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
                             nTempMaxPage++;
                         
-                        snprintf(sMessage, STR_MSG_SIZE, "Found some fakemon!");
+                        setMessage(sMessage, "Found some fakemon!");
                     }
                     // if no fakemon was found
                     else if (!isSearchMode)
                     {
-                        snprintf(sMessage, STR_MSG_SIZE, "No Fakemon found.");
+                        setMessage(sMessage, "No Fakemon found.");
                     }
                     // either way go back to mode select choices
                     Mode = 0;
@@ -1707,7 +1712,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 {
                     sInput[0] = '\0';
                     Mode = 0;
-                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                    setMessage(sMessage, "What would you like to do?");
                 }
                 // if the user did not type cancel, loop through every fakemon in your box and 
                 // see if it matches to any of the name
@@ -1738,12 +1743,12 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
                             nTempMaxPage++;
                         
-                        snprintf(sMessage, STR_MSG_SIZE, "Found some fakemon!");
+                        setMessage(sMessage, "Found some fakemon!");
                     }
                     // if no fakemon was found
                     else if (!isSearchMode)
                     {
-                        snprintf(sMessage, STR_MSG_SIZE, "No Fakemon found.");
+                        setMessage(sMessage, "No Fakemon found.");
                     }
                     // either way go back to mode select choices
                     Mode = 0;
@@ -1774,7 +1779,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     sInput[0] = '\0';
                     Mode = 0;
                     nSortMode = 0;
-                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                    setMessage(sMessage, "What would you like to do?");
                 }
                 // check what sort mode the user has selected
                 // Ascending
@@ -1817,7 +1822,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
 
                     }
 
-                    snprintf(sMessage, STR_MSG_SIZE, "Sorted Short Name by Ascending Order");
+                    setMessage(sMessage, "Sorted Short Name by Ascending Order");
                 }
                 // descending
                 else if (nSortMode == 2)
@@ -1851,7 +1856,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
 
                     }
 
-                    snprintf(sMessage, STR_MSG_SIZE, "Sorted Short Name by Descending Order");
+                    setMessage(sMessage, "Sorted Short Name by Descending Order");
                 }
                     
                 // resetting the values because it might be used again
@@ -1890,7 +1895,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     sInput[0] = '\0';
                     Mode = 0;
                     mon_Sel = -1;
-                    snprintf(sMessage, STR_MSG_SIZE, "What would you like to do?");
+                    setMessage(sMessage, "What would you like to do?");
                 }
                 // View Entry
                 else if (strcmp(sInput, selectedChoices[0]) == 0)
@@ -1906,6 +1911,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     // since it will loop back to the same fakemon, it is repeated.
                     snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
                         caughtMons[mon_Sel].nSlot + 1);
+                    sMessage[STR_MSG_SIZE - 1] = '\0';
                 }
                 // Release
                 else if (strcmp(sInput, selectedChoices[1]) == 0)
@@ -1914,6 +1920,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     sInput[0] = '\0';
                     snprintf(sMessage, STR_MSG_SIZE, "Are you sure you want to release SLOT: %d?", 
                         caughtMons[mon_Sel].nSlot + 1);
+                    sMessage[STR_MSG_SIZE - 1] = '\0';
                 }
             }
         }
@@ -1937,7 +1944,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 // if no
                 if (strcmp(sInput, releaseConfirmChoices[1]) == 0)
                 {
-                    snprintf(sMessage, STR_MSG_SIZE, "Release Cancelled");
+                    setMessage(sMessage, "Release Cancelled");
                     sInput[0] = '\0';
                     // go back to the choices on what to do.
                     Mode = 6;
@@ -1993,7 +2000,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     // decrementing searchedMon counter (searched Qty)
                     searchedQty--;
 
-                    snprintf(sMessage, STR_MSG_SIZE, "Released Fakemon.");
+                    setMessage(sMessage, "Released Fakemon.");
                     sInput[0] = '\0';
                     // go back to main menu
                     Mode = 0;
@@ -2186,15 +2193,13 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                 else if (strcmp(&(sInput[strlen(sInput) - 4]), ".txt") != 0) // if the file extension is not .txt
                 {
                     Input_Fail = 5;
-                    snprintf(sMessage, STR_MSG_SIZE, 
-                                "Type .txt at the end of the file name. Try again or type 'Cancel'");
+                    setMessage(sMessage, "Type .txt at the end of the file name. Try again or type 'Cancel'");
                     sInput[0] = '\0';
                 }
                 else if (strcmp(sInput, ".txt") == 0)   // if the file name is empty (only .txt)
                 {
                     Input_Fail = 4;
-                    snprintf(sMessage, STR_MSG_SIZE, 
-                                "Type a file name followed by a .txt. Try again or type 'Cancel'");
+                    setMessage(sMessage, "Type a file name followed by a .txt. Try again or type 'Cancel'");
                     sInput[0] = '\0';
                 }
                 
@@ -2225,7 +2230,7 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                         Input_Fail = 0;
                         isDeleting = 0;
                         isOverwriting = 0;
-                        snprintf(sMessage, STR_MSG_SIZE, "Save Cancelled");
+                        setMessage(sMessage, "Save Cancelled");
                     }
                 }
                 // if in delete mode
@@ -2250,14 +2255,13 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                                 Input_Fail = 0;
                                 isDeleting = 0;
                                 isOverwriting = 0;
-                                snprintf(sMessage, STR_MSG_SIZE, 
-                                            "That file does not exist. Save operation cancelled.");
+                                setMessage(sMessage, "That file does not exist. Save operation cancelled.");
                             }
                         }
                         else
                         {
                             availDeleteName = 1;
-                            snprintf(sMessage, STR_MSG_SIZE, "Type the name of the file you want to delete");
+                            setMessage(sMessage, "Type the name of the file you want to delete");
                         }
                     }
                     // if if they do not want to delete
@@ -2267,7 +2271,7 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                         Input_Fail = 0;
                         isDeleting = 0;
                         isOverwriting = 0;
-                        snprintf(sMessage, STR_MSG_SIZE, "Save Cancelled");
+                        setMessage(sMessage, "Save Cancelled");
                     }
                 }
 
@@ -2275,7 +2279,7 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                 {
                     // set the mode to isOverwriting
                     Input_Fail = 6;
-                    snprintf(sMessage, STR_MSG_SIZE, 
+                    setMessage(sMessage, 
                         "The file name is already in the slot. Do you want to Overwrite?");
                     sInput[0] = '\0';
                     isOverwriting = 1;
@@ -2286,6 +2290,7 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                     Input_Fail = 7;
                     snprintf(sMessage, STR_MSG_SIZE, 
                         "Maximum of %d save slots. Do you want to delete a save slot?", MAX_SAV_FILES);
+                    sMessage[STR_MSG_SIZE - 1] = '\0';
                     sInput[0] = '\0';
                     isDeleting = 1;
                 }
@@ -2359,7 +2364,7 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                         Input_Fail = 0;
                         isDeleting = 0;
                         isOverwriting = 0;
-                        snprintf(sMessage, STR_MSG_SIZE, "File saved!");
+                        setMessage(sMessage, "File saved!");
                     }
                 }
             }
@@ -2485,8 +2490,7 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                         Input_Fail = 8;
                         sInput[0] = '\0';
                         isOpened = 0;       // set to no if file opening was unsuccesful
-                        snprintf(sMessage, STR_MSG_SIZE, 
-                                    "That file name does not exist! Try again or type 'Cancel'");
+                        setMessage(sMessage, "That file name does not exist! Try again or type 'Cancel'");
                     }
                     
                     if (isOpened)
@@ -2494,8 +2498,7 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                         // set the question state to confirm if the user wants to overwrite
                         // will loop to the start
                         isConfimring = 1;
-                        snprintf(sMessage, STR_MSG_SIZE, 
-                                    "Loading this file will delete all your current data. Proceed?");
+                        setMessage(sMessage, "Loading this file will delete all your current data. Proceed?");
                     }
                 }
                 
@@ -2606,12 +2609,12 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                     }
                     
 
-                    snprintf(sMessage, STR_MSG_SIZE, "File succesfully loaded!");
+                    setMessage(sMessage, "File succesfully loaded!");
                 }
                 // if they do not want to overwrite and load anymore
                 else if (!(isConfirmed))
                 {
-                    snprintf(sMessage, STR_MSG_SIZE, "Loading File Cancelled");
+                    setMessage(sMessage, "Loading File Cancelled");
                 }
 
                 // either way, close the file and exit the function (will go back to settings menu)
