@@ -87,10 +87,21 @@ int main(void)
                 // Add Dex
                 if (strcmp(sInput, sDatabaseChoices[0]) == 0)
                 {
-                    isSucces = addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Add Dex TUI
-                                        nMonCreated, sMessage, -1);  
-                    if (isSucces)   // addDex returns 1 if new fakemon populated the Fakedex (excluding update entries)
-                        nMonCreated++;
+                    // if there is still room in the dex
+                    if (nMonCreated < DEX_MAX)
+                    {
+                        isSucces = addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Add Dex TUI
+                                            nMonCreated, sMessage, -1);  
+                        if (isSucces)   // addDex returns 1 if new fakemon populated the Fakedex (excluding update entries)
+                            nMonCreated++;
+                    }
+                    // if the dex is full
+                    else
+                    {
+                        sInput[0] = '\0';
+                        sprintf(sMessage, "You can only have %d entries in the Fakedex.", DEX_MAX);
+                    }
+                    
                 }
                 // View Dex
                 else if (strcmp(sInput, sDatabaseChoices[1]) == 0)
@@ -124,22 +135,40 @@ int main(void)
         // Exploration
         else if (strcmp(sInput, sMainChoices[1]) == 0)
         {
-            do 
+            // if there is still room in the box, the user can do exploration 
+            if (nCapturedMons < BOX_MAX)
             {
-                exploration(sInput, STR_INPUT_STD + STR_MARGIN, sExplorationChoices, EXPLORATIONCHOICES_SIZE, 
-                                &ActiveCell, nMonCreated, sMessage);
-
-                // if the user has not typed "Cancel"
-                if (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0)
+                do 
                 {
-                    // encounter a fakemon. randomized fakemon is handled inside the function
-                    encounter(sInput, STR_INPUT_STD + STR_MARGIN, sEncounterChoices, ENCOUNTERCHOICES_SIZE, 
-                                FakeDex, nMonCreated, caughtMons, &nCapturedMons, sMessage);
-                }   
-                                 
+                    exploration(sInput, STR_INPUT_STD + STR_MARGIN, sExplorationChoices, EXPLORATIONCHOICES_SIZE, 
+                                    &ActiveCell, nMonCreated, sMessage);
 
-            } while (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0);
-            // while the user has not typed cancel
+                    // if the user has not typed "Cancel"
+                    if (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0)
+                    {
+                        // encounter a fakemon. randomized fakemon is handled inside the function
+                        encounter(sInput, STR_INPUT_STD + STR_MARGIN, sEncounterChoices, ENCOUNTERCHOICES_SIZE, 
+                                    FakeDex, nMonCreated, caughtMons, &nCapturedMons, sMessage);
+                    }   
+                                    
+
+                } while ((strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0) && 
+                            nCapturedMons < BOX_MAX);
+                // while the user has not typed cancel or still have room in the box
+
+                // if the loop stopped because the box is full, print this
+                if (nCapturedMons >= BOX_MAX)
+                {
+                    sInput[0] = '\0';
+                    sprintf(sMessage, "You have been kicked out. Your box is full.");
+                }
+            }
+            // if there is no more room
+            else
+            {
+                sInput[0] = '\0';
+                sprintf(sMessage, "You need to own less than %d fakemons to explore.", BOX_MAX);
+            }
         }
 
         // Box
