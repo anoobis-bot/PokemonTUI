@@ -1,4 +1,4 @@
-NUMBER OF ENTRIES: 6
+NUMBER OF ENTRIES: 10
 
 FULL NAME: Blastoise
 SHORT NAME: BLSTY
@@ -34,6 +34,30 @@ FULL NAME: RoyCon
 SHORT NAME: RYCON
 DESCRIPTION: We didn't start the fire!
 GENDER: UNKNOWN
+CAUGHT: NO
+
+FULL NAME: Falcow
+SHORT NAME: FALCN
+DESCRIPTION: A wild _ has appeared hwreh jahrahra auhrair akjraksdfhgwe ewhgrswA wild _ has appeared hwreh jahrahra auhrair akjraksdfhgwe ewhgrswA wild _ has appeared hwreh jahrahra auhrair akjraksdfhgwe ewhgrswA wild _ has appeared hwreh jahrahra auhrair akjraksdfhgwe ewhgrswA wild _ has appeared hwreh jahrahra
+GENDER: MALE
+CAUGHT: NO
+
+FULL NAME: Kyogre
+SHORT NAME: KYOGR
+DESCRIPTION: Beast of the seas
+GENDER: UNKNOWN
+CAUGHT: NO
+
+FULL NAME: unownseven
+SHORT NAME: UNKWN
+DESCRIPTION: The Unknown.
+GENDER: UNKNOWN
+CAUGHT: NO
+
+FULL NAME: Jolteon
+SHORT NAME: THNDR
+DESCRIPTION: One of the eeveelutions. will zap your butt
+GENDER: FEMALE
 CAUGHT: NO
 
 --------- DEX END ---------

@@ -380,7 +380,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                     // is its own data (if they do not want to change the contents)
                     if (compMon != nCurrMon)
                     {
-                        if (strcmp(sInput, dex_Database[compMon].sFull_Name) == 0)
+                        if (strcasecmp(sInput, dex_Database[compMon].sFull_Name) == 0)
                         {
                             isDuplicate = 1;
                             // compMon is the index where the fakemon to be overwritten resides.
@@ -474,6 +474,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                     viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, compMon, 1, sMessage);
                     if (strcmp(sInput, sDuplicateChoice[0]) == 0)   // if they entered "Yes"
                     {
+                        tempMon.nCaught = dex_Database[compMon].nCaught;
                         dex_Database[compMon] = tempMon;    // update the compMon(index) with its new value
                         setMessage(sMessage, "Fakemon entry updated");
                     }
@@ -530,6 +531,8 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                     // if it did not get an error for format
                     if (!Input_Fail)
                     {
+                        // converts the short name into upper case
+                        toUpperWord(sInput, SHORT_NAME_SIZE);
                         // checks if there are any duplicates of the Short Name in the database
                         for (compMon = 0; compMon < nMonCreated && !(isDuplicate); compMon++)
                         {
@@ -552,8 +555,6 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                     // if there are no other errors, asssign it. 
                     if (!(Input_Fail))
                     {
-                        // convert it to upper case and assign it
-                        toUpperWord(sInput, SHORT_NAME_SIZE);
                         strcpy(dex_Database[nCurrMon].sShort_Name, sInput);
                     }
                 }
