@@ -397,7 +397,19 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             {
                 // store the user input to the tempMon struct buffer
                 if (currQuestion == 0)
-                    strcpy(tempMon.sFull_Name, sInput);
+                {
+                    // checks if there are only letters in the name
+                    // assign it if it is only letters
+                    if (onlyLetters(sInput, strlen(sInput)))
+                        strcpy(tempMon.sFull_Name, sInput);
+                    // if not, get input again
+                    else
+                    {
+                        sInput[0] = '\0';
+                        setMessage(sMessage, "Only input letters in the English alphabet");
+                        Input_Fail = 9;
+                    }
+                }
                 else if (currQuestion == 1)
                 {
                     // checks if the short name input is valid
@@ -476,7 +488,19 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             {
                 // sInput is assigned to its rightful struct member
                 if (currQuestion == 0)
-                    strcpy(dex_Database[nCurrMon].sFull_Name, sInput);
+                {
+                    // checks if there are only letters in the name
+                    // assign it if it is only letters
+                    if (onlyLetters(sInput, strlen(sInput)))
+                        strcpy(dex_Database[nCurrMon].sFull_Name, sInput);
+                    // if not, get input again
+                    else
+                    {
+                        sInput[0] = '\0';
+                        setMessage(sMessage, "Only input letters in the English alphabet");
+                        Input_Fail = 9;
+                    }
+                }
                 
                 else if (currQuestion == 1)
                 {
