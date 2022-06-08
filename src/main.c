@@ -127,19 +127,15 @@ int main(void)
             do 
             {
                 exploration(sInput, STR_INPUT_STD + STR_MARGIN, sExplorationChoices, EXPLORATIONCHOICES_SIZE, 
-                                &ActiveCell, sMessage);
+                                &ActiveCell, nMonCreated, sMessage);
 
-                // if the fakedex is populated. (otherwise, an encounter would be impossible)
-                if (nMonCreated > 0)
+                // if the user has not typed "Cancel"
+                if (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0)
                 {
-                    // if the user has not typed "Cancel"
-                    if (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0)
-                    {
-                        // encounter a fakemon. randomized fakemon is handled inside the function
-                        encounter(sInput, STR_INPUT_STD + STR_MARGIN, sEncounterChoices, ENCOUNTERCHOICES_SIZE, 
-                                    FakeDex, nMonCreated, caughtMons, &nCapturedMons, sMessage);
-                    }   
-                }
+                    // encounter a fakemon. randomized fakemon is handled inside the function
+                    encounter(sInput, STR_INPUT_STD + STR_MARGIN, sEncounterChoices, ENCOUNTERCHOICES_SIZE, 
+                                FakeDex, nMonCreated, caughtMons, &nCapturedMons, sMessage);
+                }   
                                  
 
             } while (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0);

@@ -1195,7 +1195,7 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
 }
 
 void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[], int nExploreChoicesSize, 
-                    int *ActiveCell ,stringMsg sMessage)
+                    int *ActiveCell, int nMonCreated, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -1267,10 +1267,12 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
                 if (*(ActiveCell) < EXPLORE_COLUMN - 1)
                 {
                     (*ActiveCell)++;
-                    toEncounter = 1;
                     sInput[0] = '\0';
                     snprintf(sMessage, STR_MSG_SIZE, "Moved %s", sExploreChoices[0]);
                     sMessage[STR_MSG_SIZE - 1] = '\0';
+                    // an encounter is only possible if there are any fakemon in the fakedex
+                    if (nMonCreated)
+                        toEncounter = 1;
                 }
             }
             // BACKWARD
@@ -1280,16 +1282,18 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
                 if (ActiveCell > 0)
                 {
                     (*ActiveCell)--;
-                    toEncounter = 1;
                     sInput[0] = '\0';
                     snprintf(sMessage, STR_MSG_SIZE, "Moved %s", sExploreChoices[1]);
                     sMessage[STR_MSG_SIZE - 1] = '\0';
+                    // an encounter is only possible if there are any fakemon in the fakedex
+                    if (nMonCreated)
+                        toEncounter = 1;
                 }
             }
         }
 
     } while ((Input_Fail || (strcmp(sInput, sExploreChoices[nExploreChoicesSize - 1] ) != 0)) && !(Encountered));
-    // loop if there are input errors, if the input is not cancel, or the user has not encountered any fakemon
+    // loop if there are input errors, if the input is not cancel, and the user has not encountered any fakemon
     
 }
 

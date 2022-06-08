@@ -25,7 +25,7 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
 int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[], int nEncounterChoicesSize, 
                 mon_type *Fakedex, int nMonCreated, box_type caughtMons[], int *nCapturedMons, stringMsg sMessage);
 void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[], int nExploreChoicesSize, 
-                    int *ActiveCell ,stringMsg sMessage);
+                    int *ActiveCell, int nMonCreated, stringMsg sMessage);
 void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int nModeChoicesSize, 
                 mon_type *Fakedex, box_type caughtMons[], int *nCapturedMons, stringMsg sMessage);
 void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
