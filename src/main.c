@@ -89,7 +89,7 @@ int main(void)
                 {
                     
                     isSucces = addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Add Dex TUI
-                                        &nMonCreated, sMessage, -1);  
+                                        &nMonCreated, caughtMons, nCapturedMons, sMessage, -1);  
                     if (isSucces)   // addDex returns 1 if new fakemon populated the Fakedex (excluding update entries)
                         nMonCreated++;
                 }
@@ -110,7 +110,7 @@ int main(void)
                 else if (strcmp(sInput, sDatabaseChoices[2]) == 0)
                 {
                     updateDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Update Dex TUI
-                        &nMonCreated, sMessage);
+                        &nMonCreated, caughtMons, nCapturedMons, sMessage);
                 }
                 // Remove Dex
                 else if (strcmp(sInput, sDatabaseChoices[3]) == 0)

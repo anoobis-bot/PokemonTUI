@@ -220,7 +220,7 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
 }
 
 int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int *nMonCreated, 
-            stringMsg sMessage, int nCurrMon)
+            box_type caughtMons[], int nCapturedMons, stringMsg sMessage, int nCurrMon)
 {
     // this will aslo be used for updateDex function since they have very similar functions, 
     // so putting these would allow which mode the function is currently is
@@ -274,6 +274,9 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
     char sOutSName[nInputSizes[1] + nExtra];
     char sOutDesc[nInputSizes[2] + nExtra];
     char sOutGender[nInputSizes[3] + nExtra];
+
+    // used in for loops for the caughtMons[]
+    int nCurrCaughtMon;
 
     while (currQuestion < nInputQty) 
     {
@@ -486,6 +489,18 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                             tempMon.nCaught = dex_Database[compMon].nCaught;
                             dex_Database[compMon] = tempMon;    // update the compMon(index) with its new value
                             setMessage(sMessage, "Fakemon entry updated");
+
+                            // this happens if there are any duplicates, thus prompting for an overwrite. 
+                            // an overwrite should affect the names in the box of caughtMons
+                            // updates the name and short name of the captured mons 
+                            for (nCurrCaughtMon = 0; nCurrCaughtMon < nCapturedMons; nCurrCaughtMon++)
+                            {
+                                if (caughtMons[nCurrCaughtMon].index_Dex == compMon)
+                                {
+                                    strcpy(caughtMons[nCurrCaughtMon].sShort_Name, dex_Database[compMon].sShort_Name);
+                                    strcpy(caughtMons[nCurrCaughtMon].sFull_Name, dex_Database[compMon].sFull_Name);
+                                }
+                            }
                         }
                         else    // if they answered no, this function end and the tempMon was not assigned to anything
                             setMessage(sMessage, "Fakemon entry discarded");
@@ -617,6 +632,22 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         }
     }
 
+    if (isUpdateDex)
+    {
+        // this only happens if the input is from updateDex (via updateDex)
+        // no need to update what's in the caughtMons if it was a new fakedex entry since to start with
+        // it would be impossible to put a new entry in that box without first going to exploration
+        // updates the name and short name of the captured mons 
+        for (nCurrCaughtMon = 0; nCurrCaughtMon < nCapturedMons; nCurrCaughtMon++)
+        {
+            if (caughtMons[nCurrCaughtMon].index_Dex == nCurrMon)
+            {
+                strcpy(caughtMons[nCurrCaughtMon].sShort_Name, dex_Database[nCurrMon].sShort_Name);
+                strcpy(caughtMons[nCurrCaughtMon].sFull_Name, dex_Database[nCurrMon].sFull_Name);
+            }
+        }
+    }
+
     if (newCreatedMon)
         strcpy(sMessage, "Succesfully added a new entry!");
 
@@ -624,7 +655,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
 }
 
 void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int *nMonCreated, 
-                stringMsg sMessage)
+                box_type caughtMons[], int nCapturedMons, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -728,7 +759,8 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
             // if they said yes
             if (strcmp(sInput, confirmChoices[0]) == 0) // if they confirmed
             {
-                if (addDex(sInput, nInputSizes, nInputQty, Fakedex, nMonCreated, sMessage, currMon))
+                if (addDex(sInput, nInputSizes, nInputQty, Fakedex, nMonCreated, caughtMons, nCapturedMons, 
+                            sMessage, currMon))
                 {
                     setMessage(sMessage, "Fakemon entry Updated!");
                 }
