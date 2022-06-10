@@ -15,6 +15,7 @@ different modes the dex has
 #include "../header/array_sizes.h"
 #include "../protoypes/util_proto.h"
 #include "../protoypes/art_proto.h"
+#include "../protoypes/box_imp_proto.h"
 #include "../header/art.h"
 #include <errno.h>
 
@@ -218,7 +219,7 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
     }    
 }
 
-int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nMonCreated, 
+int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int *nMonCreated, 
             stringMsg sMessage, int nCurrMon)
 {
     // this will aslo be used for updateDex function since they have very similar functions, 
@@ -227,7 +228,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
     if (nCurrMon < 0)   // if in addDex mode
     {
         // the current created fakemon is the highest index (nMonCreated)
-        nCurrMon = nMonCreated;
+        nCurrMon = *nMonCreated;
     }
     // else if the nCurrMon >= 0, that means this will replace whatever data in the index nCurrMon
     else    // if in updateDex Mode
@@ -297,7 +298,8 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         strcpy(sOutDesc, "Description: ");
         strcpy(sOutGender, "Gender: ");
 
-        if (isDuplicate)    // if the entry is duplicate, the inputted data is stored in a temporary data buffer
+        // if the entry is duplicate, the inputted data is stored in a temporary data buffer
+        if (isDuplicate || ((*nMonCreated) >= DEX_MAX)) 
         {                   // since the data maybe discarded. so the data to be printed cannot come from dex_Database
             strcat(sOutFName, tempMon.sFull_Name);
             strcat(sOutSName, tempMon.sShort_Name);
@@ -374,7 +376,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             // duplicates.
             if (currQuestion == 0)
             {
-                for (compMon = 0; compMon < nMonCreated && !(isDuplicate); compMon++)
+                for (compMon = 0; compMon < (*nMonCreated) && !(isDuplicate); compMon++)
                 {
                     // if in the updateDex function, we wouldnt want to trigger a isDuplicate, if the sInput
                     // is its own data (if they do not want to change the contents)
@@ -393,7 +395,10 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                 }
             }
 
-            if (isDuplicate)    // isDuplicate will never turn again to 0 once set to 1
+            // if it is duplicate or the dex is full, store the contents on a temp buffer.
+            // will discard it or not, depending on the choice of the user
+            // isDuplicate will never turn again to 0 once set to 1
+            if (isDuplicate || ((*nMonCreated) >= DEX_MAX))
             {
                 // store the user input to the tempMon struct buffer
                 if (currQuestion == 0)
@@ -468,20 +473,46 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                 // if all questions have been asked
                 if (currQuestion >= nInputQty)
                 {
-                    // tell the user that there has been a duplicate
-                    setMessage(sMessage, "We found a duplicate, would you like to overide this entry?");
-                    // show the original entry and ask if they want to overwrite
-                    viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, compMon, 1, sMessage);
-                    if (strcmp(sInput, sDuplicateChoice[0]) == 0)   // if they entered "Yes"
+                    // is Duplicate has priority since update first before
+                    // replacing
+                    if (isDuplicate)
                     {
-                        tempMon.nCaught = dex_Database[compMon].nCaught;
-                        dex_Database[compMon] = tempMon;    // update the compMon(index) with its new value
-                        setMessage(sMessage, "Fakemon entry updated");
+                        // tell the user that there has been a duplicate
+                        setMessage(sMessage, "We found a duplicate, would you like to overide this entry?");
+                        // show the original entry and ask if they want to overwrite
+                        viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, compMon, 1, sMessage);
+                        if (strcmp(sInput, sDuplicateChoice[0]) == 0)   // if they entered "Yes"
+                        {
+                            tempMon.nCaught = dex_Database[compMon].nCaught;
+                            dex_Database[compMon] = tempMon;    // update the compMon(index) with its new value
+                            setMessage(sMessage, "Fakemon entry updated");
+                        }
+                        else    // if they answered no, this function end and the tempMon was not assigned to anything
+                            setMessage(sMessage, "Fakemon entry discarded");
                     }
-                    else    // if they answered no, this function end and the tempMon was not assigned to anything
-                        setMessage(sMessage, "Fakemon entry discarded");
+                    else if ((*nMonCreated) >= DEX_MAX)
+                    {
+                        // tell the user that the dex is full
+                        setMessage(sMessage, "Dex is full. Type Cancel or the fakemon's Full name to remove.");
+                        // if a fakemon was removed
+                        if (removeDex(sInput, nInputSizes[0] + STR_MARGIN, dex_Database, nMonCreated, sMessage))
+                        {
+                            // adds the fakemon at the end of the fakedex since when removing a fakemon, it is shifted
+                            // to the left, leaving the last unoccupied
+                            // since nMonCreated is subtracted by 1 by removeDex, there is no need for -1 here
+                            dex_Database[(*nMonCreated)] = tempMon;
+                            // that is why we need to add 1 again since it was subtracted 1
+                            (*nMonCreated)++;
+                            setMessage(sMessage, "Freed up space and added new entry!");
+                        }
+                        else
+                        {
+                            setMessage(sMessage, "Fakemon entry discarded");
+                        }
+
+                    }
                     
-                    newCreatedMon = 0;  // no new entry was made, they just updated/discarded an entry
+                    newCreatedMon = 0;  // no new entry was made, they just updated/discarded/replaced an entry
                 }
             }
 
@@ -534,7 +565,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         // converts the short name into upper case
                         toUpperWord(sInput, SHORT_NAME_SIZE);
                         // checks if there are any duplicates of the Short Name in the database
-                        for (compMon = 0; compMon < nMonCreated && !(isDuplicate); compMon++)
+                        for (compMon = 0; compMon < (*nMonCreated) && !(isDuplicate); compMon++)
                         {
                             // if in the updateDex function, we wouldnt want to trigger a isDuplicate, if the sInput
                             // is its own data (if they do not want to change the contents)
@@ -592,7 +623,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
     return newCreatedMon;
 }
 
-void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int nMonCreated, 
+void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int *nMonCreated, 
                 stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
@@ -665,7 +696,7 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
                 // if they did not type cancel
                 if (!(toCancel))
                 {
-                    for (currMon = 0; currMon < nMonCreated && !(isMatch); currMon++)
+                    for (currMon = 0; currMon < (*nMonCreated) && !(isMatch); currMon++)
                     {
                         // if the input matches with one of the fakemon
                         if (strcmp(Fakedex[currMon].sFull_Name, sInput) == 0)
@@ -716,7 +747,7 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
     } while (!(toCancel));
 }
 
-void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, stringMsg sMessage)
+int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -725,6 +756,9 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
 
     // variable used to exit the function
     int toCancel = 0;
+
+    // variable used to know if a fakemon was removed. default to no
+    int isRemoved = 0;
 
     if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
         strcpy(sMessage, "Type fakemon's full name or enter 'Cancel' to go back."); 
@@ -752,7 +786,7 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
         currRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
-        printHeader(HDR_Update_Dex);
+        printHeader(HDR_Remove_Dex);
 
 
         // main content
@@ -847,6 +881,8 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
                     (*nMonCreated)--;
 
                     setMessage(sMessage, "Fakemon deleted.");
+                    // set the flag to yes. which means a fakemon was removed.
+                    isRemoved = 1;
                 }
                 else
                 {
@@ -865,6 +901,8 @@ void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCrea
             
         }
     } while (!(toCancel));
+
+    return isRemoved;
 }
 
 int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage)

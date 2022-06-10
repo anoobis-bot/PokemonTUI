@@ -87,21 +87,11 @@ int main(void)
                 // Add Dex
                 if (strcmp(sInput, sDatabaseChoices[0]) == 0)
                 {
-                    // if there is still room in the dex
-                    if (nMonCreated < DEX_MAX)
-                    {
-                        isSucces = addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Add Dex TUI
-                                            nMonCreated, sMessage, -1);  
-                        if (isSucces)   // addDex returns 1 if new fakemon populated the Fakedex (excluding update entries)
-                            nMonCreated++;
-                    }
-                    // if the dex is full
-                    else
-                    {
-                        sInput[0] = '\0';
-                        sprintf(sMessage, "You can only have %d entries in the Fakedex.", DEX_MAX);
-                    }
                     
+                    isSucces = addDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Add Dex TUI
+                                        &nMonCreated, sMessage, -1);  
+                    if (isSucces)   // addDex returns 1 if new fakemon populated the Fakedex (excluding update entries)
+                        nMonCreated++;
                 }
                 // View Dex
                 else if (strcmp(sInput, sDatabaseChoices[1]) == 0)
@@ -120,7 +110,7 @@ int main(void)
                 else if (strcmp(sInput, sDatabaseChoices[2]) == 0)
                 {
                     updateDex(sInput, nDatabase_In_Sizes, STRUCT_IN_NUM, FakeDex,   // Update Dex TUI
-                        nMonCreated, sMessage);
+                        &nMonCreated, sMessage);
                 }
                 // Remove Dex
                 else if (strcmp(sInput, sDatabaseChoices[3]) == 0)

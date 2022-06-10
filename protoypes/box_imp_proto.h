@@ -16,11 +16,11 @@ void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoi
                         stringMsg sMessage);
 void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoicesSize, mon_type *Fakedex, 
                 int nMonEntry, int forceView, stringMsg sMessage);
-int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int nMonCreated, 
+int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int *nMonCreated, 
             stringMsg sMessage, int nCurrMon);
-void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int nMonCreated, 
+void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int *nMonCreated, 
                 stringMsg sMessage);
-void removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, stringMsg sMessage);
+int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, stringMsg sMessage);
 int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage);
 int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[], int nEncounterChoicesSize, 
                 mon_type *Fakedex, int nMonCreated, box_type caughtMons[], int *nCapturedMons, stringMsg sMessage);
