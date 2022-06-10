@@ -150,7 +150,7 @@ int main(void)
                 if (nCapturedMons >= BOX_MAX)
                 {
                     sInput[0] = '\0';
-                    sprintf(sMessage, "You have been kicked out. Your box is full.");
+                    sprintf(sMessage, "You have been kicked out. Your box is full. Maximum of %d", BOX_MAX);
                 }
             }
             // if there is no more room

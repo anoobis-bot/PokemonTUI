@@ -1231,12 +1231,27 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
     if (sMessage[0] == '\0')    // if the sMessage is empty (no message from other functions)
         strcpy(sMessage, "What would you like to do?");   // message that would be sent to the user at the bottom screen.
     
+    // choices for the viewMon
+    stringChoice sViewMonChoices[1] = {"Cancel"};
+    
     // buffer that will be printed out in printText function.
-    // 30 is for the "A wild _ has appeared!"
-    char outputBuffer[30 + FULL_NAME_SIZE] = "";
+    // LIMITATIONS: The text should not be 99
+    char outputBuffer[100] = "";
 
     // the randomly selected fakemon.
     int nChosenMon = rand() % nMonCreated;
+
+    // constant 8 since the longest word is UNKNOWN
+    char sGenderBuffer[8];
+
+    // since the chosen mon is already set, we can safely convert the gender character 
+    // the gender in the struct only has struct so I have to convert it to string
+    if (Fakedex[nChosenMon].cGender == 'M')
+        strcpy(sGenderBuffer, "MALE");
+    else if (Fakedex[nChosenMon].cGender == 'F')
+        strcpy(sGenderBuffer, "FEMALE");
+    else if (Fakedex[nChosenMon].cGender == 'U')
+        strcpy(sGenderBuffer, "UNKNOWN");
 
     do {
         printf(CLEAR);  // clears the screen
@@ -1247,7 +1262,8 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
         printHeader(HDR_Encounter);
 
         printFillerLines(HEIGHT / 4, &currRow);
-        snprintf(outputBuffer, 30 + FULL_NAME_SIZE, "A wild %s has appeared!", Fakedex[nChosenMon].sFull_Name);
+        snprintf(outputBuffer, 100, "A wild %s (%s) has appeared!", Fakedex[nChosenMon].sFull_Name, 
+                    sGenderBuffer);
         printText(outputBuffer, 'c', &currRow);
         printFillerLines(1, &currRow);
         displayArt(ART_Mon_Sprite, 7, &currRow);
@@ -1271,8 +1287,8 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
     // if they decided to catch
     if (strcmp(sInput, sEncounterChoices[0]) == 0)
     {
-        // 80% chance to catch
-        if ((rand() % 100) < 80)
+        // CATCH_RATE% chance to catch
+        if ((rand() % 100) < CATCH_RATE)
         {
             setMessage(sMessage, "Fakemon Caught!");
             // assignin appropriate data to each member of the element in captured mons
@@ -1283,8 +1299,17 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
 
             (*nCapturedMons)++;
 
-            // makes the fakedex entry as captured
-            Fakedex[nChosenMon].nCaught = 1;
+            // if not yet caught, make the caught field caught
+            if (!(Fakedex[nChosenMon].nCaught))
+            {
+                // makes the fakedex entry as captured
+                Fakedex[nChosenMon].nCaught = 1;
+
+                viewMon(sInput, nInputSize, sViewMonChoices, 1, Fakedex, nChosenMon, 1, sMessage);
+                // since "Cancel" will be typed, the input buffer needs to be cleaned since it might unintentionally
+                // break/exit a loop.
+                sInput[0] = '\0';
+            }
 
             return nChosenMon;
         }
@@ -1338,7 +1363,7 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
             // rand() % 100 generates a pseudo-random number with a range of [0, 99]
             // generating a number that is less than 40 (meaning [0, 39]) means that 40 of the 100
             // numbers would return true. that is a 40% chance to be true.
-            if ((rand() % 100) < 40)
+            if ((rand() % 100) < ENCOUNTER_RATE)
                 Encountered = 1;
 
             // resets it back to 0 to make sure that this if statement will only trigger

@@ -57,4 +57,9 @@
 #define NUM_BOX_COLUMN 4
 #define NUM_BOX_ROW 2
 
+// Percentage chances
+#define CATCH_RATE 80
+#define ENCOUNTER_RATE 40
+
+
 #endif
