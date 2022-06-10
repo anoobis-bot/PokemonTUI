@@ -115,7 +115,8 @@ int main(void)
                 // Remove Dex
                 else if (strcmp(sInput, sDatabaseChoices[3]) == 0)
                 {
-                    removeDex(sInput, FULL_NAME_SIZE + STR_MARGIN, FakeDex, &nMonCreated, sMessage);
+                    removeDex(sInput, FULL_NAME_SIZE + STR_MARGIN, FakeDex, &nMonCreated, caughtMons, 
+                                nCapturedMons, sMessage);
                 }
 
             } while (strcmp(sInput, sDatabaseChoices[DATABASECHOICES_SIZE - 1]) != 0); 

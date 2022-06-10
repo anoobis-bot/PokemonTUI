@@ -20,7 +20,8 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             box_type caughtMons[], int nCapturedMons, stringMsg sMessage, int nCurrMon);
 void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int *nMonCreated, 
                 box_type caughtMons[], int nCapturedMons, stringMsg sMessage);
-int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, stringMsg sMessage);
+int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, 
+                box_type caughtMons[], int nCapturedMons, stringMsg sMessage);
 int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage);
 int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[], int nEncounterChoicesSize, 
                 mon_type *Fakedex, int nMonCreated, box_type caughtMons[], int *nCapturedMons, stringMsg sMessage);

@@ -510,7 +510,8 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         // tell the user that the dex is full
                         setMessage(sMessage, "Dex is full. Type Cancel or the fakemon's Full name to remove.");
                         // if a fakemon was removed
-                        if (removeDex(sInput, nInputSizes[0] + STR_MARGIN, dex_Database, nMonCreated, sMessage))
+                        if (removeDex(sInput, nInputSizes[0] + STR_MARGIN, dex_Database, nMonCreated, 
+                                        caughtMons, nCapturedMons, sMessage))
                         {
                             // adds the fakemon at the end of the fakedex since when removing a fakemon, it is shifted
                             // to the left, leaving the last unoccupied
@@ -779,7 +780,8 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
     } while (!(toCancel));
 }
 
-int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, stringMsg sMessage)
+int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, 
+                box_type caughtMons[], int nCapturedMons, stringMsg sMessage)
 {
     int currRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
@@ -808,6 +810,9 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
     int isMatch = 0;
     // variable used to loop through the fakedex, search if there is match
     int currMon;
+    
+    // variable used in for loops for the caughtMons array
+    int nCurrCapturedMon;
     
     // for confirmation if they want to update the dex
     stringChoice confirmChoices[2] = {"Yes", "Cancel"};
@@ -891,6 +896,20 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
                 // if they said yes
                 if (strcmp(sInput, confirmChoices[0]) == 0) // if they confirmed
                 {
+                    // before deleting and altering the currMon
+                    // in the box type struct, the index of fakemon in the fakedex is listed there.
+                    // if the index of the fakemon that is removed is lower than the already caught
+                    // ones, there would be discrepancies. that is why in needs to be udpated
+                    for (nCurrCapturedMon = 0; nCurrCapturedMon < nCapturedMons; nCurrCapturedMon++)
+                    {
+                        // if the index that was removed is lower than the index in the bot_type struct
+                        // remove it
+                        if (caughtMons[nCurrCapturedMon].index_Dex > currMon)
+                        {
+                            (caughtMons[nCurrCapturedMon].index_Dex)--;
+                        }
+                    }
+                    
                     // shifts all entries to the left by one starting from currMon
                     // this essentially deletes the currMon by overwriting it by its next entry
                     // only go up until < nMonCreated - 1 since it's going to have a segmentation fault
