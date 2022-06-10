@@ -950,8 +950,12 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
     const int nSpaceBetween = 3;    // space between the name and description
    
     // max space given to encode the description of the fakemon in one line. the constant 3 here is for "<number>. ", 
-    // which is 3 chars
-    const int nDescNumMax = WIDTH - LEFT_PAD - nLeftPad - 3 - FULL_NAME_SIZE - nSpaceBetween - nRightPad  - RIGHT_PAD;
+    // which has a maximum of 3 chars
+    int nDescNumMax = WIDTH - LEFT_PAD - nLeftPad - 3 - FULL_NAME_SIZE - nSpaceBetween - nRightPad  - RIGHT_PAD;
+
+    // used to know the extra number space. since there is a constant '3' for the number, it is possible to have 
+    // 2 digits or 3 digit numbers. this is where this comes into place
+    int nDeviation;
     
     // since printText function cannot handle variable outputs (i.e. %d place holders and %s)
     // strcat() is used to place the contents of each line to the outputBuffer. After placing all the contents
@@ -969,7 +973,8 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
     int nNameLack;
 
     // buffer used to print the current number of the fakemon <number>.
-    char sNumHolder[3];
+    // this is 6 since the maximum digit is 3 + . + space + null
+    char sNumHolder[6];
     
     // these are created to easily change the header text of each column. right now they say: Name      Description
     const int Name_HDR_Len = 5;
@@ -1026,6 +1031,15 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             // strcat will be used in the buffer so in is initialized again
             outputBuffer[0] = '\0'; 
 
+            // sNumHolder is the buffer for the number of the current pokemon entry
+            // (currMon + 1) + (currPage * MON_PAGE) displays what index + 1 the fakemon is based on the current page
+            // it is put here up front so that nDescMax can be calibrated (it will use strlen(sNumHolder))
+            snprintf(sNumHolder, 6, "%d.", (currMon + 1) + (currPage * MON_PAGE));
+            
+            // since in the nDescNumMax, the constant is 3 (expected digit is only 1)
+            // this fixes that.
+            nDeviation = strlen(sNumHolder) - 2;
+
             // prepping the description of the current fakemon entry. if the length of the fakemon's description exceeds 
             // the nDescNumMax - 4 (for the ...\0) it is truncated and replaced with an ellipsis ...
             // nore: snprintf only prints n-1 to buffer
@@ -1050,9 +1064,6 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             for (currPad = 0; currPad < nLeftPad; currPad++)
                 strcat(outputBuffer, " ");
 
-            // sNumHolder is the buffer for the number of the current pokemon entry
-            // (currMon + 1) + (currPage * MON_PAGE) displays what index + 1 the fakemon is based on the current page
-            snprintf(sNumHolder, 3, "%d.", (currMon + 1) + (currPage * MON_PAGE));
             strcat(outputBuffer, sNumHolder);   // putting the sNumHolder to the outputBuffer
             // space after the number
             strcat(outputBuffer, " ");
@@ -1065,7 +1076,8 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             // FULL NAME SIZE. Full name cannot overflow since in the add dex function, characters more
             // than FULL_NAME_SIZE is rejected
             nNameLack = FULL_NAME_SIZE - strlen(Fakedex[currMon + (currPage * MON_PAGE)].sFull_Name);
-            for (currPad = 0; currPad < nSpaceBetween + nNameLack; currPad++)
+            // this is where the nDeviation is used. If there are 2 digits, nDeviation will be 1
+            for (currPad = 0; currPad < nSpaceBetween + nNameLack - nDeviation; currPad++)
                 strcat(outputBuffer, " ");
             
             // putting the preppared sDescBuffer to the output buffer
