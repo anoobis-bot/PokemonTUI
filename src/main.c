@@ -160,6 +160,9 @@ int main(void)
                     // exit
                     sInput[0] = '\0';
                 }
+
+                // either way, if the user exited the exploration, his position will repeat to index 0
+                ActiveCell = 0;
             }
             // if there is no more room
             else
