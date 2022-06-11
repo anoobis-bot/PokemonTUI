@@ -1251,7 +1251,7 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
         strcpy(sMessage, "What would you like to do?");   // message that would be sent to the user at the bottom screen.
     
     // choices for the viewMon
-    stringChoice sViewMonChoices[1] = {"Cancel"};
+    stringChoice sViewMonChoices[1] = {"OK"};
     
     // buffer that will be printed out in printText function.
     // LIMITATIONS: The text should not be 99

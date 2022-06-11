@@ -24,7 +24,7 @@ int main(void)
     // Fakedex Database Choices
     stringChoice sDatabaseChoices[DATABASECHOICES_SIZE] = {"Add Dex", "View Dex", "Update Dex", "Remove Dex", "Cancel"};
     // View fakemon entry choices
-    stringChoice sViewMonDexChoices[VIEWMONDEXCHOICES_SIZE] = {"Cancel"};
+    stringChoice sViewMonDexChoices[VIEWMONDEXCHOICES_SIZE] = {"OK"};
     // Settings choice
     stringChoice sSettingChoices[SETTINGCHOICES_SIZE] = {"Save", "Load", "Cancel"};
     // Exploration Choices
