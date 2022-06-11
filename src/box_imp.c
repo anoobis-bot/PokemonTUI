@@ -2203,7 +2203,18 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     if (nMaxPage == 0)
                         nMaxPage = 1;
 
-                    nTempMaxPage = nMaxPage;
+                    // page is based on search entries only
+                    if (isSearchMode)
+                    {
+                        nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
+                        if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
+                            nTempMaxPage++;
+                    }
+                    // if not in search mode, page is based on the whole box
+                    else
+                    {
+                        nTempMaxPage = nMaxPage;
+                    }
                 }
             }
         }
