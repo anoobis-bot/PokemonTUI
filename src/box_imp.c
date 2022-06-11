@@ -633,7 +633,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         }
     }
 
-    if (isUpdateDex)
+    if (isUpdateDex && !isDuplicate)
     {
         // this only happens if the input is from updateDex (via updateDex)
         // no need to update what's in the caughtMons if it was a new fakedex entry since to start with
@@ -2173,7 +2173,9 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         for (; currMon < searchedQty - 1; currMon++)
                         {
                             // this time, every member will be shifted
-                            searchedCaughtMons[currMon].nSlot = searchedCaughtMons[currMon + 1].nSlot;
+                            // -1 fot the nSlot since the current nSlot has been deleted that's why every slot value
+                            //  after it gets shifted too
+                            searchedCaughtMons[currMon].nSlot = (searchedCaughtMons[currMon + 1].nSlot) - 1;
                             searchedCaughtMons[currMon].index_Dex = searchedCaughtMons[currMon + 1].index_Dex;
                             strcpy(searchedCaughtMons[currMon].sShort_Name, searchedCaughtMons[currMon + 1].sShort_Name);
                             strcpy(searchedCaughtMons[currMon].sFull_Name, searchedCaughtMons[currMon + 1].sFull_Name);
