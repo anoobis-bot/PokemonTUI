@@ -385,7 +385,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                     // is its own data (if they do not want to change the contents)
                     if (compMon != nCurrMon)
                     {
-                        if (strcasecmp(sInput, dex_Database[compMon].sFull_Name) == 0)
+                        if (strcmp(sInput, dex_Database[compMon].sFull_Name) == 0)
                         {
                             isDuplicate = 1;
                             // compMon is the index where the fakemon to be overwritten resides.
@@ -1503,7 +1503,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     stringChoice selectedChoices[3] = {"View Entry", "Release", "Cancel"};
 
     // choices for viewMon
-    stringChoice viewMonChoice[1] = {"Cancel"};
+    stringChoice viewMonChoice[1] = {"OK"};
 
     // choices for release
     stringChoice releaseConfirmChoices[2] = {"Yes", "No"};
@@ -1635,7 +1635,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 }
                 // user typed cancel while in search mode. will returnj to mode select
                 // but not in search mode anymore
-                else if (strcmp(sInput, sModeChoices[5]) == 0 && isSearchMode)
+                else if (strcmp(sInput, sRestrictModeChoices[2]) == 0 && isSearchMode)
                 {
                     Mode = 0;
                     isSearchMode = 0;
@@ -1830,7 +1830,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     for (currMon = 0; currMon < *nCapturedMons; currMon++)
                     {
                         // if it matches, appeand the member's contents to the searchCaughtMon's 
-                        if (strcmp(caughtMons[currMon].sFull_Name, sInput) == 0)
+                        if (strcasecmp(caughtMons[currMon].sFull_Name, sInput) == 0)
                         {
                             isSearchMode = 3;
                             searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
@@ -1894,7 +1894,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     for (currMon = 0; currMon < *nCapturedMons; currMon++)
                     {
                         // if it matches, appeand the member's contents to the searchCaughtMon's 
-                        if (strcmp(caughtMons[currMon].sShort_Name, sInput) == 0)
+                        if (strcasecmp(caughtMons[currMon].sShort_Name, sInput) == 0)
                         {
                             isSearchMode = 4;
                             searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
