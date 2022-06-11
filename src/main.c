@@ -33,7 +33,7 @@ int main(void)
     stringChoice sEncounterChoices[ENCOUNTERCHOICES_SIZE] = {"CATCH", "RUN"}; 
     // mode choices for the viewBox
     stringChoice sBoxChoices[BOXCHOICES_SIZE] = {"Navigate", "Select", "Full Name Search", "Short Name Search", 
-                                                    "Sort", "Cancel"};
+                                                    "Sort", "Exit"};
 
     
     // initialize dex and make all members equal to 0
@@ -178,6 +178,14 @@ int main(void)
                             caughtMons, &nCapturedMons, sMessage);
             } while (strcmp(sInput, sBoxChoices[BOXCHOICES_SIZE - 1]) != 0);
             // while the user has not typed cancel
+
+            // if the user typed exit
+            if (strcmp(sInput, sBoxChoices[BOXCHOICES_SIZE - 1]) == 0)
+            {
+                // just in case no loop would accidentally stop, the sInput buffer is cleaned from the word
+                // exit
+                sInput[0] = '\0';
+            }
         }
 
         // Settings

@@ -1613,7 +1613,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 else if (strcmp(sInput, sModeChoices[1]) == 0)
                 {
                     Mode = 2;
-                    setMessage(sMessage, "Which fakemon would you like to pick?");
+                    setMessage(sMessage, "Which fakemon would you like to pick (number)? Type -1 to EXIT");
                 }
                 // Full Name Search
                 else if (strcmp(sInput, sModeChoices[2]) == 0)
@@ -1708,14 +1708,22 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
             }
             else
             {
+                // if the fakemon are limited to the searched entries
                 if (isSearchMode)
                 {
                     // if the user decided not to select a fakemon
                     if (nIntIn == -1)
                     {
+                        // if the programmer decided to not exit the box when the user typed -1
+                        // and instead go back to menu for box, uncomment the code below and comment
+                        // the 2nd blcok of code in this if block
                         // turns back to mod e select, but searchMode is still active
-                        Mode = 0;
-                        setMessage(sMessage, "What would you like to do?");
+                        // Mode = 0;
+                        // setMessage(sMessage, "What would you like to do?");
+
+                        // makes it so that the loop stops and exits the function
+                        // puts EXIT in sInput
+                        strcpy(sInput, sModeChoices[nModeChoicesSize - 1]);
                     }
                     // if the user typed the short name
                     else
@@ -1750,8 +1758,16 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 {
                     if (nIntIn == -1)
                     {
-                        Mode = 0;
-                        setMessage(sMessage, "What would you like to do?");
+                        // if the programmer decided to not exit the box when the user typed -1
+                        // and instead go back to menu for box, uncomment the code below and comment
+                        // the 2nd blcok of code in this if block
+                        // turns back to mod e select, but searchMode is still active
+                        // Mode = 0;
+                        // setMessage(sMessage, "What would you like to do?");
+
+                        // makes it so that the loop stops and exits the function
+                        // puts EXIT in sInput
+                        strcpy(sInput, sModeChoices[nModeChoicesSize - 1]);
                     }
                     else
                     {
