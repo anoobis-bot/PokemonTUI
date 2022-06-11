@@ -28,7 +28,7 @@ int main(void)
     // Settings choice
     stringChoice sSettingChoices[SETTINGCHOICES_SIZE] = {"Save", "Load", "Cancel"};
     // Exploration Choices
-    stringChoice sExplorationChoices[EXPLORATIONCHOICES_SIZE] = {"FORWARD", "BACKWARD", "Cancel"};
+    stringChoice sExplorationChoices[EXPLORATIONCHOICES_SIZE] = {"FORWARD", "BACKWARD", "EXIT"};
     // Encounter Fakemon choices
     stringChoice sEncounterChoices[ENCOUNTERCHOICES_SIZE] = {"CATCH", "RUN"}; 
     // mode choices for the viewBox
@@ -145,13 +145,20 @@ int main(void)
 
                 } while ((strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) != 0) && 
                             nCapturedMons < BOX_MAX);
-                // while the user has not typed cancel or still have room in the box
+                // while the user has not typed EXIT or still have room in the box
 
                 // if the loop stopped because the box is full, print this
                 if (nCapturedMons >= BOX_MAX)
                 {
                     sInput[0] = '\0';
                     sprintf(sMessage, "You have been kicked out. Your box is full. Maximum of %d", BOX_MAX);
+                }
+                // if the user typed exit
+                else if (strcmp(sInput, sExplorationChoices[EXPLORATIONCHOICES_SIZE - 1]) == 0)
+                {
+                    // just in case no loop would accidentally stop, the sInput buffer is cleaned from the word
+                    // exit
+                    sInput[0] = '\0';
                 }
             }
             // if there is no more room
