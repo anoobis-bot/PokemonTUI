@@ -1810,57 +1810,66 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
 
             Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
 
+            // if the user typed Cancel
+            if (strcmp(sInput, "Camcel") == 0)
+            {
+                // any number just to loop back into mode 0 and not go to the if (!(Input_Fail)) block
+                Input_Fail = 1000;
+                sInput[0] = '\0';
+                Mode = 0;
+                setMessage(sMessage, "What would you like to do?");
+            }
+            // if the length of the string input is not SHORT_NAME_SIZE
+            else if (strlen(sInput) > FULL_NAME_SIZE)
+            {
+                // loop back and ask again for a short name
+                Input_Fail = 9;
+                snprintf(sMessage, STR_MSG_SIZE, "Please enter less than %d characters or type 'Cancel'", 
+                            FULL_NAME_SIZE);
+            }
+
             // if the user input is valid (the number of chars is accepted)
             if (!(Input_Fail))
             {
-                // if the user typed cancel, go back to mode select
-                if (strcmp(sInput, "Cancel") == 0)
-                {
-                    sInput[0] = '\0';
-                    Mode = 0;
-                    setMessage(sMessage, "What would you like to do?");
-                }
                 // if the user did not type cancel, loop through every fakemon in your box and 
                 // see if it matches to any of the name
-                else
-                {
-                    // since the slot number is the same as the index, currMon can be used
-                    // as the variable to acces each element in the caughtMons array
-                    // search the whole caughtMons array
-                    for (currMon = 0; currMon < *nCapturedMons; currMon++)
-                    {
-                        // if it matches, appeand the member's contents to the searchCaughtMon's 
-                        if (strcasecmp(caughtMons[currMon].sFull_Name, sInput) == 0)
-                        {
-                            isSearchMode = 3;
-                            searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
-                            searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
-                            strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
-                            strcpy(searchedCaughtMons[searchedQty].sFull_Name, caughtMons[currMon].sFull_Name);
-                            searchedQty++;
-                        }
-                    }
 
-                    // if a fakemon was searched
-                    if (isSearchMode)
+                // since the slot number is the same as the index, currMon can be used
+                // as the variable to acces each element in the caughtMons array
+                // search the whole caughtMons array
+                for (currMon = 0; currMon < *nCapturedMons; currMon++)
+                {
+                    // if it matches, appeand the member's contents to the searchCaughtMon's 
+                    if (strcasecmp(caughtMons[currMon].sFull_Name, sInput) == 0)
                     {
-                        // setting the right page number since the fakemon searched
-                        // is lower than the whole box population
-                        nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
-                        if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
-                            nTempMaxPage++;
-                        
-                        setMessage(sMessage, "Found some fakemon!");
+                        isSearchMode = 3;
+                        searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
+                        searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
+                        strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
+                        strcpy(searchedCaughtMons[searchedQty].sFull_Name, caughtMons[currMon].sFull_Name);
+                        searchedQty++;
                     }
-                    // if no fakemon was found
-                    else if (!isSearchMode)
-                    {
-                        setMessage(sMessage, "No Fakemon found.");
-                    }
-                    // either way go back to mode select choices
-                    Mode = 0;
-                    sInput[0] = '\0';
                 }
+
+                // if a fakemon was searched
+                if (isSearchMode)
+                {
+                    // setting the right page number since the fakemon searched
+                    // is lower than the whole box population
+                    nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
+                    if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
+                        nTempMaxPage++;
+                    
+                    setMessage(sMessage, "Found some fakemon!");
+                }
+                // if no fakemon was found
+                else if (!isSearchMode)
+                {
+                    setMessage(sMessage, "No Fakemon found.");
+                }
+                // either way go back to mode select choices
+                Mode = 0;
+                sInput[0] = '\0';
             }
         }
 
@@ -1875,56 +1884,65 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
 
             Input_Fail = getInput(sInput, nInputSize, NULL, 0, sMessage);
 
+            // if the user typed Cancel
+            if (strcmp(sInput, "Camcel") == 0)
+            {
+                // any number just to loop back into mode 0 and not go to the if (!(Input_Fail)) block
+                Input_Fail = 1000;
+                sInput[0] = '\0';
+                Mode = 0;
+                setMessage(sMessage, "What would you like to do?");
+            }
+            // if the length of the string input is not SHORT_NAME_SIZE
+            else if (strlen(sInput) != SHORT_NAME_SIZE)
+            {
+                // loop back and ask again for a short name
+                Input_Fail = 9;
+                snprintf(sMessage, STR_MSG_SIZE, "Please enter exactly %d characters or type 'Cancel'", 
+                            SHORT_NAME_SIZE);
+            }
+
             // if the user input is valid
             if (!(Input_Fail))
             {
-                // if the user typed cancel, go back to mode select
-                if (strcmp(sInput, "Cancel") == 0)
-                {
-                    sInput[0] = '\0';
-                    Mode = 0;
-                    setMessage(sMessage, "What would you like to do?");
-                }
-                // if the user did not type cancel, loop through every fakemon in your box and 
+                // if the user did not type cancel or no errors in input, loop through every fakemon in your box and 
                 // see if it matches to any of the name
-                else
+                
+                // since the slot number is the same as the index, currMon can be used
+                // as the variable to acces each element in the caughtMons array
+                for (currMon = 0; currMon < *nCapturedMons; currMon++)
                 {
-                    // since the slot number is the same as the index, currMon can be used
-                    // as the variable to acces each element in the caughtMons array
-                    for (currMon = 0; currMon < *nCapturedMons; currMon++)
+                    // if it matches, appeand the member's contents to the searchCaughtMon's 
+                    if (strcasecmp(caughtMons[currMon].sShort_Name, sInput) == 0)
                     {
-                        // if it matches, appeand the member's contents to the searchCaughtMon's 
-                        if (strcasecmp(caughtMons[currMon].sShort_Name, sInput) == 0)
-                        {
-                            isSearchMode = 4;
-                            searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
-                            searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
-                            strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
-                            strcpy(searchedCaughtMons[searchedQty].sFull_Name, caughtMons[currMon].sFull_Name);
-                            searchedQty++;
-                        }
+                        isSearchMode = 4;
+                        searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
+                        searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
+                        strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
+                        strcpy(searchedCaughtMons[searchedQty].sFull_Name, caughtMons[currMon].sFull_Name);
+                        searchedQty++;
                     }
-
-                    // if a fakemon was searched
-                    if (isSearchMode)
-                    {
-                        // setting the right page number since the fakemon searched
-                        // is lower than the whole box population
-                        nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
-                        if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
-                            nTempMaxPage++;
-                        
-                        setMessage(sMessage, "Found some fakemon!");
-                    }
-                    // if no fakemon was found
-                    else if (!isSearchMode)
-                    {
-                        setMessage(sMessage, "No Fakemon found.");
-                    }
-                    // either way go back to mode select choices
-                    Mode = 0;
-                    sInput[0] = '\0';
                 }
+
+                // if a fakemon was searched
+                if (isSearchMode)
+                {
+                    // setting the right page number since the fakemon searched
+                    // is lower than the whole box population
+                    nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
+                    if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
+                        nTempMaxPage++;
+                    
+                    setMessage(sMessage, "Found some fakemon!");
+                }
+                // if no fakemon was found
+                else if (!isSearchMode)
+                {
+                    setMessage(sMessage, "No Fakemon found.");
+                }
+                // either way go back to mode select choices
+                Mode = 0;
+                sInput[0] = '\0';
             }
         }
 
