@@ -13,13 +13,26 @@ of the functions in art.c file
 
 #include "../configurations.h"
 
-void colorReset();
-void forgroundGreen();
-void foregroundRed();
-void foregroundBrown();
+void 
+colorReset();
 
-void displayArt(char sArt[][WIDTH], int nArtHeight,int *currRow);
-void printGrass(int ActiveCell, int *currRow);
-void printCaughtMons(box_type IndexMonsDisplay[], int nIndexMonsDisplay_Size, int currPage, int *currRow);
+void 
+forgroundGreen();
+
+void 
+foregroundRed();
+
+void 
+foregroundBrown();
+
+
+void 
+displayArt(char sArt[][WIDTH], int nArtHeight,int *nCurrRow);
+
+void 
+printGrass(int nActiveCell, int *nCurrRow);
+
+void 
+printCaughtMons(box_type pIndexMonsDisplay[], int nIndexMonsDisplay_Size, int nCurrPage, int *nCurrRow);
 
 #endif
