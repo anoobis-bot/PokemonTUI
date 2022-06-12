@@ -20,15 +20,18 @@ different modes the dex has
 #include <errno.h>
 
 
-/* This function creates the GUI for the main menu
-    it modifies the sInput to what the user has selected.
-    PARAMETERS:
-    - sInput is the input thw ould be later modified
-    - nInputSize is the size of the char array sInput
-    - sMainChoices is the array of strings composed of the main menu choices    */
-void mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int nMainChoicesSize, stringMsg sMessage)
+/* This function creates the TUI for the main menu it modifies the sInput based on what the user has selected.
+    It can be any of the main sections
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param sMainChoices[]: is the array of strings composed of the main menu choices
+    @param nMainChoicesSize: Number of elements in sMainChoices[]
+    @param sMessage: Put sMessage variable here
+*/
+void 
+mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int nMainChoicesSize, stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -41,21 +44,21 @@ void mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int 
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_FakeDex); 
 
         
         // prints the main content of the TUI
-        printFillerLines(HEIGHT / 10, &currRow);
-        printText("Welcome to the Fakedex game, trainer!", 'c', &currRow);
-        printFillerLines(1, &currRow);              // prints lines 1/8 of the HEIGHT
-        displayArt(ART_Pokeball, 9,&currRow);    // dipalys the pokeball art
-        printFillerLines(1, &currRow);
-        printChoices(sMainChoices, nMainChoicesSize, 3, 2, 'c', &currRow); // prints the possible choices fot main menu
+        printFillerLines(HEIGHT / 10, &nCurrRow);
+        printText("Welcome to the Fakedex game, trainer!", 'c', &nCurrRow);
+        printFillerLines(1, &nCurrRow);              // prints lines 1/8 of the HEIGHT
+        displayArt(ART_Pokeball, 9,&nCurrRow);    // dipalys the pokeball art
+        printFillerLines(1, &nCurrRow);
+        printChoices(sMainChoices, nMainChoicesSize, 3, 2, 'c', &nCurrRow); // prints the possible choices fot main menu
         
-        printBottomRemain(currRow); // prints the remaining row so that it would be HEIGHT 
+        printBottomRemain(nCurrRow); // prints the remaining row so that it would be HEIGHT 
                                     // number of content rows
 
 
@@ -73,10 +76,21 @@ void mainMenu(stringIn sInput, int nInputSize, stringChoice sMainChoices[], int 
     } while (Input_Fail);
 }
 
-void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize, 
+
+/* This function creates the TUI for the main menu in the fakedex. It can let the user choose whether they
+    would like to go to add dex, view dex, update dex, or remove dex.
+    It can be any of the main sections
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param sDatabaseChoices[]: is the array of strings composed of the main menu in the fakedex choices
+    @param nDatabaseChoicesSize: Number of elements in sDatabaseChoices[]
+    @param sMessage: Put sMessage variable here
+*/
+void 
+fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoices[], int nDatabaseChoicesSize, 
                         stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -88,19 +102,19 @@ void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoi
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_Database); 
 
 
         // prints the main content of the TUI
-        printFillerLines(HEIGHT / 2, &currRow);
-        printText("Welcome to the Fakedex Database, Trainer! What would you like to do?", 'c', &currRow);
-        printFillerLines(1, &currRow);
-        printChoices(sDatabaseChoices, nDatabaseChoicesSize, nDatabaseChoicesSize, 1, 'c', &currRow);
+        printFillerLines(HEIGHT / 2, &nCurrRow);
+        printText("Welcome to the Fakedex Database, Trainer! What would you like to do?", 'c', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
+        printChoices(sDatabaseChoices, nDatabaseChoicesSize, nDatabaseChoicesSize, 1, 'c', &nCurrRow);
 
-        printBottomRemain(currRow);
+        printBottomRemain(nCurrRow);
 
 
         // prints bottom part of the box and the system message too, if there are any.
@@ -116,10 +130,24 @@ void fakedexDatabase(stringIn sInput, int nInputSize, stringChoice sDatabaseChoi
     } while (Input_Fail);
 }
 
-void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoicesSize, mon_type *Fakedex, 
+
+/* This function creates the TUI for showing the fakemon information from the Fakedex database
+    It can be any of the main sections
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param sChoices[]: is the array of strings that would be the choices to be printed in this segment
+    @param nChoicesSize: Number of elements in sChoices[]
+    @param *pFakedex: put the database pFakedex array here
+    @param nMonEntry: Put the index from the pFakedex that is to be displayed (0 based)
+    @param forceView: Put 1 if you want to view the details of the fakemon even if it is uncaught. Otherwise,
+                        put 0.
+    @param sMessage: Put sMessage variable here
+*/
+void 
+viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoicesSize, mon_type *pFakedex, 
                 int nMonEntry, int forceView, stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -129,76 +157,79 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
         strcpy(sMessage, "What would you like to do?");   // message that would be sent to the user at the bottom screen.
     
     // buffer that will be printed out in printText function. Max of 500 characters
-    char outputBuffer[500] = "";
+    const int nOutputBuffer_MAX = 500;
+    char sOutputBuffer[nOutputBuffer_MAX];
+    sOutputBuffer[0] = '\0';
+    
 
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_View_Fakemon);
 
 
         // main content
-        printText("These are your Fakemon Information", 'c', &currRow);
-        printFillerLines(1, &currRow);
+        printText("These are your Fakemon Information", 'c', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
         // print full name
-        snprintf(outputBuffer, 500, "%s %s", "Full Name:", Fakedex[nMonEntry].sFull_Name);
-        printText(outputBuffer, 'j', &currRow);
-        printFillerLines(1, &currRow);
+        snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Full Name:", pFakedex[nMonEntry].sFull_Name);
+        printText(sOutputBuffer, 'j', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
         // if the fakemon is caught, disclose all the fakemon's information
-        if (Fakedex[nMonEntry].nCaught || forceView)
+        if (pFakedex[nMonEntry].nCaught || forceView)
         {
             // print short name
-            snprintf(outputBuffer, 500, "%s %s", "Short Name:", Fakedex[nMonEntry].sShort_Name);
-            printText(outputBuffer, 'j', &currRow);
-            printFillerLines(1, &currRow);
+            snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Short Name:", pFakedex[nMonEntry].sShort_Name);
+            printText(sOutputBuffer, 'j', &nCurrRow);
+            printFillerLines(1, &nCurrRow);
             // print desciption
-            snprintf(outputBuffer, 500, "%s %s", "Description:", Fakedex[nMonEntry].sDescript);
-            printText(outputBuffer, 'j', &currRow);
-            printFillerLines(1, &currRow);
+            snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Description:", pFakedex[nMonEntry].sDescript);
+            printText(sOutputBuffer, 'j', &nCurrRow);
+            printFillerLines(1, &nCurrRow);
             // print Gender
             // since cGender member only has char, putting the constant MALE FEMALE or UNKNOWN is necessary
-            if (Fakedex[nMonEntry].cGender == 'M')  
-                snprintf(outputBuffer, 500, "%s %s", "Gender:", "MALE");
-            else if (Fakedex[nMonEntry].cGender == 'F')  
-                snprintf(outputBuffer, 500, "%s %s", "Gender:", "FEMALE");
-            else if (Fakedex[nMonEntry].cGender == 'U')  
-                snprintf(outputBuffer, 500, "%s %s", "Gender:", "UNKNOWN");
-            printText(outputBuffer, 'j', &currRow);
-            printFillerLines(1, &currRow);
+            if (pFakedex[nMonEntry].cGender == 'M')  
+                snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Gender:", "MALE");
+            else if (pFakedex[nMonEntry].cGender == 'F')  
+                snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Gender:", "FEMALE");
+            else if (pFakedex[nMonEntry].cGender == 'U')  
+                snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Gender:", "UNKNOWN");
+            printText(sOutputBuffer, 'j', &nCurrRow);
+            printFillerLines(1, &nCurrRow);
             
         }
         // if not caught, only display ??? for short name, description, and gender
         else
         {
             // print short name
-            snprintf(outputBuffer, 500, "%s %s", "Short Name:", "???");
-            printText(outputBuffer, 'j', &currRow);
-            printFillerLines(1, &currRow);
+            snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Short Name:", "???");
+            printText(sOutputBuffer, 'j', &nCurrRow);
+            printFillerLines(1, &nCurrRow);
             // print desciption
-            snprintf(outputBuffer, 500, "%s %s", "Description:", "???");
-            printText(outputBuffer, 'j', &currRow);
-            printFillerLines(1, &currRow);
+            snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Description:", "???");
+            printText(sOutputBuffer, 'j', &nCurrRow);
+            printFillerLines(1, &nCurrRow);
             // print Gender
-            snprintf(outputBuffer, 500, "%s %s", "Gender:", "???");
-            printText(outputBuffer, 'j', &currRow);
-            printFillerLines(1, &currRow);
+            snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Gender:", "???");
+            printText(sOutputBuffer, 'j', &nCurrRow);
+            printFillerLines(1, &nCurrRow);
         }
 
         // print caught or uncaught
         // since nCaught member only has short, putting the constant CAUGHT or UNCAUGHT
-        if (Fakedex[nMonEntry].nCaught == 0)  
-            snprintf(outputBuffer, 500, "%s %s", "Status:", "UNCAUGHT");
-        else if (Fakedex[nMonEntry].nCaught == 1)  
-            snprintf(outputBuffer, 500, "%s %s", "Status:", "CAUGHT");
-        printText(outputBuffer, 'j', &currRow);
-        printFillerLines(1, &currRow);
+        if (pFakedex[nMonEntry].nCaught == 0)  
+            snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Status:", "UNCAUGHT");
+        else if (pFakedex[nMonEntry].nCaught == 1)  
+            snprintf(sOutputBuffer, nOutputBuffer_MAX, "%s %s", "Status:", "CAUGHT");
+        printText(sOutputBuffer, 'j', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
 
-        printChoices(sChoices, nChoicesSize, nChoicesSize, 1, 'c', &currRow);
+        printChoices(sChoices, nChoicesSize, nChoicesSize, 1, 'c', &nCurrRow);
 
-        printBottomRemain(currRow);
+        printBottomRemain(nCurrRow);
 
 
         // prints bottom part of the box and the system message too, if there are any.
@@ -219,16 +250,41 @@ void viewMon(stringIn sInput, int nInputSize, stringChoice sChoices[], int nChoi
     }    
 }
 
-int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Database, int *nMonCreated, 
-            box_type caughtMons[], int nCapturedMons, stringMsg sMessage, int nCurrMon)
+
+/* This function creates the TUI for adding a new entry to the fakedex. It could add a new entry, or when
+    the user has typed a non unique Full Name, it would prompt the user for an overwrite. 
+    This function is also used by the update function beccause of its overwrite similarities.
+    If an entry is updated, it also reflects on the caught fakemon in the user's storage box
+    @param sInput: put sInput variable here
+    @param pInputSizes[]: since there are different inputs here (i.e., Full Name, short name, desription, etc)
+                            They all have their own maximum number of character limits. The pInputSizes[] stores
+                            the maximum number of inputs needed for each question. max number of characters for
+                            question 0 is pInputSizes[0], question 1 is pInputSizes[1] and so on. Be sure to
+                            add + STR_MARGIN to the size for input validation
+    @param nInputQty: Number of elements in pInputSizes (or how many questions)
+    @param *dex_Database: put *PFakedex variable here
+    @param *pMonCreated: put the address of nMonCreated here as it would be changed when there a new entry is added
+    @param pCaughtMons[]: put pCaughtMons[] array here as it can change a  caught fakemon's name when updating an entry
+    @param nCaptureMons: put nCapturedMons here to know how many fakemons have been captured. used in loops
+    @param sMessage: Put sMessage variable here
+    @param nCurrMon: Used in updateDex(). When updating dex, just put the index from the pFakedex[] that you
+                        want to update in this parameter. Otherwise, if you just want to add a new entry in 
+                        pFakedex[], put any negative number here
+
+    @return returns 1 if there was a new fakemon entry that populated the Fakedex. updated entries does 
+            not count as a new fakemon entry which returns 0.
+*/
+int 
+addDex(stringIn sInput, int pInputSizes[], int nInputQty, mon_type *dex_Database, int *pMonCreated, 
+            box_type pCaughtMons[], int nCapturedMons, stringMsg sMessage, int nCurrMon)
 {
     // this will aslo be used for updateDex function since they have very similar functions, 
     // so putting these would allow which mode the function is currently is
     int isUpdateDex = 0;
     if (nCurrMon < 0)   // if in addDex mode
     {
-        // the current created fakemon is the highest index (nMonCreated)
-        nCurrMon = *nMonCreated;
+        // the current created fakemon is the highest index (pMonCreated)
+        nCurrMon = *pMonCreated;
     }
     // else if the nCurrMon >= 0, that means this will replace whatever data in the index nCurrMon
     else    // if in updateDex Mode
@@ -236,16 +292,16 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         isUpdateDex = 1;
     }
 
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
 
     // value used in a for loop to check if the name match any of the already stored data 
-    int compMon = 0;        // compareMon
+    int nCompMon = 0;        // compareMon
     int isDuplicate = 0;   // will turn into 1 once there is a found duplictae
     // this is where the temporary data would be stored if the full name is the same(since it may overwrite data)
-    mon_type tempMon = {{0}};
+    mon_type strucTempMon = {{0}};
     // choices for viewMon() if there is a duplicate
     stringChoice sDuplicateChoice[2] = {"Yes", "No"};
 
@@ -261,7 +317,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
     // 2 = description,
     // 3 = gender.
     // this variable lets the function know what kind of entry the program currently needs from the user
-    int currQuestion = 0;
+    int nCurrQuestion = 0;
 
     // since this function's contents type out the user's input, printing the contents of this function 
     // requires a dynamic approach. number of spaces varies line by line to connect the right vertical bar (box TUI)
@@ -270,19 +326,19 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
     // segmentation errors, the sizes of each members of the struct are assigned to the output buffers(destinations of strcat)
     // nExtra is for headroom, and also for the "Name: ", "Description: " etc...
     int nExtra = 20;
-    char sOutFName[nInputSizes[0] + nExtra];
-    char sOutSName[nInputSizes[1] + nExtra];
-    char sOutDesc[nInputSizes[2] + nExtra];
-    char sOutGender[nInputSizes[3] + nExtra];
+    char sOutFName[pInputSizes[0] + nExtra];
+    char sOutSName[pInputSizes[1] + nExtra];
+    char sOutDesc[pInputSizes[2] + nExtra];
+    char sOutGender[pInputSizes[3] + nExtra];
 
-    // used in for loops for the caughtMons[]
+    // used in for loops for the pCaughtMons[]
     int nCurrCaughtMon;
 
-    while (currQuestion < nInputQty) 
+    while (nCurrQuestion < nInputQty) 
     {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         if (isUpdateDex)
@@ -302,11 +358,11 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         strcpy(sOutGender, "Gender: ");
 
         // if the entry is duplicate, the inputted data is stored in a temporary data buffer
-        if (isDuplicate || ((*nMonCreated) >= DEX_MAX)) 
+        if (isDuplicate || ((*pMonCreated) >= DEX_MAX)) 
         {                   // since the data maybe discarded. so the data to be printed cannot come from dex_Database
-            strcat(sOutFName, tempMon.sFull_Name);
-            strcat(sOutSName, tempMon.sShort_Name);
-            strcat(sOutDesc, tempMon.sDescript);
+            strcat(sOutFName, strucTempMon.sFull_Name);
+            strcat(sOutSName, strucTempMon.sShort_Name);
+            strcat(sOutDesc, strucTempMon.sDescript);
         }
         else
         {
@@ -328,36 +384,36 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         
 
         // prints the main content of the TUI. Printing of the output buffers.
-        printFillerLines(1, &currRow);
+        printFillerLines(1, &nCurrRow);
 
         if (isUpdateDex)
-            printText("These are your current Fakemon Information", 'c', &currRow);
+            printText("These are your current Fakemon Information", 'c', &nCurrRow);
         else
-            printText("These are your new Fakemon Information", 'c', &currRow);
+            printText("These are your new Fakemon Information", 'c', &nCurrRow);
 
-        printFillerLines(1, &currRow);
-        printText(sOutFName, 'j', &currRow);
-        printFillerLines(1, &currRow);
-        printText(sOutSName, 'j', &currRow);
-        printFillerLines(1, &currRow);
-        printText(sOutDesc, 'j', &currRow);
-        printFillerLines(1, &currRow);
-        printText(sOutGender, 'j', &currRow);
-        printFillerLines(1, &currRow);
+        printFillerLines(1, &nCurrRow);
+        printText(sOutFName, 'j', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
+        printText(sOutSName, 'j', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
+        printText(sOutDesc, 'j', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
+        printText(sOutGender, 'j', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
 
-        printBottomRemain(currRow);
+        printBottomRemain(nCurrRow);
 
 
         // preparing the right message, since each question requires different prompt from the program.
         if (!(Input_Fail))
         {
-            if (currQuestion == 0)
+            if (nCurrQuestion == 0)
                 strcpy(sMessage, "Input your Fakemon's full name.");
-            else if (currQuestion == 1)
+            else if (nCurrQuestion == 1)
                 strcpy(sMessage, "Input your Fakemon's short name. 5 Letters. Will be capitalized");
-            else if (currQuestion == 2)
+            else if (nCurrQuestion == 2)
                 strcpy(sMessage, "Input your Fakemon's description.");
-            else if (currQuestion == 3)
+            else if (nCurrQuestion == 3)
                 strcpy(sMessage, "Input your Fakemon's gender. 'F', 'M', 'U' only. U is Unknown.");
         }
         // prints bottom part of the box and the system message too, if there are any.
@@ -367,7 +423,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
         // getInput returns if the user input is valid or not.
         // refer to getInput implementation (util.c) for the list of possible error msg returns
         // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
-        Input_Fail = getInput(sInput, nInputSizes[currQuestion], NULL, 0, sMessage);
+        Input_Fail = getInput(sInput, pInputSizes[nCurrQuestion], NULL, 0, sMessage);
         // if the input fails, it will prompt the user to type an input again
         // only valid inputs will be returned (sInput)
 
@@ -377,21 +433,21 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             // since the full name of the fakemon is the basis for overwiting data this is the only question
             // in which the input from that question is compared to every full name in the data base to check if there are
             // duplicates.
-            if (currQuestion == 0)
+            if (nCurrQuestion == 0)
             {
-                for (compMon = 0; compMon < (*nMonCreated) && !(isDuplicate); compMon++)
+                for (nCompMon = 0; nCompMon < (*pMonCreated) && !(isDuplicate); nCompMon++)
                 {
                     // if in the updateDex function, we wouldnt want to trigger a isDuplicate, if the sInput
                     // is its own data (if they do not want to change the contents)
-                    if (compMon != nCurrMon)
+                    if (nCompMon != nCurrMon)
                     {
-                        if (strcmp(sInput, dex_Database[compMon].sFull_Name) == 0)
+                        if (strcmp(sInput, dex_Database[nCompMon].sFull_Name) == 0)
                         {
                             isDuplicate = 1;
-                            // compMon is the index where the fakemon to be overwritten resides.
-                            // compMon is decremented to balance it out 
+                            // nCompMon is the index where the fakemon to be overwritten resides.
+                            // nCompMon is decremented to balance it out 
                             // since at the end of the for loop, it would be incremeneted.
-                            compMon--;
+                            nCompMon--;
                         }
                     }
                     
@@ -401,15 +457,15 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             // if it is duplicate or the dex is full, store the contents on a temp buffer.
             // will discard it or not, depending on the choice of the user
             // isDuplicate will never turn again to 0 once set to 1
-            if (isDuplicate || ((*nMonCreated) >= DEX_MAX))
+            if (isDuplicate || ((*pMonCreated) >= DEX_MAX))
             {
-                // store the user input to the tempMon struct buffer
-                if (currQuestion == 0)
+                // store the user input to the strucTempMon struct buffer
+                if (nCurrQuestion == 0)
                 {
                     // checks if there are only letters in the name
                     // assign it if it is only letters
                     if (onlyLetters(sInput, strlen(sInput)))
-                        strcpy(tempMon.sFull_Name, sInput);
+                        strcpy(strucTempMon.sFull_Name, sInput);
                     // if not, get input again
                     else
                     {
@@ -418,7 +474,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         Input_Fail = 9;
                     }
                 }
-                else if (currQuestion == 1)
+                else if (nCurrQuestion == 1)
                 {
                     // checks if the short name input is valid
                     // if it has SHORT_NAME_SIZE characters
@@ -429,7 +485,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         {
                             // convert it to upper case and assign it
                             toUpperWord(sInput, SHORT_NAME_SIZE);
-                            strcpy(tempMon.sShort_Name, sInput);
+                            strcpy(strucTempMon.sShort_Name, sInput);
                         }
                         else
                         {
@@ -449,18 +505,18 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         sMessage[STR_MSG_SIZE - 1] = '\0';
                     }
                 }
-                else if (currQuestion == 2)
-                    strcpy(tempMon.sDescript, sInput);
+                else if (nCurrQuestion == 2)
+                    strcpy(strucTempMon.sDescript, sInput);
                 
                 // for gender's input case, the developer did not modify the getInput command to alter the Input_Fail to 
                 // output as 2, it cannot check if the user input is in the choices (M, F, U)since that needs an argument 
                 // for the  3rd parameter, which in this case, set to NULL, since the full and short name and 
                 // description does not need choices. Since this is the only time that this particular problem will arise, 
                 // there is no need to alter the getInput function as this will complicate the getInput function.
-                else if (currQuestion == 3)
+                else if (nCurrQuestion == 3)
                 {
                     if (sInput[0] == 'M' || sInput[0] == 'F' || sInput[0] == 'U')
-                        tempMon.cGender = sInput[0];
+                        strucTempMon.cGender = sInput[0];
                     else // if other letters are inputted
                     {
                         Input_Fail = 2; // user input not in the choices
@@ -470,11 +526,11 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                 
                 // procceed to the next question if the input was succesful
                 if (!(Input_Fail))  
-                    currQuestion++;
+                    nCurrQuestion++;
 
 
                 // if all questions have been asked
-                if (currQuestion >= nInputQty)
+                if (nCurrQuestion >= nInputQty)
                 {
                     // is Duplicate has priority since update first before
                     // replacing
@@ -483,42 +539,42 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         // tell the user that there has been a duplicate
                         setMessage(sMessage, "We found a duplicate, would you like to overide this entry?");
                         // show the original entry and ask if they want to overwrite
-                        viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, compMon, 1, sMessage);
+                        viewMon(sInput, 3 + STR_MARGIN, sDuplicateChoice, 2, dex_Database, nCompMon, 1, sMessage);
                         if (strcmp(sInput, sDuplicateChoice[0]) == 0)   // if they entered "Yes"
                         {
-                            tempMon.nCaught = dex_Database[compMon].nCaught;
-                            dex_Database[compMon] = tempMon;    // update the compMon(index) with its new value
+                            strucTempMon.nCaught = dex_Database[nCompMon].nCaught;
+                            dex_Database[nCompMon] = strucTempMon;    // update the nCompMon(index) with its new value
                             setMessage(sMessage, "Fakemon entry updated");
 
                             // this happens if there are any duplicates, thus prompting for an overwrite. 
-                            // an overwrite should affect the names in the box of caughtMons
+                            // an overwrite should affect the names in the box of pCaughtMons
                             // updates the name and short name of the captured mons 
                             for (nCurrCaughtMon = 0; nCurrCaughtMon < nCapturedMons; nCurrCaughtMon++)
                             {
-                                if (caughtMons[nCurrCaughtMon].index_Dex == compMon)
+                                if (pCaughtMons[nCurrCaughtMon].index_Dex == nCompMon)
                                 {
-                                    strcpy(caughtMons[nCurrCaughtMon].sShort_Name, dex_Database[compMon].sShort_Name);
-                                    strcpy(caughtMons[nCurrCaughtMon].sFull_Name, dex_Database[compMon].sFull_Name);
+                                    strcpy(pCaughtMons[nCurrCaughtMon].sShort_Name, dex_Database[nCompMon].sShort_Name);
+                                    strcpy(pCaughtMons[nCurrCaughtMon].sFull_Name, dex_Database[nCompMon].sFull_Name);
                                 }
                             }
                         }
-                        else    // if they answered no, this function end and the tempMon was not assigned to anything
+                        else    // if they answered no, this function end and the strucTempMon was not assigned to anything
                             setMessage(sMessage, "Fakemon entry discarded");
                     }
-                    else if ((*nMonCreated) >= DEX_MAX)
+                    else if ((*pMonCreated) >= DEX_MAX)
                     {
                         // tell the user that the dex is full
                         setMessage(sMessage, "Dex is full. Type Cancel or the fakemon's Full name to remove.");
                         // if a fakemon was removed
-                        if (removeDex(sInput, nInputSizes[0] + STR_MARGIN, dex_Database, nMonCreated, 
-                                        caughtMons, nCapturedMons, sMessage))
+                        if (removeDex(sInput, pInputSizes[0] + STR_MARGIN, dex_Database, pMonCreated, 
+                                        pCaughtMons, nCapturedMons, sMessage))
                         {
                             // adds the fakemon at the end of the fakedex since when removing a fakemon, it is shifted
                             // to the left, leaving the last unoccupied
-                            // since nMonCreated is subtracted by 1 by removeDex, there is no need for -1 here
-                            dex_Database[(*nMonCreated)] = tempMon;
+                            // since pMonCreated is subtracted by 1 by removeDex, there is no need for -1 here
+                            dex_Database[(*pMonCreated)] = strucTempMon;
                             // that is why we need to add 1 again since it was subtracted 1
-                            (*nMonCreated)++;
+                            (*pMonCreated)++;
                             setMessage(sMessage, "Freed up space and added new entry!");
                         }
                         else
@@ -535,7 +591,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
             else if (!(isDuplicate))    // if the Full Name is not duplicated
             {
                 // sInput is assigned to its rightful struct member
-                if (currQuestion == 0)
+                if (nCurrQuestion == 0)
                 {
                     // checks if there are only letters in the name
                     // assign it if it is only letters
@@ -550,7 +606,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                     }
                 }
                 
-                else if (currQuestion == 1)
+                else if (nCurrQuestion == 1)
                 {
                     // checks if the short name input's format is valid
                     // if it has SHORT_NAME_SIZE characters
@@ -581,13 +637,13 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                         // converts the short name into upper case
                         toUpperWord(sInput, SHORT_NAME_SIZE);
                         // checks if there are any duplicates of the Short Name in the database
-                        for (compMon = 0; compMon < (*nMonCreated) && !(isDuplicate); compMon++)
+                        for (nCompMon = 0; nCompMon < (*pMonCreated) && !(isDuplicate); nCompMon++)
                         {
                             // if in the updateDex function, we wouldnt want to trigger a isDuplicate, if the sInput
                             // is its own data (if they do not want to change the contents)
-                            if (compMon != nCurrMon)
+                            if (nCompMon != nCurrMon)
                             {
-                                if (strcmp(sInput, dex_Database[compMon].sShort_Name) == 0)
+                                if (strcmp(sInput, dex_Database[nCompMon].sShort_Name) == 0)
                                 {
                                     Input_Fail = 3;
                                     setMessage(sMessage, 
@@ -606,7 +662,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                     }
                 }
                 
-                else if (currQuestion == 2)
+                else if (nCurrQuestion == 2)
                     strcpy(dex_Database[nCurrMon].sDescript, sInput);
                 
                 // for gender's input case, the developer did not modify the getInput command to alter the Input_Fail to 
@@ -614,7 +670,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
                 // 3rd parameter, which in this case, set to NULL, since the full and short name and description does not
                 // need choices. Since this is the only time that this particular problem will arise, 
                 // there is no need to alter the getInput function as this will complicate the getInput function.
-                else if (currQuestion == 3)
+                else if (nCurrQuestion == 3)
                 {
                     if (sInput[0] == 'M' || sInput[0] == 'F' || sInput[0] == 'U')
                         dex_Database[nCurrMon].cGender = sInput[0];
@@ -627,7 +683,7 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
 
                 // if the input was successful, proceed to the next question
                 if (!(Input_Fail))
-                    currQuestion++;
+                    nCurrQuestion++;
             }
             
         }
@@ -636,15 +692,15 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
     if (isUpdateDex && !isDuplicate)
     {
         // this only happens if the input is from updateDex (via updateDex)
-        // no need to update what's in the caughtMons if it was a new fakedex entry since to start with
+        // no need to update what's in the pCaughtMons if it was a new fakedex entry since to start with
         // it would be impossible to put a new entry in that box without first going to exploration
         // updates the name and short name of the captured mons 
         for (nCurrCaughtMon = 0; nCurrCaughtMon < nCapturedMons; nCurrCaughtMon++)
         {
-            if (caughtMons[nCurrCaughtMon].index_Dex == nCurrMon)
+            if (pCaughtMons[nCurrCaughtMon].index_Dex == nCurrMon)
             {
-                strcpy(caughtMons[nCurrCaughtMon].sShort_Name, dex_Database[nCurrMon].sShort_Name);
-                strcpy(caughtMons[nCurrCaughtMon].sFull_Name, dex_Database[nCurrMon].sFull_Name);
+                strcpy(pCaughtMons[nCurrCaughtMon].sShort_Name, dex_Database[nCurrMon].sShort_Name);
+                strcpy(pCaughtMons[nCurrCaughtMon].sFull_Name, dex_Database[nCurrMon].sFull_Name);
             }
         }
     }
@@ -655,10 +711,24 @@ int addDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *dex_Data
     return newCreatedMon;
 }
 
-void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fakedex, int *nMonCreated, 
-                box_type caughtMons[], int nCapturedMons, stringMsg sMessage)
+
+/* This function updates entries in the Fakedex thourhg searching the fakemon's full name. If it does not find one
+    no updating will take place. This function just nests the addDex function when going through the updating
+    process.
+    @param sInput: put sInput variable here
+    @param pInputSizes[]: parameter used in addDex() refer to that function.
+    @param nInputQty: Number of elements in pInputSizes (or how many questions)
+    @param *pFakedex: put *pFakedex variable here
+    @param *pMonCreated: put the address of nMonCreated here as it would be changed when there a new entry is added
+    @param pCaughtMons[]: put pCaughtMons[] array here as it can change a  caught fakemon's name when updating an entry
+    @param nCaptureMons: put nCapturedMons here to know how many fakemons have been captured. used in loops
+    @param sMessage: Put sMessage variable here
+*/
+void 
+updateDex(stringIn sInput, int pInputSizes[], int nInputQty, mon_type *pFakedex, int *pMonCreated, 
+                box_type pCaughtMons[], int nCapturedMons, stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -675,21 +745,21 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
     // 1: if in search mode. searching if the name entered matches to any of the fakemon entries
     // 2: edit mode. edits each members of the fakemon struct
     // default to mode 1
-    int Mode = 1;
+    int nMode = 1;
 
     // variable used to know if the input full name matches to any thing on the data base.
     // default to no;
     int isMatch = 0;
     // variable used to loop through the fakedex, search if there is match
-    int currMon;
+    int nCurrMon;
     
     // for confirmation if they want to update the dex
-    stringChoice confirmChoices[2] = {"Yes", "Cancel"};
+    stringChoice sConfirmChoices[2] = {"Yes", "Cancel"};
 
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_Update_Dex);
@@ -697,12 +767,12 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
 
         // main content
         // if trying to get fakemon name
-        if (Mode == 1)
+        if (nMode == 1)
         {
-            printFillerLines(HEIGHT / 2, &currRow);
-            printText("Which Fakemon do you want to update? Enter its full name.", 'c', &currRow);
+            printFillerLines(HEIGHT / 2, &nCurrRow);
+            printText("Which Fakemon do you want to update? Enter its full name.", 'c', &nCurrRow);
 
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
@@ -710,7 +780,7 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
             // getInput returns if the user input is valid or not.
             // refer to getInput implementation (util.c) for the list of possible error msg returns
             // it also alters the sMessage to be printed if it found an error or if it has a feedback to be printed again
-            Input_Fail = getInput(sInput, nInputSizes[0], NULL, 0, sMessage);
+            Input_Fail = getInput(sInput, pInputSizes[0], NULL, 0, sMessage);
             // 0 index is for the full name size since the full name is the one being asked
             // if the input fails, it will prompt the user to type an input again
             // only valid inputs will be returned (sInput)
@@ -728,14 +798,14 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
                 // if they did not type cancel
                 if (!(toCancel))
                 {
-                    for (currMon = 0; currMon < (*nMonCreated) && !(isMatch); currMon++)
+                    for (nCurrMon = 0; nCurrMon < (*pMonCreated) && !(isMatch); nCurrMon++)
                     {
                         // if the input matches with one of the fakemon
-                        if (strcmp(Fakedex[currMon].sFull_Name, sInput) == 0)
+                        if (strcmp(pFakedex[nCurrMon].sFull_Name, sInput) == 0)
                         {
                             isMatch = 1;
-                            currMon--;  // since currMon will be incremented at the exit of the for loop
-                            Mode = 2;   // change mode to update mode
+                            nCurrMon--;  // since nCurrMon will be incremented at the exit of the for loop
+                            nMode = 2;   // change mode to update mode
                         }
                     }
 
@@ -749,19 +819,19 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
             }
         }
 
-        else if (Mode == 2)
+        else if (nMode == 2)
         {
             // confirm if they want to update this fakemon
             setMessage(sMessage, "Are you sure you want to update this fakemon's information?");
-            viewMon(sInput, nInputSizes[0], confirmChoices, 2, Fakedex, currMon, 1, sMessage);
+            viewMon(sInput, pInputSizes[0], sConfirmChoices, 2, pFakedex, nCurrMon, 1, sMessage);
             // sInputSize[0] is the size since "Yes" and "Cancel" are the only one being asked
             // the STR_FNAME_SIZE is enough for that
 
             // if they said yes
-            if (strcmp(sInput, confirmChoices[0]) == 0) // if they confirmed
+            if (strcmp(sInput, sConfirmChoices[0]) == 0) // if they confirmed
             {
-                if (addDex(sInput, nInputSizes, nInputQty, Fakedex, nMonCreated, caughtMons, nCapturedMons, 
-                            sMessage, currMon))
+                if (addDex(sInput, pInputSizes, nInputQty, pFakedex, pMonCreated, pCaughtMons, nCapturedMons, 
+                            sMessage, nCurrMon))
                 {
                     setMessage(sMessage, "Fakemon entry Updated!");
                 }
@@ -780,10 +850,24 @@ void updateDex(stringIn sInput, int nInputSizes[], int nInputQty, mon_type *Fake
     } while (!(toCancel));
 }
 
-int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreated, 
-                box_type caughtMons[], int nCapturedMons, stringMsg sMessage)
+
+/* This function removes entries in the Fakedex thourhg searching the fakemon's full name. If it does not find one
+    no removing will take place.
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param *pFakedex: put *pFakedex variable here
+    @param *pMonCreated: put the address of nMonCreated here as it would be changed when there a new entry is added
+    @param pCaughtMons[]: put pCaughtMons[] array here as it can change a  caught fakemon's name when updating an entry
+    @param nCaptureMons: put nCapturedMons here to know how many fakemons have been captured. used in loops
+    @param sMessage: Put sMessage variable here
+
+    @return returns 1 if there was a succesful removing. otherise 0
+*/
+int 
+removeDex(stringIn sInput, int nInputSize, mon_type *pFakedex, int *pMonCreated, 
+                box_type pCaughtMons[], int nCapturedMons, stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -803,24 +887,24 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
     // 1: if in search mode. searching if the name entered matches to any of the fakemon entries
     // 2: edit mode. edits each members of the fakemon struct
     // default to mode 1
-    int Mode = 1;
+    int nMode = 1;
 
     // variable used to know if the input full name matches to any thing on the data base.
     // default to no;
     int isMatch = 0;
     // variable used to loop through the fakedex, search if there is match
-    int currMon;
+    int nCurrMon;
     
-    // variable used in for loops for the caughtMons array
+    // variable used in for loops for the pCaughtMons array
     int nCurrCapturedMon;
     
     // for confirmation if they want to update the dex
-    stringChoice confirmChoices[2] = {"Yes", "Cancel"};
+    stringChoice sConfirmChoices[2] = {"Yes", "Cancel"};
 
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_Remove_Dex);
@@ -828,12 +912,12 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
 
         // main content
         // if trying to get fakemon name
-        if (Mode == 1)
+        if (nMode == 1)
         {
-            printFillerLines(HEIGHT / 2, &currRow);
-            printText("Which Fakemon do you want to update? Enter its full name.", 'c', &currRow);
+            printFillerLines(HEIGHT / 2, &nCurrRow);
+            printText("Which Fakemon do you want to update? Enter its full name.", 'c', &nCurrRow);
 
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
@@ -859,14 +943,14 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
                 // if they did not type cancel
                 if (!(toCancel))
                 {
-                    for (currMon = 0; currMon < *(nMonCreated) && !(isMatch); currMon++)
+                    for (nCurrMon = 0; nCurrMon < *(pMonCreated) && !(isMatch); nCurrMon++)
                     {
                         // if the input matches with one of the fakemon
-                        if (strcmp(Fakedex[currMon].sFull_Name, sInput) == 0)
+                        if (strcmp(pFakedex[nCurrMon].sFull_Name, sInput) == 0)
                         {
                             isMatch = 1;
-                            currMon--;  // since currMon will be incremented at the exit of the for loop
-                            Mode = 2;   // change mode to update mode
+                            nCurrMon--;  // since nCurrMon will be incremented at the exit of the for loop
+                            nMode = 2;   // change mode to update mode
                         }
                     }
                     
@@ -882,21 +966,21 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
         }
 
         // if trying to delete (based on the input fakemon)
-        else if (Mode == 2)
+        else if (nMode == 2)
         {
-            if (Fakedex[currMon].nCaught == 0)  // if the fakemon is not yet caught
+            if (pFakedex[nCurrMon].nCaught == 0)  // if the fakemon is not yet caught
             {
                 // confirm if they want to update this fakemon
                 setMessage(sMessage, "Are you sure you want to delete this fakemon");
-                viewMon(sInput, nInputSize, confirmChoices, 2, Fakedex, currMon, 1, sMessage);
+                viewMon(sInput, nInputSize, sConfirmChoices, 2, pFakedex, nCurrMon, 1, sMessage);
                 // sInputSize is the size since "Yes" and "Cancel" are the only one being asked
                 // the STR_FNAME_SIZE is enough for that
                 // that's pretty big already
 
                 // if they said yes
-                if (strcmp(sInput, confirmChoices[0]) == 0) // if they confirmed
+                if (strcmp(sInput, sConfirmChoices[0]) == 0) // if they confirmed
                 {
-                    // before deleting and altering the currMon
+                    // before deleting and altering the nCurrMon
                     // in the box type struct, the index of fakemon in the fakedex is listed there.
                     // if the index of the fakemon that is removed is lower than the already caught
                     // ones, there would be discrepancies. that is why in needs to be udpated
@@ -904,32 +988,32 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
                     {
                         // if the index that was removed is lower than the index in the bot_type struct
                         // remove it
-                        if (caughtMons[nCurrCapturedMon].index_Dex > currMon)
+                        if (pCaughtMons[nCurrCapturedMon].index_Dex > nCurrMon)
                         {
-                            (caughtMons[nCurrCapturedMon].index_Dex)--;
+                            (pCaughtMons[nCurrCapturedMon].index_Dex)--;
                         }
                     }
                     
-                    // shifts all entries to the left by one starting from currMon
-                    // this essentially deletes the currMon by overwriting it by its next entry
-                    // only go up until < nMonCreated - 1 since it's going to have a segmentation fault
-                    for (; currMon < (*nMonCreated) - 1; currMon++)
+                    // shifts all entries to the left by one starting from nCurrMon
+                    // this essentially deletes the nCurrMon by overwriting it by its next entry
+                    // only go up until < pMonCreated - 1 since it's going to have a segmentation fault
+                    for (; nCurrMon < (*pMonCreated) - 1; nCurrMon++)
                     {
-                        strcpy(Fakedex[currMon].sFull_Name, Fakedex[currMon + 1].sFull_Name);
-                        strcpy(Fakedex[currMon].sShort_Name, Fakedex[currMon + 1].sShort_Name);
-                        strcpy(Fakedex[currMon].sDescript, Fakedex[currMon + 1].sDescript);
-                        Fakedex[currMon].cGender = Fakedex[currMon + 1].cGender;
-                        Fakedex[currMon].nCaught = Fakedex[currMon + 1].nCaught;
+                        strcpy(pFakedex[nCurrMon].sFull_Name, pFakedex[nCurrMon + 1].sFull_Name);
+                        strcpy(pFakedex[nCurrMon].sShort_Name, pFakedex[nCurrMon + 1].sShort_Name);
+                        strcpy(pFakedex[nCurrMon].sDescript, pFakedex[nCurrMon + 1].sDescript);
+                        pFakedex[nCurrMon].cGender = pFakedex[nCurrMon + 1].cGender;
+                        pFakedex[nCurrMon].nCaught = pFakedex[nCurrMon + 1].nCaught;
                     }
 
                     // delete the last entry since it's already copied(shifted) to the left
                     // nMonCreated starts at index 1
-                    (Fakedex[*(nMonCreated) - 1].sFull_Name)[0] = '\0';
-                    (Fakedex[*(nMonCreated) - 1].sShort_Name)[0] = '\0';
-                    (Fakedex[*(nMonCreated) - 1].sDescript)[0] = '\0';
-                    Fakedex[*(nMonCreated) - 1].cGender = 0;
-                    Fakedex[*(nMonCreated) - 1].nCaught = 0;
-                    (*nMonCreated)--;
+                    (pFakedex[*(pMonCreated) - 1].sFull_Name)[0] = '\0';
+                    (pFakedex[*(pMonCreated) - 1].sShort_Name)[0] = '\0';
+                    (pFakedex[*(pMonCreated) - 1].sDescript)[0] = '\0';
+                    pFakedex[*(pMonCreated) - 1].cGender = 0;
+                    pFakedex[*(pMonCreated) - 1].nCaught = 0;
+                    (*pMonCreated)--;
 
                     setMessage(sMessage, "Fakemon deleted.");
                     // set the flag to yes. which means a fakemon was removed.
@@ -945,7 +1029,7 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
             else    // if already caught
             {
                 toCancel = 0;
-                Mode = 1;       // repeat and get full name again
+                nMode = 1;       // repeat and get full name again
                 setMessage(sMessage, "Cannot remove caught Fakemon. Try again or type 'Cancel'");
                 sInput[0] = '\0';
             }
@@ -956,11 +1040,23 @@ int removeDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int *nMonCreat
     return isRemoved;
 }
 
-int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulation, stringMsg sMessage)
+
+/* This function removes entries in the Fakedex thourhg searching the fakemon's full name. If it does not find one
+    no removing will take place.
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param *pFakedex: put *pFakedex variable here
+    @param nMonCreated: put the address of nMonCreated here as it would be changed when there a new entry is added
+    @param sMessage: Put sMessage variable here
+
+    @return returns the index in the pFakedex on what the user selected. if there is no selected, return -1
+*/
+int 
+viewDex(stringIn sInput, int nInputSize, mon_type *pFakedex, int nMonCreated, stringMsg sMessage)
 {
     int nIntIn;     // since the input that would be used here is integers, this would be the buffer for it
 
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
 
@@ -969,29 +1065,29 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
 
 
     // variables used for page display functions
-    int currPage = 0;
+    int nCurrPage = 0;
     int nMaxPage;
     // used to display the index number of fakemon
-    int currMon = 0;
+    int nCurrMon = 0;
 
-    // initializinf the max page (based on the number of elements that are in Fakedex[] already)
-    nMaxPage = currPopulation / MON_PAGE;
-    if ((currPopulation % MON_PAGE) != 0)   // ceiling operation. (if there is a decimal in the quotient, round it up always)
+    // initializinf the max page (based on the number of elements that are in pFakedex[] already)
+    nMaxPage = nMonCreated / MON_PAGE;
+    if ((nMonCreated % MON_PAGE) != 0)   // ceiling operation. (if there is a decimal in the quotient, round it up always)
         nMaxPage++;
     if (nMaxPage == 0)
         nMaxPage = 1;
     
 
-    // this is the value to be returned. it is the index of the fakemon in Fakedex[]
-    int mon_Sel = -1; 
+    // this is the value to be returned. it is the index of the fakemon in pFakedex[]
+    int nMon_Sel = -1; 
 
     // 3 modes. 
     // 0 = selecting whether they would like to go back, navigate, or select a fakemon
     // 1 = navigate (change page) ;; 2 = select a fakemon
-    int Mode = 0;
+    int nMode = 0;
 
     // local array of choices if mode = 0
-    stringChoice modeChoices[3] = {"Navigate", "Select", "Cancel"};
+    stringChoice sModeChoices[3] = {"Navigate", "Select", "Cancel"};
 
 
     // these variables are used to format the diplay TUI of this page -----
@@ -1009,16 +1105,16 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
     int nDeviation;
     
     // since printText function cannot handle variable outputs (i.e. %d place holders and %s)
-    // strcat() is used to place the contents of each line to the outputBuffer. After placing all the contents
-    // of a singe line to the outputBuffer, it is printf()ed to the output screen. 
+    // strcat() is used to place the contents of each line to the sOutputBuffer. After placing all the contents
+    // of a singe line to the sOutputBuffer, it is printf()ed to the output screen. 
     // snprintf could be used, but it would still need to use strcat(). for uniformity, strcat was used to
     // create the single line in a buffer, which is then printed out.
-    const int OutputBufMax = WIDTH;
-    char outputBuffer[OutputBufMax];
+    const int nOutputBufMax = WIDTH;
+    char sOutputBuffer[nOutputBufMax];
     char sDescBuffer[nDescNumMax];
 
     // for loops with strcat() is used to concatinate the number of Pad " " that would be printed
-    int currPad;
+    int nCurrPad;
 
     // used to know the lacking number of spaces to print to reach FULL_NAME_SIZE
     int nNameLack;
@@ -1028,12 +1124,12 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
     char sNumHolder[6];
     
     // these are created to easily change the header text of each column. right now they say: Name      Description
-    const int Name_HDR_Len = 5;
-    char Name_HDR[Name_HDR_Len];
-    strcpy(Name_HDR, "Name");
-    const int Desc_HDR_Len = 12;
-    char Desc_HDR[Desc_HDR_Len];
-    strcpy(Desc_HDR, "Description");
+    const int nName_HDR_Len = 5;
+    char sName_HDR[nName_HDR_Len];
+    strcpy(sName_HDR, "Name");
+    const int nDesc_HDR_Len = 12;
+    char sDesc_HDR[nDesc_HDR_Len];
+    strcpy(sDesc_HDR, "Description");
 
     // up until here -----
 
@@ -1042,50 +1138,50 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
 
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_View_Dex); 
 
 
         // main content of the TUI
-        printFillerLines(1, &currRow);
-        printText("Fakemon Entries", 'c', &currRow);
-        snprintf(outputBuffer, OutputBufMax, "%d of %d", (currPage + 1), nMaxPage); // putting the page info in buffer
-        printText(outputBuffer, 'c', &currRow); // printing the page info
+        printFillerLines(1, &nCurrRow);
+        printText("Fakemon Entries", 'c', &nCurrRow);
+        snprintf(sOutputBuffer, nOutputBufMax, "%d of %d", (nCurrPage + 1), nMaxPage); // putting the page info in buffer
+        printText(sOutputBuffer, 'c', &nCurrRow); // printing the page info
 
-        printFillerLines(1, &currRow);
+        printFillerLines(1, &nCurrRow);
 
-        outputBuffer[0] = '\0';     // initializing the buffer since strcat will be used
+        sOutputBuffer[0] = '\0';     // initializing the buffer since strcat will be used
         // putting nLeftPad number of spaces in buffer (to print the left pad)
-        for (currPad = 0; currPad < nLeftPad + 3; currPad++)
-            strcat(outputBuffer, " ");
+        for (nCurrPad = 0; nCurrPad < nLeftPad + 3; nCurrPad++)
+            strcat(sOutputBuffer, " ");
 
         // putting header text
-        strcat(outputBuffer, Name_HDR);
+        strcat(sOutputBuffer, sName_HDR);
         // putting appropriate number of spaces between the 2 text headers
-        for (currPad = 0; currPad < nSpaceBetween + (FULL_NAME_SIZE - (Name_HDR_Len - 1)); currPad++)
-            strcat(outputBuffer, " ");
-        strcat(outputBuffer, Desc_HDR);
+        for (nCurrPad = 0; nCurrPad < nSpaceBetween + (FULL_NAME_SIZE - (nName_HDR_Len - 1)); nCurrPad++)
+            strcat(sOutputBuffer, " ");
+        strcat(sOutputBuffer, sDesc_HDR);
         // printing the bufffer containing the header text
         printLeftStart();
-        printf("%s", outputBuffer);
-        printRightRemain(strlen(outputBuffer));
-        currRow++;
+        printf("%s", sOutputBuffer);
+        printRightRemain(strlen(sOutputBuffer));
+        nCurrRow++;
 
-        printFillerLines(1, &currRow);
+        printFillerLines(1, &nCurrRow);
 
 
         // printing of fakedex entries
-        for (currMon = 0; (currMon < MON_PAGE) && (currMon + (currPage * MON_PAGE)) < currPopulation ; currMon++)
+        for (nCurrMon = 0; (nCurrMon < MON_PAGE) && (nCurrMon + (nCurrPage * MON_PAGE)) < nMonCreated ; nCurrMon++)
         {
             // strcat will be used in the buffer so in is initialized again
-            outputBuffer[0] = '\0'; 
+            sOutputBuffer[0] = '\0'; 
 
             // sNumHolder is the buffer for the number of the current pokemon entry
-            // (currMon + 1) + (currPage * MON_PAGE) displays what index + 1 the fakemon is based on the current page
+            // (nCurrMon + 1) + (nCurrPage * MON_PAGE) displays what index + 1 the fakemon is based on the current page
             // it is put here up front so that nDescMax can be calibrated (it will use strlen(sNumHolder))
-            snprintf(sNumHolder, 6, "%d.", (currMon + 1) + (currPage * MON_PAGE));
+            snprintf(sNumHolder, 6, "%d.", (nCurrMon + 1) + (nCurrPage * MON_PAGE));
             
             // since in the nDescNumMax, the constant is 3 (expected digit is only 1)
             // this fixes that.
@@ -1094,13 +1190,13 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             // prepping the description of the current fakemon entry. if the length of the fakemon's description exceeds 
             // the nDescNumMax - 4 (for the ...\0) it is truncated and replaced with an ellipsis ...
             // nore: snprintf only prints n-1 to buffer
-            if (Fakedex[currMon + (currPage * MON_PAGE)].nCaught)
+            if (pFakedex[nCurrMon + (nCurrPage * MON_PAGE)].nCaught)
             {
-                snprintf(sDescBuffer, nDescNumMax - 3, Fakedex[currMon + (currPage * MON_PAGE)].sDescript);
+                snprintf(sDescBuffer, nDescNumMax - 3, pFakedex[nCurrMon + (nCurrPage * MON_PAGE)].sDescript);
                 // since sDescBuffer is not initialized to all 0, making sure it it has null
                 // this only applies if the nDescBuffer is saturated
                 sDescBuffer[nDescNumMax - 4] = '\0';    
-                if (strlen(Fakedex[currMon + (currPage * MON_PAGE)].sDescript) > nDescNumMax - 4)
+                if (strlen(pFakedex[nCurrMon + (nCurrPage * MON_PAGE)].sDescript) > nDescNumMax - 4)
                     strcat(sDescBuffer, "..."); // if it is truncated, put ellipsis on it
             }
             // if the fakemon is still uncaught, just display ??? in the description
@@ -1112,67 +1208,67 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             
             // this is where the printing of the line starts.
             // putting the necessary number of pad to the buffer first 
-            for (currPad = 0; currPad < nLeftPad; currPad++)
-                strcat(outputBuffer, " ");
+            for (nCurrPad = 0; nCurrPad < nLeftPad; nCurrPad++)
+                strcat(sOutputBuffer, " ");
 
-            strcat(outputBuffer, sNumHolder);   // putting the sNumHolder to the outputBuffer
+            strcat(sOutputBuffer, sNumHolder);   // putting the sNumHolder to the sOutputBuffer
             // space after the number
-            strcat(outputBuffer, " ");
+            strcat(sOutputBuffer, " ");
 
             // putting to the buffer the full name of the current fakemon entry
-            strcat(outputBuffer, Fakedex[currMon + (currPage * MON_PAGE)].sFull_Name);
+            strcat(sOutputBuffer, pFakedex[nCurrMon + (nCurrPage * MON_PAGE)].sFull_Name);
 
             // putting  the appropriate number of whitespaces after the name so that the description would 
             // have a uniform start position. nNameLack is the number of whitespaces lacking to reach the length
             // FULL NAME SIZE. Full name cannot overflow since in the add dex function, characters more
             // than FULL_NAME_SIZE is rejected
-            nNameLack = FULL_NAME_SIZE - strlen(Fakedex[currMon + (currPage * MON_PAGE)].sFull_Name);
+            nNameLack = FULL_NAME_SIZE - strlen(pFakedex[nCurrMon + (nCurrPage * MON_PAGE)].sFull_Name);
             // this is where the nDeviation is used. If there are 2 digits, nDeviation will be 1
-            for (currPad = 0; currPad < nSpaceBetween + nNameLack - nDeviation; currPad++)
-                strcat(outputBuffer, " ");
+            for (nCurrPad = 0; nCurrPad < nSpaceBetween + nNameLack - nDeviation; nCurrPad++)
+                strcat(sOutputBuffer, " ");
             
             // putting the preppared sDescBuffer to the output buffer
-            strcat(outputBuffer, sDescBuffer);
+            strcat(sOutputBuffer, sDescBuffer);
 
-            // printing the outputBuffer. one fakemon per line.
+            // printing the sOutputBuffer. one fakemon per line.
             printLeftStart();
-            printf("%s", outputBuffer);
-            printRightRemain(strlen(outputBuffer));
-            currRow++;
-            printFillerLines(1, &currRow);
+            printf("%s", sOutputBuffer);
+            printRightRemain(strlen(sOutputBuffer));
+            nCurrRow++;
+            printFillerLines(1, &nCurrRow);
         }   // repeat this line by line until all fakemon entries are exhausted or when MON_PAGE number of fakemon
             // already populates the page
 
         
         // after printing the fakemon entries, print the choices orlower part of the TUI
-        if (Mode == 0)
+        if (nMode == 0)
         {
             // prints the choices of modes
-            printChoices(modeChoices, 3, 3, 1, 'c', &currRow);
+            printChoices(sModeChoices, 3, 3, 1, 'c', &nCurrRow);
 
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
 
-            getInput(sInput, nInputSize, modeChoices, 3, sMessage);
-            if (strcmp(sInput, modeChoices[0]) == 0)    // navigate mode
+            getInput(sInput, nInputSize, sModeChoices, 3, sMessage);
+            if (strcmp(sInput, sModeChoices[0]) == 0)    // navigate mode
             {
-                Mode = 1;
+                nMode = 1;
                 setMessage(sMessage, "Which Page woud you like to go? Enter -1 to cancel");
             }
-            else if (strcmp(sInput, modeChoices[1]) == 0)   // select mode
+            else if (strcmp(sInput, sModeChoices[1]) == 0)   // select mode
             {
-                Mode = 2;
+                nMode = 2;
                 setMessage(sMessage, "Type the Fakemon's number you want to select. Enter -1 to cancel");
             }
             // if cancel is typed, the whole loop is stopped
         }
-        else if (Mode == 1) // navigate
+        else if (nMode == 1) // navigate
         {
             // prints bottom part of the box and the system message too, if there are any.
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
@@ -1186,21 +1282,21 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             }
             else if (nIntIn == -1)  // escape function. returns to mode 0
             {
-                Mode = 0;
+                nMode = 0;
                 setMessage(sMessage, "What would you like to do?");
             }
             else    // or if the user inputted a valid number, page is set to that and mode returns to 0
             {
-                currPage = nIntIn - 1;  // currPage starts at index 0
-                Mode = 0;
+                nCurrPage = nIntIn - 1;  // nCurrPage starts at index 0
+                nMode = 0;
                 setMessage(sMessage, "What would you like to do?");
             }
             
         }
-        else if (Mode == 2) // select
+        else if (nMode == 2) // select
         {
             // prints bottom part of the box and the system message too, if there are any.
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
@@ -1209,39 +1305,56 @@ int viewDex(stringIn sInput, int nInputSize, mon_type *Fakedex, int currPopulati
             nIntIn = strtoll(sInput, NULL, 10); // strtoll returns 0 if conversion is unsuccesful
             // if the input is unsuccesful, negative (exculdding -1 for escape), not in range of the current fakemon
             // numbers in the page, or greater than the number of fakemon entries
-            if ((nIntIn < ((currPage * MON_PAGE) + 1) && nIntIn != -1) || nIntIn > (currPage * MON_PAGE) + MON_PAGE ||
-                    nIntIn > currPopulation)
+            if ((nIntIn < ((nCurrPage * MON_PAGE) + 1) && nIntIn != -1) || nIntIn > (nCurrPage * MON_PAGE) + MON_PAGE ||
+                    nIntIn > nMonCreated)
             {
                 setMessage(sMessage, "Only input the Fakemon number in this page or -1.");
                 sInput[0] = '\0';
             }
             else if (nIntIn == -1)  // escape function. returns to mode 0 
             {
-                Mode = 0;
+                nMode = 0;
                 setMessage(sMessage, "What would you like to do?");
             }
-            else    // succesful input. mon_Sel is returned.
+            else    // succesful input. nMon_Sel is returned.
             {
-                mon_Sel = nIntIn - 1; // mon_Sel starts at 0 index
+                nMon_Sel = nIntIn - 1; // nMon_Sel starts at 0 index
             }
         }
 
-    } while(strcmp(sInput, modeChoices[2]) != 0 && mon_Sel < 0);    // while sInput != "Cancel" && mon_Sel is negative
-                                                                    // (there are no negative in the Fakedex array)
+    } while(strcmp(sInput, sModeChoices[2]) != 0 && nMon_Sel < 0);    // while sInput != "Cancel" && nMon_Sel is negative
+                                                                    // (there are no negative in the pFakedex array)
     
-    if (strcmp(sInput, modeChoices[2]) == 0)    // if the user typed cancel
+    if (strcmp(sInput, sModeChoices[2]) == 0)    // if the user typed cancel
     {
-        mon_Sel = -1;       // make sure that there were no selected fakemon
+        nMon_Sel = -1;       // make sure that there were no selected fakemon
         sInput[0] = '\0';   // "Cancel" will be left in the sInput buffer which could cause compplications for
     }                       // other functions. that is why after typing, sInput is cleaned.
 
-    return mon_Sel;
+    return nMon_Sel;
 }
 
-int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[], int nEncounterChoicesSize, 
-                mon_type *Fakedex, int nMonCreated, box_type caughtMons[], int *nCapturedMons, stringMsg sMessage)
+
+/* This function displays the TUI for the encounter. It is the one the generate the fakemon from its index at
+    random. It also records the captured mon in the user's box
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param sEncounterChoices: is the array of strings that would be the choices to be printed in this segment
+    @param nEncounterChoicesSize: number of elements in sEncounterChoices
+    @param *pFakedex: put *pFakedex variable here
+    @param nMonCreated: put nMonCreated here as it would be changed when there a new entry is added
+    @param pCaughtMons[]: put pCaughtMons[] array here as it can change a  caught fakemon's name when a new fakemon
+                            is caught
+    @param *pCapturedMons: put addres of nCapturedMons here to know how many fakemons have been captured. used in loops
+    @param sMessage: Put sMessage variable here
+
+    @return returns 1 if there was a an encounter, otherwise 0 (if the user exited)
+*/
+int 
+encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[], int nEncounterChoicesSize, 
+                mon_type *pFakedex, int nMonCreated, box_type pCaughtMons[], int *pCapturedMons, stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -1255,7 +1368,7 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
     
     // buffer that will be printed out in printText function.
     // LIMITATIONS: The text should not be 99
-    char outputBuffer[100] = "";
+    char sOutputBuffer[100] = "";
 
     // the randomly selected fakemon.
     int nChosenMon = rand() % nMonCreated;
@@ -1265,31 +1378,31 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
 
     // since the chosen mon is already set, we can safely convert the gender character 
     // the gender in the struct only has struct so I have to convert it to string
-    if (Fakedex[nChosenMon].cGender == 'M')
+    if (pFakedex[nChosenMon].cGender == 'M')
         strcpy(sGenderBuffer, "MALE");
-    else if (Fakedex[nChosenMon].cGender == 'F')
+    else if (pFakedex[nChosenMon].cGender == 'F')
         strcpy(sGenderBuffer, "FEMALE");
-    else if (Fakedex[nChosenMon].cGender == 'U')
+    else if (pFakedex[nChosenMon].cGender == 'U')
         strcpy(sGenderBuffer, "UNKNOWN");
 
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_Encounter);
 
-        printFillerLines(HEIGHT / 4, &currRow);
-        snprintf(outputBuffer, 100, "A wild %s (%s) has appeared!", Fakedex[nChosenMon].sFull_Name, 
+        printFillerLines(HEIGHT / 4, &nCurrRow);
+        snprintf(sOutputBuffer, 100, "A wild %s (%s) has appeared!", pFakedex[nChosenMon].sFull_Name, 
                     sGenderBuffer);
-        printText(outputBuffer, 'c', &currRow);
-        printFillerLines(1, &currRow);
-        displayArt(ART_Mon_Sprite, 7, &currRow);
-        printFillerLines(2, &currRow);
-        printChoices(sEncounterChoices, nEncounterChoicesSize, nEncounterChoicesSize, 1, 'c', &currRow);
+        printText(sOutputBuffer, 'c', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
+        displayArt(ART_Mon_Sprite, 7, &nCurrRow);
+        printFillerLines(2, &nCurrRow);
+        printChoices(sEncounterChoices, nEncounterChoicesSize, nEncounterChoicesSize, 1, 'c', &nCurrRow);
 
-        printBottomRemain(currRow);
+        printBottomRemain(nCurrRow);
 
         // prints bottom part of the box and the system message too, if there are any.
         printRemark(sMessage);
@@ -1311,20 +1424,20 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
         {
             setMessage(sMessage, "Fakemon Caught!");
             // assignin appropriate data to each member of the element in captured mons
-            caughtMons[*nCapturedMons].nSlot = *nCapturedMons;
-            strcpy(caughtMons[*nCapturedMons].sShort_Name, Fakedex[nChosenMon].sShort_Name);
-            strcpy(caughtMons[*nCapturedMons].sFull_Name, Fakedex[nChosenMon].sFull_Name);
-            caughtMons[*nCapturedMons].index_Dex = nChosenMon;
+            pCaughtMons[*pCapturedMons].nSlot = *pCapturedMons;
+            strcpy(pCaughtMons[*pCapturedMons].sShort_Name, pFakedex[nChosenMon].sShort_Name);
+            strcpy(pCaughtMons[*pCapturedMons].sFull_Name, pFakedex[nChosenMon].sFull_Name);
+            pCaughtMons[*pCapturedMons].index_Dex = nChosenMon;
 
-            (*nCapturedMons)++;
+            (*pCapturedMons)++;
 
             // if not yet caught, make the caught field caught
-            if (!(Fakedex[nChosenMon].nCaught))
+            if (!(pFakedex[nChosenMon].nCaught))
             {
-                // makes the fakedex entry as captured
-                Fakedex[nChosenMon].nCaught = 1;
+                // makes the pFakedex entry as captured
+                pFakedex[nChosenMon].nCaught = 1;
 
-                viewMon(sInput, nInputSize, sViewMonChoices, 1, Fakedex, nChosenMon, 1, sMessage);
+                viewMon(sInput, nInputSize, sViewMonChoices, 1, pFakedex, nChosenMon, 1, sMessage);
                 // since "Cancel" will be typed, the input buffer needs to be cleaned since it might unintentionally
                 // break/exit a loop.
                 sInput[0] = '\0';
@@ -1345,10 +1458,21 @@ int encounter(stringIn sInput, int nInputSize, stringChoice sEncounterChoices[],
     }
 }
 
-void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[], int nExploreChoicesSize, 
-                    int *ActiveCell, int nMonCreated, stringMsg sMessage)
+
+/* This function is the TUI for the exploration area
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param sExploreChoices: is the array of strings that would be the choices to be printed in this segment
+    @param nExploreChoicesSize: number of elements in sExploreChoices
+    @param *pActiveCell: put the addres of nActiveCell here as it would be changed.
+    @param nMonCreated: put nMonCreated here it checks if there is any fakemon entries in the dex
+    @param sMessage: Put sMessage variable here
+*/
+void 
+exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[], int nExploreChoicesSize, 
+                    int *pActiveCell, int nMonCreated, stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -1362,20 +1486,20 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
     int toEncounter = 0;
 
     // used to know if the trainer has encountered a fakemon
-    int Encountered = 0;
+    int hasEncountered = 0;
 
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_EXPLORATION);
 
         // displays the tree art
-        displayArt(ART_Tree, 10, &currRow);
+        displayArt(ART_Tree, 10, &nCurrRow);
         // prints the grass tiles based in the ActiveCell(position)
-        printGrass(*ActiveCell, &currRow);
+        printGrass(*pActiveCell, &nCurrRow);
         // this will only trigger if the user has succesfully issued a FORWARD or BACHWARD command
         if (toEncounter)
         {
@@ -1383,17 +1507,17 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
             // generating a number that is less than 40 (meaning [0, 39]) means that 40 of the 100
             // numbers would return true. that is a 40% chance to be true.
             if ((rand() % 100) < ENCOUNTER_RATE)
-                Encountered = 1;
+                hasEncountered = 1;
 
             // resets it back to 0 to make sure that this if statement will only trigger
             // on a succesful FORWARD or BACKWARD command 
             toEncounter = 0;
         }
-        printFillerLines(1, &currRow);
+        printFillerLines(1, &nCurrRow);
         // FORWARD, BACKWARD, CANCEL
-        printChoices(sExploreChoices, nExploreChoicesSize, nExploreChoicesSize, 1, 'c', &currRow);
+        printChoices(sExploreChoices, nExploreChoicesSize, nExploreChoicesSize, 1, 'c', &nCurrRow);
 
-        printBottomRemain(currRow);
+        printBottomRemain(nCurrRow);
 
 
         // prints bottom part of the box and the system message too, if there are any.
@@ -1401,7 +1525,7 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
         sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
         // if the user has already encountered a fakemon, there is no need to get input once again
-        if (!Encountered)
+        if (!hasEncountered)
         {
             // getInput returns if the user input is valid or not.
             // refer to getInput implementation (util.c) for the list of possible error msg returns
@@ -1415,9 +1539,9 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
             if (strcmp(sInput, sExploreChoices[0]) == 0)
             {
                 // if not at the boundary
-                if (*(ActiveCell) < EXPLORE_COLUMN - 1)
+                if (*(pActiveCell) < EXPLORE_COLUMN - 1)
                 {
-                    (*ActiveCell)++;
+                    (*pActiveCell)++;
                     sInput[0] = '\0';
                     snprintf(sMessage, STR_MSG_SIZE, "Moved %s", sExploreChoices[0]);
                     sMessage[STR_MSG_SIZE - 1] = '\0';
@@ -1430,9 +1554,9 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
             else if (strcmp(sInput, sExploreChoices[1]) == 0)
             {
                 // if not at the boundary
-                if (ActiveCell > 0)
+                if (*(pActiveCell) > 0)
                 {
-                    (*ActiveCell)--;
+                    (*pActiveCell)--;
                     sInput[0] = '\0';
                     snprintf(sMessage, STR_MSG_SIZE, "Moved %s", sExploreChoices[1]);
                     sMessage[STR_MSG_SIZE - 1] = '\0';
@@ -1443,17 +1567,32 @@ void exploration(stringIn sInput, int nInputSize, stringChoice sExploreChoices[]
             }
         }
 
-    } while ((Input_Fail || (strcmp(sInput, sExploreChoices[nExploreChoicesSize - 1] ) != 0)) && !(Encountered));
+    } while ((Input_Fail || (strcmp(sInput, sExploreChoices[nExploreChoicesSize - 1] ) != 0)) && !(hasEncountered));
     // loop if there are input errors, if the input is not cancel, and the user has not encountered any fakemon
     
 }
 
-void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int nModeChoicesSize, 
-                mon_type *Fakedex, box_type caughtMons[], int *nCapturedMons, stringMsg sMessage)
+
+/* This function displays the TUI for the caught fakemons of the user. It already stores the segment functionalities
+    this segments has like sort and search
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param sModeChoices[]: is the array of strings that would be the choices to be printed in this segment
+    @param nModeChoicesSize: number of elements in sModeChoices
+    @param *pFakedex: put *pFakedex variable here
+    @param pCaughtMons[]: put pCaughtMons[] array here as it can change a  caught fakemon's name when a new fakemon
+                            is caught
+    @param *pCapturedMons: put addres of nCapturedMons here to know how many fakemons have been captured. used in loops
+                            and may be altered if a fakemon is released
+    @param sMessage: Put sMessage variable here
+*/
+void 
+viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int nModeChoicesSize, 
+                mon_type *pFakedex, box_type pCaughtMons[], int *pCapturedMons, stringMsg sMessage)
 {
     int nIntIn = 0;     // since the input that would be used here is integers, this would be the buffer for it
 
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -1463,13 +1602,13 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
 
 
     // variables used for page display functions
-    int currPage = 0;
+    int nCurrPage = 0;
     int nMaxPage;
 
-    // initializinf the max page (based on the number of elements that are in Fakedex[] already)
-    nMaxPage = *nCapturedMons / BOX_MON_PAGE;
+    // initializinf the max page (based on the number of elements that are in pFakedex[] already)
+    nMaxPage = *pCapturedMons / BOX_MON_PAGE;
     // ceiling operation. (if there is a decimal in the quotient, round it up always)
-    if ((*nCapturedMons % BOX_MON_PAGE) != 0)  
+    if ((*pCapturedMons % BOX_MON_PAGE) != 0)  
         nMaxPage++;
     if (nMaxPage == 0)
         nMaxPage = 1;
@@ -1480,15 +1619,15 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     int nTempMaxPage = nMaxPage;
 
     // number of cells per page
-    int cellPerPage = NUM_BOX_COLUMN * NUM_BOX_ROW;
+    int nCellPerPage = NUM_BOX_COLUMN * NUM_BOX_ROW;
 
-    // it is the index of the fakemon in Fakedex[]
-    int mon_Sel = -1; 
+    // it is the index of the fakemon in pFakedex[]
+    int nMon_Sel = -1; 
 
     // used in select mode to know if a fakemon is found
     int isFound = 0;
 
-    // 3 modes. 
+    // 8 modes. 
     // 0 = selecting whether they would like to go back, navigate, or select a fakemon
     // 1 = navigate (change page)
     // 2 = select a fakemon
@@ -1497,16 +1636,16 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     // 5 = sort
     // 6 = fakemon has been selected. 
     // 7 = release mode. confirm if they want to release
-    int Mode = 0;
+    int nMode = 0;
 
     // for mode = 6
-    stringChoice selectedChoices[3] = {"View Entry", "Release", "Cancel"};
+    stringChoice sSelectedChoices[3] = {"View Entry", "Release", "Cancel"};
 
     // choices for viewMon
-    stringChoice viewMonChoice[1] = {"OK"};
+    stringChoice sViewMonChoice[1] = {"OK"};
 
     // choices for release
-    stringChoice releaseConfirmChoices[2] = {"Yes", "No"};
+    stringChoice sReleaseConfirmChoices[2] = {"Yes", "No"};
 
     // choices for sort mode
     stringChoice sSortChoices[3] = {"Ascending", "Descending", "Cancel"};
@@ -1521,10 +1660,10 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     int isSearchMode = 0;
 
     // arrays that store which fakemons are searched
-    box_type searchedCaughtMons[BOX_MAX] = {{0}};
+    box_type strucSearchedCaughtMons[BOX_MAX] = {{0}};
 
-    // how many vaelements in searchedCaughtMons
-    int searchedQty = 0;
+    // how many vaelements in strucSearchedCaughtMons
+    int nSearchedQty = 0;
 
     // indicates what type of sort mode to use
     // 0 = none selected yed
@@ -1537,48 +1676,48 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     // used to know which value is the lowest/highest
     int nSwap_Slot;
     // used as a place holder for swaping
-    box_type tempMon;
+    box_type strucTempMon;
 
     // used in for loops for checking if input is valid / is in the page
-    int currMon;
+    int nCurrMon;
     
     // since printText function cannot handle variable outputs (i.e. %d place holders and %s)
-    // strcat() is used to place the contents of each line to the outputBuffer. After placing all the contents
-    // of a singe line to the outputBuffer, it is printf()ed to the output screen. 
+    // strcat() is used to place the contents of each line to the sOutputBuffer. After placing all the contents
+    // of a singe line to the sOutputBuffer, it is printf()ed to the output screen. 
     // snprintf could be used, but it would still need to use strcat(). for uniformity, strcat was used to
     // create the single line in a buffer, which is then printed out.
-    const int OutputBufMax = WIDTH;
-    char outputBuffer[OutputBufMax];
+    const int nOutputBufMax = WIDTH;
+    char sOutputBuffer[nOutputBufMax];
 
     
     do
     {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_Box); 
 
         // main content
-        printText("Welcome to your box! Here lies your caught Fakemons.", 'c', &currRow);
-        snprintf(outputBuffer, OutputBufMax, "%d of %d", (currPage + 1), nTempMaxPage);
-        printText(outputBuffer, 'c', &currRow);
-        printFillerLines(1, &currRow);
+        printText("Welcome to your box! Here lies your caught Fakemons.", 'c', &nCurrRow);
+        snprintf(sOutputBuffer, nOutputBufMax, "%d of %d", (nCurrPage + 1), nTempMaxPage);
+        printText(sOutputBuffer, 'c', &nCurrRow);
+        printFillerLines(1, &nCurrRow);
         
         // if in search mode, print the only searched fakemons
         if (isSearchMode)
-            printCaughtMons(searchedCaughtMons, searchedQty, currPage, &currRow);
+            printCaughtMons(strucSearchedCaughtMons, nSearchedQty, nCurrPage, &nCurrRow);
         else if (!isSearchMode)
-            printCaughtMons(caughtMons, *nCapturedMons, currPage, &currRow);
+            printCaughtMons(pCaughtMons, *pCapturedMons, nCurrPage, &nCurrRow);
 
         // Picking type mode
-        if (Mode == 0)
+        if (nMode == 0)
         {
             if (!isSearchMode)
             {
-                printChoices(sModeChoices, nModeChoicesSize, nModeChoicesSize / 2, 2, 'c', &currRow);
-                printBottomRemain(currRow);
+                printChoices(sModeChoices, nModeChoicesSize, nModeChoicesSize / 2, 2, 'c', &nCurrRow);
+                printBottomRemain(nCurrRow);
 
                 // prints bottom part of the box and the system message too, if there are any.
                 printRemark(sMessage);
@@ -1589,8 +1728,8 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
             // serach mode has restricted choices. only navigate, select, and cancel
             else if (isSearchMode)
             {
-                printChoices(sRestrictModeChoices, 3, 3, 1, 'c', &currRow);
-                printBottomRemain(currRow);
+                printChoices(sRestrictModeChoices, 3, 3, 1, 'c', &nCurrRow);
+                printBottomRemain(nCurrRow);
                 // prints bottom part of the box and the system message too, if there are any.
                 printRemark(sMessage);
                 sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
@@ -1606,53 +1745,53 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 // Navigate
                 if (strcmp(sInput, sModeChoices[0]) == 0)
                 {
-                    Mode = 1;
+                    nMode = 1;
                     setMessage(sMessage, "What page would you like to go? Type -1 to Cancel");
                 }
                 // Select
                 else if (strcmp(sInput, sModeChoices[1]) == 0)
                 {
-                    Mode = 2;
+                    nMode = 2;
                     setMessage(sMessage, "Which fakemon would you like to pick (number)? Type -1 to EXIT");
                 }
                 // Full Name Search
                 else if (strcmp(sInput, sModeChoices[2]) == 0)
                 {
-                    Mode = 3;
+                    nMode = 3;
                     setMessage(sMessage, "Enter your fakemon's full name or type Cancel");
                 }
                 // Short Name Search
                 else if (strcmp(sInput, sModeChoices[3]) == 0)
                 {
-                    Mode = 4;
+                    nMode = 4;
                     setMessage(sMessage, "Enter your fakemon's short name or type Cancel");
                 }
                 // Sort
                 else if (strcmp(sInput, sModeChoices[4]) == 0)
                 {
-                    Mode = 5;
+                    nMode = 5;
                     setMessage(sMessage, "Short Name Sort. Which sort mode would you like to do?");
                 }
                 // user typed cancel while in search mode. will returnj to mode select
                 // but not in search mode anymore
                 else if (strcmp(sInput, sRestrictModeChoices[2]) == 0 && isSearchMode)
                 {
-                    Mode = 0;
+                    nMode = 0;
                     isSearchMode = 0;
                     // since the sInput still has "Cancel" it will stop the loop
                     // that is why it is necessary to clean it
                     sInput[0] = '\0';
                     setMessage(sMessage, "What would you like to do?");
 
-                    // since it might be used again, the searchedCaughtMons is reseted
-                    for (currMon = 0; currMon < searchedQty; currMon++)
+                    // since it might be used again, the strucSearchedCaughtMons is reseted
+                    for (nCurrMon = 0; nCurrMon < nSearchedQty; nCurrMon++)
                     {
-                        searchedCaughtMons[currMon].nSlot = 0;
-                        searchedCaughtMons[currPage].index_Dex = 0;
-                        searchedCaughtMons[currMon].sShort_Name[0] = '\0';
-                        searchedCaughtMons[currMon].sFull_Name[0] = '\0';
+                        strucSearchedCaughtMons[nCurrMon].nSlot = 0;
+                        strucSearchedCaughtMons[nCurrMon].index_Dex = 0;
+                        strucSearchedCaughtMons[nCurrMon].sShort_Name[0] = '\0';
+                        strucSearchedCaughtMons[nCurrMon].sFull_Name[0] = '\0';
                     }
-                    searchedQty = 0;
+                    nSearchedQty = 0;
 
                     // reset the number of page to original
                     nTempMaxPage = nMaxPage;
@@ -1661,10 +1800,10 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
         }
         
         // Navigate mode
-        else if (Mode == 1)
+        else if (nMode == 1)
         {            
             // prints bottom part of the box and the system message too, if there are any.
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
@@ -1678,22 +1817,22 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
             }
             else if (nIntIn == -1)  // escape function. returns to mode 0
             {
-                Mode = 0;
+                nMode = 0;
                 setMessage(sMessage, "What would you like to do?");
             }
             else    // or if the user inputted a valid number, page is set to that and mode returns to 0
             {
-                currPage = nIntIn - 1;  // currPage starts at index 0
-                Mode = 0;
+                nCurrPage = nIntIn - 1;  // nCurrPage starts at index 0
+                nMode = 0;
                 setMessage(sMessage, "What would you like to do?");
             }
         }
 
         // Select Mode
-        else if (Mode == 2)
+        else if (nMode == 2)
         {
             // prints bottom part of the box and the system message too, if there are any.
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
@@ -1718,7 +1857,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         // and instead go back to menu for box, uncomment the code below and comment
                         // the 2nd blcok of code in this if block
                         // turns back to mod e select, but searchMode is still active
-                        // Mode = 0;
+                        // nMode = 0;
                         // setMessage(sMessage, "What would you like to do?");
 
                         // makes it so that the loop stops and exits the function
@@ -1728,19 +1867,19 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     // if the user typed the short name
                     else
                     {
-                        // search every fakemon's short name only in the current page in searchedCaughtMons
-                        for (currMon = currPage * cellPerPage; 
-                            currMon < (currPage * cellPerPage) + cellPerPage && currMon < searchedQty; 
-                            currMon++)
+                        // search every fakemon's short name only in the current page in strucSearchedCaughtMons
+                        for (nCurrMon = nCurrPage * nCellPerPage; 
+                            nCurrMon < (nCurrPage * nCellPerPage) + nCellPerPage && nCurrMon < nSearchedQty; 
+                            nCurrMon++)
                         {
                             // if found
-                            if (searchedCaughtMons[currMon].nSlot == (nIntIn - 1))
+                            if (strucSearchedCaughtMons[nCurrMon].nSlot == (nIntIn - 1))
                             {
-                                mon_Sel = searchedCaughtMons[currMon].nSlot;
+                                nMon_Sel = strucSearchedCaughtMons[nCurrMon].nSlot;
                                 isFound = 1;
-                                Mode = 6;
+                                nMode = 6;
                                 snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
-                                            caughtMons[mon_Sel].nSlot + 1);
+                                            pCaughtMons[nMon_Sel].nSlot + 1);
                                 sMessage[STR_MSG_SIZE - 1] = '\0';
                             }
                         }
@@ -1762,7 +1901,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                         // and instead go back to menu for box, uncomment the code below and comment
                         // the 2nd blcok of code in this if block
                         // turns back to mod e select, but searchMode is still active
-                        // Mode = 0;
+                        // nMode = 0;
                         // setMessage(sMessage, "What would you like to do?");
 
                         // makes it so that the loop stops and exits the function
@@ -1772,18 +1911,18 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     else
                     {
                         // search every fakemon's short name only in the current page
-                        for (currMon = currPage * cellPerPage; 
-                            currMon < (currPage * cellPerPage) + cellPerPage && currMon < *nCapturedMons; 
-                            currMon++)
+                        for (nCurrMon = nCurrPage * nCellPerPage; 
+                            nCurrMon < (nCurrPage * nCellPerPage) + nCellPerPage && nCurrMon < *pCapturedMons; 
+                            nCurrMon++)
                         {
                             // if found
-                            if (caughtMons[currMon].nSlot == (nIntIn - 1))
+                            if (pCaughtMons[nCurrMon].nSlot == (nIntIn - 1))
                             {
-                                mon_Sel = caughtMons[currMon].nSlot;
+                                nMon_Sel = pCaughtMons[nCurrMon].nSlot;
                                 isFound = 1;
-                                Mode = 6;
+                                nMode = 6;
                                 snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
-                                            caughtMons[mon_Sel].nSlot + 1);
+                                            pCaughtMons[nMon_Sel].nSlot + 1);
                                 sMessage[STR_MSG_SIZE - 1] = '\0';
                             }
                         }
@@ -1800,9 +1939,9 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
         }
         
         // search by full name
-        else if (Mode == 3)
+        else if (nMode == 3)
         {
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
@@ -1816,7 +1955,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 // any number just to loop back into mode 0 and not go to the if (!(Input_Fail)) block
                 Input_Fail = 1000;
                 sInput[0] = '\0';
-                Mode = 0;
+                nMode = 0;
                 setMessage(sMessage, "What would you like to do?");
             }
             // if the length of the string input is not SHORT_NAME_SIZE
@@ -1834,20 +1973,20 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 // if the user did not type cancel, loop through every fakemon in your box and 
                 // see if it matches to any of the name
 
-                // since the slot number is the same as the index, currMon can be used
-                // as the variable to acces each element in the caughtMons array
-                // search the whole caughtMons array
-                for (currMon = 0; currMon < *nCapturedMons; currMon++)
+                // since the slot number is the same as the index, nCurrMon can be used
+                // as the variable to acces each element in the pCaughtMons array
+                // search the whole pCaughtMons array
+                for (nCurrMon = 0; nCurrMon < *pCapturedMons; nCurrMon++)
                 {
                     // if it matches, appeand the member's contents to the searchCaughtMon's 
-                    if (strcasecmp(caughtMons[currMon].sFull_Name, sInput) == 0)
+                    if (strcasecmp(pCaughtMons[nCurrMon].sFull_Name, sInput) == 0)
                     {
                         isSearchMode = 3;
-                        searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
-                        searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
-                        strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
-                        strcpy(searchedCaughtMons[searchedQty].sFull_Name, caughtMons[currMon].sFull_Name);
-                        searchedQty++;
+                        strucSearchedCaughtMons[nSearchedQty].nSlot = pCaughtMons[nCurrMon].nSlot;
+                        strucSearchedCaughtMons[nSearchedQty].index_Dex = pCaughtMons[nCurrMon].index_Dex;
+                        strcpy(strucSearchedCaughtMons[nSearchedQty].sShort_Name, pCaughtMons[nCurrMon].sShort_Name);
+                        strcpy(strucSearchedCaughtMons[nSearchedQty].sFull_Name, pCaughtMons[nCurrMon].sFull_Name);
+                        nSearchedQty++;
                     }
                 }
 
@@ -1856,8 +1995,8 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 {
                     // setting the right page number since the fakemon searched
                     // is lower than the whole box population
-                    nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
-                    if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
+                    nTempMaxPage = nSearchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
+                    if ((nSearchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
                         nTempMaxPage++;
                     
                     setMessage(sMessage, "Found some fakemon!");
@@ -1868,15 +2007,15 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     setMessage(sMessage, "No Fakemon found.");
                 }
                 // either way go back to mode select choices
-                Mode = 0;
+                nMode = 0;
                 sInput[0] = '\0';
             }
         }
 
         // search by short name
-        else if (Mode == 4)
+        else if (nMode == 4)
         {
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
@@ -1890,7 +2029,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 // any number just to loop back into mode 0 and not go to the if (!(Input_Fail)) block
                 Input_Fail = 1000;
                 sInput[0] = '\0';
-                Mode = 0;
+                nMode = 0;
                 setMessage(sMessage, "What would you like to do?");
             }
             // if the length of the string input is not SHORT_NAME_SIZE
@@ -1908,19 +2047,19 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 // if the user did not type cancel or no errors in input, loop through every fakemon in your box and 
                 // see if it matches to any of the name
                 
-                // since the slot number is the same as the index, currMon can be used
-                // as the variable to acces each element in the caughtMons array
-                for (currMon = 0; currMon < *nCapturedMons; currMon++)
+                // since the slot number is the same as the index, nCurrMon can be used
+                // as the variable to acces each element in the pCaughtMons array
+                for (nCurrMon = 0; nCurrMon < *pCapturedMons; nCurrMon++)
                 {
                     // if it matches, appeand the member's contents to the searchCaughtMon's 
-                    if (strcasecmp(caughtMons[currMon].sShort_Name, sInput) == 0)
+                    if (strcasecmp(pCaughtMons[nCurrMon].sShort_Name, sInput) == 0)
                     {
                         isSearchMode = 4;
-                        searchedCaughtMons[searchedQty].nSlot = caughtMons[currMon].nSlot;
-                        searchedCaughtMons[searchedQty].index_Dex = caughtMons[currMon].index_Dex;
-                        strcpy(searchedCaughtMons[searchedQty].sShort_Name, caughtMons[currMon].sShort_Name);
-                        strcpy(searchedCaughtMons[searchedQty].sFull_Name, caughtMons[currMon].sFull_Name);
-                        searchedQty++;
+                        strucSearchedCaughtMons[nSearchedQty].nSlot = pCaughtMons[nCurrMon].nSlot;
+                        strucSearchedCaughtMons[nSearchedQty].index_Dex = pCaughtMons[nCurrMon].index_Dex;
+                        strcpy(strucSearchedCaughtMons[nSearchedQty].sShort_Name, pCaughtMons[nCurrMon].sShort_Name);
+                        strcpy(strucSearchedCaughtMons[nSearchedQty].sFull_Name, pCaughtMons[nCurrMon].sFull_Name);
+                        nSearchedQty++;
                     }
                 }
 
@@ -1929,8 +2068,8 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 {
                     // setting the right page number since the fakemon searched
                     // is lower than the whole box population
-                    nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
-                    if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
+                    nTempMaxPage = nSearchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
+                    if ((nSearchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
                         nTempMaxPage++;
                     
                     setMessage(sMessage, "Found some fakemon!");
@@ -1941,17 +2080,17 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     setMessage(sMessage, "No Fakemon found.");
                 }
                 // either way go back to mode select choices
-                Mode = 0;
+                nMode = 0;
                 sInput[0] = '\0';
             }
         }
 
         // sort by short name
-        else if (Mode == 5)
+        else if (nMode == 5)
         {
 
-            printChoices(sSortChoices, 3, 3, 1, 'c', &currRow);
-            printBottomRemain(currRow);
+            printChoices(sSortChoices, 3, 3, 1, 'c', &nCurrRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
@@ -1966,7 +2105,7 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 if (strcmp(sInput, "Cancel") == 0)
                 {
                     sInput[0] = '\0';
-                    Mode = 0;
+                    nMode = 0;
                     nSortMode = 0;
                     setMessage(sMessage, "What would you like to do?");
                 }
@@ -1983,30 +2122,30 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 if (nSortMode == 1)
                 {
                     // Selection Sort
-                    for (currMon = 0; currMon < (*nCapturedMons) - 1; currMon++)
+                    for (nCurrMon = 0; nCurrMon < (*pCapturedMons) - 1; nCurrMon++)
                     {
                         // initializing the slot to be swapped
-                        nSwap_Slot = currMon;
-                        // checks each short name value after the currmon
-                        for (nSeeker = currMon + 1; nSeeker < *nCapturedMons; nSeeker++)
+                        nSwap_Slot = nCurrMon;
+                        // checks each short name value after the nCurrMon
+                        for (nSeeker = nCurrMon + 1; nSeeker < *pCapturedMons; nSeeker++)
                         {
                             // it records which slot has the firstest letter in the alphabet
-                            if (strcmp(caughtMons[nSwap_Slot].sShort_Name, caughtMons[nSeeker].sShort_Name) > 0)
+                            if (strcmp(pCaughtMons[nSwap_Slot].sShort_Name, pCaughtMons[nSeeker].sShort_Name) > 0)
                             {
                                 nSwap_Slot = nSeeker;
                             }
                         }
                         // if it found a firster letter in the alphabe, swap it.
-                        if (nSwap_Slot > currMon)
+                        if (nSwap_Slot > nCurrMon)
                         {
                             // swap algo
-                            tempMon = caughtMons[currMon];
-                            caughtMons[currMon] = caughtMons[nSwap_Slot];
-                            caughtMons[nSwap_Slot] = tempMon;
+                            strucTempMon = pCaughtMons[nCurrMon];
+                            pCaughtMons[nCurrMon] = pCaughtMons[nSwap_Slot];
+                            pCaughtMons[nSwap_Slot] = strucTempMon;
 
                             // retain the slot number. only swap the short name, full name, and dex index
-                            caughtMons[nSwap_Slot].nSlot = caughtMons[currMon].nSlot;
-                            caughtMons[currMon].nSlot = tempMon.nSlot;
+                            pCaughtMons[nSwap_Slot].nSlot = pCaughtMons[nCurrMon].nSlot;
+                            pCaughtMons[nCurrMon].nSlot = strucTempMon.nSlot;
                         }
 
                     }
@@ -2017,30 +2156,30 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                 else if (nSortMode == 2)
                 {
                     // Selection Sort
-                    for (currMon = 0; currMon < (*nCapturedMons) - 1; currMon++)
+                    for (nCurrMon = 0; nCurrMon < (*pCapturedMons) - 1; nCurrMon++)
                     {
                         // initializing the slot to be swapped
-                        nSwap_Slot = currMon;
-                        // checks each short name value after the currmon
-                        for (nSeeker = currMon + 1; nSeeker < *nCapturedMons; nSeeker++)
+                        nSwap_Slot = nCurrMon;
+                        // checks each short name value after the nCurrMon
+                        for (nSeeker = nCurrMon + 1; nSeeker < *pCapturedMons; nSeeker++)
                         {
                             // it records which slot has the lastest letter in the alphabet
-                            if (strcmp(caughtMons[nSwap_Slot].sShort_Name, caughtMons[nSeeker].sShort_Name) < 0)
+                            if (strcmp(pCaughtMons[nSwap_Slot].sShort_Name, pCaughtMons[nSeeker].sShort_Name) < 0)
                             {
                                 nSwap_Slot = nSeeker;
                             }
                         }
                         // if it found a lastest letter in the alphabe, swap it.
-                        if (nSwap_Slot > currMon)
+                        if (nSwap_Slot > nCurrMon)
                         {
                             // swap algo
-                            tempMon = caughtMons[currMon];
-                            caughtMons[currMon] = caughtMons[nSwap_Slot];
-                            caughtMons[nSwap_Slot] = tempMon;
+                            strucTempMon = pCaughtMons[nCurrMon];
+                            pCaughtMons[nCurrMon] = pCaughtMons[nSwap_Slot];
+                            pCaughtMons[nSwap_Slot] = strucTempMon;
 
                             // retain the slot number. only swap the short name, full name, and dex index
-                            caughtMons[nSwap_Slot].nSlot = caughtMons[currMon].nSlot;
-                            caughtMons[currMon].nSlot = tempMon.nSlot;
+                            pCaughtMons[nSwap_Slot].nSlot = pCaughtMons[nCurrMon].nSlot;
+                            pCaughtMons[nCurrMon].nSlot = strucTempMon.nSlot;
                         }
 
                     }
@@ -2050,157 +2189,157 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     
                 // resetting the values because it might be used again
                 sInput[0] = '\0';
-                Mode = 0;
+                nMode = 0;
                 nSortMode = 0;
             }
         }
 
         // what to do with the selected fakemon
-        else if (Mode == 6)
+        else if (nMode == 6)
         {
-            // NOTE: mon_Sel is already defined in Mode = 2
+            // NOTE: nMon_Sel is already defined in Mode = 2
             // the only way to get here is if the user succesfully selected a fakemon
-            // mon_Sel is the slot number of the fakemon in box struct array
+            // nMon_Sel is the slot number of the fakemon in box struct array
 
             // resetting the value for future use
             isFound = 0;
 
-            printChoices(selectedChoices, 3, 3, 1, 'c', &currRow);
-            printBottomRemain(currRow);
+            printChoices(sSelectedChoices, 3, 3, 1, 'c', &nCurrRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
-            Input_Fail = getInput(sInput, nInputSize, selectedChoices, 3, sMessage);
+            Input_Fail = getInput(sInput, nInputSize, sSelectedChoices, 3, sMessage);
 
             if (!Input_Fail)
             {
-                // mon_Sel has already been defined
+                // nMon_Sel has already been defined
 
                 // Cancel
-                if (strcmp(sInput, selectedChoices[2]) == 0)
+                if (strcmp(sInput, sSelectedChoices[2]) == 0)
                 {
                     sInput[0] = '\0';
-                    Mode = 0;
-                    mon_Sel = -1;
+                    nMode = 0;
+                    nMon_Sel = -1;
                     setMessage(sMessage, "What would you like to do?");
                 }
                 // View Entry
-                else if (strcmp(sInput, selectedChoices[0]) == 0)
+                else if (strcmp(sInput, sSelectedChoices[0]) == 0)
                 {
                     // makes sure that input buffer is clear
                     sInput[0] = '\0';
                     // index_Dex is uused in this case
-                    viewMon(sInput, nInputSize, viewMonChoice, 1, Fakedex, caughtMons[mon_Sel].index_Dex, 1, 
+                    viewMon(sInput, nInputSize, sViewMonChoice, 1, pFakedex, pCaughtMons[nMon_Sel].index_Dex, 1, 
                             sMessage);
                     // since Cancel will be typed in the viewMon, it needs to be cleaned or else, this loop
                     // will end
                     sInput[0] = '\0';
                     // since it will loop back to the same fakemon, it is repeated.
                     snprintf(sMessage, STR_MSG_SIZE, "What would you like to do with SLOT: %d?", 
-                        caughtMons[mon_Sel].nSlot + 1);
+                        pCaughtMons[nMon_Sel].nSlot + 1);
                     sMessage[STR_MSG_SIZE - 1] = '\0';
                 }
                 // Release
-                else if (strcmp(sInput, selectedChoices[1]) == 0)
+                else if (strcmp(sInput, sSelectedChoices[1]) == 0)
                 {
-                    Mode = 7;
+                    nMode = 7;
                     sInput[0] = '\0';
                     snprintf(sMessage, STR_MSG_SIZE, "Are you sure you want to release SLOT: %d?", 
-                        caughtMons[mon_Sel].nSlot + 1);
+                        pCaughtMons[nMon_Sel].nSlot + 1);
                     sMessage[STR_MSG_SIZE - 1] = '\0';
                 }
             }
         }
 
         // release mode (confirmation)
-        else if (Mode == 7)
+        else if (nMode == 7)
         {
-            // NOTE: mon_Sel has already been defined
+            // NOTE: nMon_Sel has already been defined
 
-            printChoices(releaseConfirmChoices, 2, 2, 1, 'c', &currRow);
-            printBottomRemain(currRow);
+            printChoices(sReleaseConfirmChoices, 2, 2, 1, 'c', &nCurrRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
-            Input_Fail = getInput(sInput, nInputSize, releaseConfirmChoices, 2, sMessage);
+            Input_Fail = getInput(sInput, nInputSize, sReleaseConfirmChoices, 2, sMessage);
 
             if (!Input_Fail)
             {
                 // if no
-                if (strcmp(sInput, releaseConfirmChoices[1]) == 0)
+                if (strcmp(sInput, sReleaseConfirmChoices[1]) == 0)
                 {
                     setMessage(sMessage, "Release Cancelled");
                     sInput[0] = '\0';
                     // go back to the choices on what to do.
-                    Mode = 6;
+                    nMode = 6;
                 }
-                // if yes. release fakemon and adjust the caughtMons array
-                else if (strcmp(sInput, releaseConfirmChoices[0]) == 0)
+                // if yes. release fakemon and adjust the pCaughtMons array
+                else if (strcmp(sInput, sReleaseConfirmChoices[0]) == 0)
                 {
-                    // currMon represents the slot in the caughtMons array
-                    // since the index of the caughtMons is = its nSlot, we can have this operation
-                    for (currMon = caughtMons[mon_Sel].nSlot; currMon < (*nCapturedMons) - 1; currMon++)
+                    // nCurrMon represents the slot in the pCaughtMons array
+                    // since the index of the pCaughtMons is = its nSlot, we can have this operation
+                    for (nCurrMon = pCaughtMons[nMon_Sel].nSlot; nCurrMon < (*pCapturedMons) - 1; nCurrMon++)
                     {
                         // shifting to the left
                         // only the names and the indexDex will move, not the slot.
-                        strcpy(caughtMons[currMon].sShort_Name, caughtMons[currMon + 1].sShort_Name);
-                        strcpy(caughtMons[currMon].sFull_Name, caughtMons[currMon + 1].sFull_Name);
-                        caughtMons[currMon].index_Dex = caughtMons[currMon + 1].index_Dex;
+                        strcpy(pCaughtMons[nCurrMon].sShort_Name, pCaughtMons[nCurrMon + 1].sShort_Name);
+                        strcpy(pCaughtMons[nCurrMon].sFull_Name, pCaughtMons[nCurrMon + 1].sFull_Name);
+                        pCaughtMons[nCurrMon].index_Dex = pCaughtMons[nCurrMon + 1].index_Dex;
                     }
-                    // cleaning the last content of caughtMons, since it would be redundant 
+                    // cleaning the last content of pCaughtMons, since it would be redundant 
                     // (plus, it will not be counted)
-                    caughtMons[(*nCapturedMons) - 1].nSlot = 0;
-                    (caughtMons[(*nCapturedMons) - 1].sShort_Name)[0] = '\0';
-                    (caughtMons[(*nCapturedMons) - 1].sFull_Name)[0] = '\0';
-                    caughtMons[(*nCapturedMons) - 1].index_Dex = 0;
+                    pCaughtMons[(*pCapturedMons) - 1].nSlot = 0;
+                    (pCaughtMons[(*pCapturedMons) - 1].sShort_Name)[0] = '\0';
+                    (pCaughtMons[(*pCapturedMons) - 1].sFull_Name)[0] = '\0';
+                    pCaughtMons[(*pCapturedMons) - 1].index_Dex = 0;
 
                     // decrementing captured mons counter
-                    (*nCapturedMons)--;
+                    (*pCapturedMons)--;
 
                     // since search set of fakemons have a different array, it needs to be updated too
                     if (isSearchMode)
                     {
-                        // finding the fakemon to be deleted in the searchedCaughtMons array
-                        currMon = 0;
-                        while (searchedCaughtMons[currMon].nSlot != caughtMons[mon_Sel].nSlot)
+                        // finding the fakemon to be deleted in the strucSearchedCaughtMons array
+                        nCurrMon = 0;
+                        while (strucSearchedCaughtMons[nCurrMon].nSlot != pCaughtMons[nMon_Sel].nSlot)
                         {
-                            currMon++;
+                            nCurrMon++;
                         }
-                        for (; currMon < searchedQty - 1; currMon++)
+                        for (; nCurrMon < nSearchedQty - 1; nCurrMon++)
                         {
                             // this time, every member will be shifted
                             // -1 fot the nSlot since the current nSlot has been deleted that's why every slot value
                             //  after it gets shifted too
-                            searchedCaughtMons[currMon].nSlot = (searchedCaughtMons[currMon + 1].nSlot) - 1;
-                            searchedCaughtMons[currMon].index_Dex = searchedCaughtMons[currMon + 1].index_Dex;
-                            strcpy(searchedCaughtMons[currMon].sShort_Name, searchedCaughtMons[currMon + 1].sShort_Name);
-                            strcpy(searchedCaughtMons[currMon].sFull_Name, searchedCaughtMons[currMon + 1].sFull_Name);
+                            strucSearchedCaughtMons[nCurrMon].nSlot = (strucSearchedCaughtMons[nCurrMon + 1].nSlot) - 1;
+                            strucSearchedCaughtMons[nCurrMon].index_Dex = strucSearchedCaughtMons[nCurrMon + 1].index_Dex;
+                            strcpy(strucSearchedCaughtMons[nCurrMon].sShort_Name, strucSearchedCaughtMons[nCurrMon + 1].sShort_Name);
+                            strcpy(strucSearchedCaughtMons[nCurrMon].sFull_Name, strucSearchedCaughtMons[nCurrMon + 1].sFull_Name);
                         }
                     }
                     // cleaning the last content of searcgedCaughtMons, since it would be redundant 
                     // (plus, it will not be counted)
-                    searchedCaughtMons[searchedQty - 1].nSlot = 0;
-                    (searchedCaughtMons[searchedQty - 1].sShort_Name)[0] = '\0';
-                    (searchedCaughtMons[searchedQty - 1].sFull_Name)[0] = '\0';
-                    searchedCaughtMons[searchedQty - 1].index_Dex = 0;
+                    strucSearchedCaughtMons[nSearchedQty - 1].nSlot = 0;
+                    (strucSearchedCaughtMons[nSearchedQty - 1].sShort_Name)[0] = '\0';
+                    (strucSearchedCaughtMons[nSearchedQty - 1].sFull_Name)[0] = '\0';
+                    strucSearchedCaughtMons[nSearchedQty - 1].index_Dex = 0;
 
                     // decrementing searchedMon counter (searched Qty)
-                    searchedQty--;
+                    nSearchedQty--;
 
                     setMessage(sMessage, "Released Fakemon.");
                     sInput[0] = '\0';
                     // go back to main menu
-                    Mode = 0;
-                    mon_Sel = -1;
+                    nMode = 0;
+                    nMon_Sel = -1;
 
                     // recalculate nMaxPage since number of fakemon has been subtracted
-                    nMaxPage = *nCapturedMons / BOX_MON_PAGE;
+                    nMaxPage = *pCapturedMons / BOX_MON_PAGE;
                     // ceiling operation. (if there is a decimal in the quotient, round it up always)
-                    if ((*nCapturedMons % BOX_MON_PAGE) != 0)   
+                    if ((*pCapturedMons % BOX_MON_PAGE) != 0)   
                         nMaxPage++;
                     if (nMaxPage == 0)
                         nMaxPage = 1;
@@ -2208,8 +2347,8 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
                     // page is based on search entries only
                     if (isSearchMode)
                     {
-                        nTempMaxPage = searchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
-                        if ((searchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
+                        nTempMaxPage = nSearchedQty / (NUM_BOX_COLUMN * NUM_BOX_ROW);
+                        if ((nSearchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
                             nTempMaxPage++;
                     }
                     // if not in search mode, page is based on the whole box
@@ -2224,10 +2363,19 @@ void viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int n
     } while (Input_Fail || strcmp(sInput, sModeChoices[nModeChoicesSize - 1]) != 0);
 }
 
-void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
+
+/* This function displays the TUI for the main menu in the settings. the userr may select to save or load
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param sSettingChoices[]: is the array of strings that would be the choices to be printed in this segment
+    @param nSettingChoiceSize: number of elements in sSettingChoices
+    @param sMessage: Put sMessage variable here
+*/
+void 
+settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], int nSettingChoiceSize, 
                         stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -2239,21 +2387,21 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_Settings); 
 
 
         // prints the main content of the TUI
-        printFillerLines(HEIGHT / 5, &currRow);
-        printText("Save Slots:", 'c', &currRow);
-        printFillerLines(2, &currRow);
-        printFileNames("sav", &currRow);
-        printFillerLines(2, &currRow);
-        printChoices(sSettingChoices, nSettingChoiceSize, nSettingChoiceSize, 1, 'c', &currRow);
+        printFillerLines(HEIGHT / 5, &nCurrRow);
+        printText("Save Slots:", 'c', &nCurrRow);
+        printFillerLines(2, &nCurrRow);
+        printFileNames("sav", &nCurrRow);
+        printFillerLines(2, &nCurrRow);
+        printChoices(sSettingChoices, nSettingChoiceSize, nSettingChoiceSize, 1, 'c', &nCurrRow);
 
-        printBottomRemain(currRow);
+        printBottomRemain(nCurrRow);
 
 
         // prints bottom part of the box and the system message too, if there are any.
@@ -2270,10 +2418,21 @@ void settings(stringIn sInput, int nInputSize, stringChoice sSettingChoices[], i
     } while (Input_Fail);
 }
 
-void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], box_type caughtMons[], 
+
+/* This function saves the current progress of the user in a specified file name in the directore "sav"
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param nMonCreated: put nMonCreated here it checks how many entries in the dex as it would be saved
+    @param pFakedex: put pFakedex here as all its information will be saved
+    @param pCaughtMons: put pCaughtMons here as all its information will be saved
+    @param nCapturedMons: put nCapturedMons here it checks how many caught fakemons are there
+    @param sMessage: Put sMessage variable here
+*/
+void 
+save(stringIn sInput, int nInputSize, int nMonCreated, mon_type pFakedex[], box_type pCaughtMons[], 
             int nCapturedMons, stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -2286,33 +2445,33 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
     // file name has the maximum input of FILE_NAME_LEN characters (including .txt), so this space would 
     // not be a problem
     // the constant 6 is used for the additional "sav\\" path
-    char pathBuffer[nInputSize + 6];
-    pathBuffer[0] = '\0';   // making sure that the buffer has no string
+    char sPathBuffer[nInputSize + 6];
+    sPathBuffer[0] = '\0';   // making sure that the buffer has no string
     // used as a buffer for the accepted file name, since sInput will also be used for yes or no (confirmation)
-    char fileNameBuffer[nInputSize];
+    char sFileNameBuffer[nInputSize];
     // this is used since when deleting a file, the user is prompted to input the file name that they want 
     // to delete. This buffer holds that file name to be deleted
-    char deleteNameBuffer[nInputSize];  
-    fileNameBuffer[0] = '\0';
-    deleteNameBuffer[0] = '\0';
+    char sDeleteNameBuffer[nInputSize];  
+    sFileNameBuffer[0] = '\0';
+    sDeleteNameBuffer[0] = '\0';
 
     // tells if the file opening was succesful. default to yes
     int isOpened = 1;
 
-    // variables used when deleting or overwriting the file
+    // variables used when deleting or overwriting the file. bool type
     int isOverwriting = 0;
     int toOverwrite = 0;
     int isDeleting = 0;
     int availDeleteName = 0;
     int toDelete = 0;
 
-    stringChoice confirmChoices[2] = {"Yes", "No"};
+    stringChoice sConfirmChoices[2] = {"Yes", "No"};
 
     // used to know how many save slots are populated
     int nNumSav = 0;
 
     // used in for loops when looping thorgh every fakemon entry
-    int currMon;
+    int nCurrMon;
 
     // variable used to know if the user wanted to cancel save operation. 
     int toCancel = 0;
@@ -2320,30 +2479,30 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_Save);
 
         // prints the main content of the TUI
-        printFillerLines(HEIGHT / 5, &currRow);
-        printText("Save Slots:", 'c', &currRow);
-        printFillerLines(2, &currRow);
-        nNumSav = printFileNames("sav", &currRow);  // updates how many save files
-        printFillerLines(2, &currRow);
+        printFillerLines(HEIGHT / 5, &nCurrRow);
+        printText("Save Slots:", 'c', &nCurrRow);
+        printFillerLines(2, &nCurrRow);
+        nNumSav = printFileNames("sav", &nCurrRow);  // updates how many save files
+        printFillerLines(2, &nCurrRow);
         
         // if not asking for confirmation (not asking for the file name input)
         if (isOverwriting || (isDeleting && !(availDeleteName)))
         {
-            printChoices(confirmChoices, 2, 2, 1, 'c', &currRow);
+            printChoices(sConfirmChoices, 2, 2, 1, 'c', &nCurrRow);
 
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
-            Input_Fail = getInput(sInput, nInputSize, confirmChoices, 2, sMessage);
+            Input_Fail = getInput(sInput, nInputSize, sConfirmChoices, 2, sMessage);
 
             if (!(Input_Fail))
             {
@@ -2358,18 +2517,18 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
         // if in delete mode and asking which file to delete
         else if (isDeleting && availDeleteName)
         {
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
-            Input_Fail = getInput(deleteNameBuffer, nInputSize, NULL, 0, sMessage);
+            Input_Fail = getInput(sDeleteNameBuffer, nInputSize, NULL, 0, sMessage);
         }
         // if not any one those, ask for the file name
         else
         {
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
@@ -2407,8 +2566,8 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                 
                 else // if there are no more problems, accept the file name
                 {
-                    // put the accepted file name in the fileNameBuffer
-                    strcpy(fileNameBuffer, sInput);
+                    // put the accepted file name in the sFileNameBuffer
+                    strcpy(sFileNameBuffer, sInput);
                 }
             }
 
@@ -2422,7 +2581,7 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                     // if confirmed to overwrite, delete the same file name
                     if (toOverwrite)
                     {
-                        deleteSav(fileNameBuffer);
+                        deleteSav(sFileNameBuffer);
                         nNumSav--;  // update the number of files
                     }
                     // if they do not want to overwrite
@@ -2445,9 +2604,9 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                         if (availDeleteName)
                         {
                             // if the file to be deleted exists (based on the file name)
-                            if (fileExists(deleteNameBuffer))
+                            if (fileExists(sDeleteNameBuffer))
                             {
-                                deleteSav(deleteNameBuffer);
+                                deleteSav(sDeleteNameBuffer);
                                 nNumSav--;  // update the number of files
                             }
                             // if the file does not exist, exit the function
@@ -2477,7 +2636,7 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                     }
                 }
 
-                else if (fileExists(fileNameBuffer))    // if the entered file name already exist
+                else if (fileExists(sFileNameBuffer))    // if the entered file name already exist
                 {
                     // set the mode to isOverwriting
                     Input_Fail = 6;
@@ -2503,14 +2662,14 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                 // a save file is already deleted. if they said no to the confirmation, no
                 // file will be deleted and thus, no new file will be created because of the
                 // expression !(nNumSav >= MAX_SAV_FILES).
-                // !(fileExists(fileNameBuffer)) is also a safeguard, so that no new file will be created
+                // !(fileExists(sFileNameBuffer)) is also a safeguard, so that no new file will be created
                 // if the input file name is a duplicate.
-                if (!(nNumSav >= MAX_SAV_FILES) && !(fileExists(fileNameBuffer)))    
+                if (!(nNumSav >= MAX_SAV_FILES) && !(fileExists(sFileNameBuffer)))    
                 {
-                    // put the file path to the pathBuffer
-                    snprintf(pathBuffer, nInputSize + 6, "sav\\%s", fileNameBuffer);
+                    // put the file path to the sPathBuffer
+                    snprintf(sPathBuffer, nInputSize + 6, "sav\\%s", sFileNameBuffer);
                     FILE *fptr;
-                    fptr = fopen(pathBuffer, "w");  // write file
+                    fptr = fopen(sPathBuffer, "w");  // write file
 
                     if (fptr == NULL)   // if unable to open file. just another precaution
                     {
@@ -2523,25 +2682,25 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                         // write the current data to a save file
                         fprintf(fptr, "NUMBER OF ENTRIES: %d\n", nMonCreated);
                         fprintf(fptr, "\n");
-                        for (currMon = 0; currMon < nMonCreated; currMon++)
+                        for (nCurrMon = 0; nCurrMon < nMonCreated; nCurrMon++)
                         {
-                            fprintf(fptr, "FULL NAME: %s\n", Fakedex[currMon].sFull_Name);
-                            fprintf(fptr, "SHORT NAME: %s\n", Fakedex[currMon].sShort_Name);
-                            fprintf(fptr, "DESCRIPTION: %s\n", Fakedex[currMon].sDescript);
+                            fprintf(fptr, "FULL NAME: %s\n", pFakedex[nCurrMon].sFull_Name);
+                            fprintf(fptr, "SHORT NAME: %s\n", pFakedex[nCurrMon].sShort_Name);
+                            fprintf(fptr, "DESCRIPTION: %s\n", pFakedex[nCurrMon].sDescript);
                             // since cGender is only a character data type, 
                             // literal constants such as MALE must be printed
-                            if (Fakedex[currMon].cGender == 'M')  
+                            if (pFakedex[nCurrMon].cGender == 'M')  
                                 fprintf(fptr, "GENDER: MALE\n");
-                            else if (Fakedex[currMon].cGender == 'F')  
+                            else if (pFakedex[nCurrMon].cGender == 'F')  
                                 fprintf(fptr, "GENDER: FEMALE\n");
-                            else if (Fakedex[currMon].cGender == 'U')  
+                            else if (pFakedex[nCurrMon].cGender == 'U')  
                                 fprintf(fptr, "GENDER: UNKNOWN\n");
                             
                             // since nCaught is only a short data type,
                             // literal constants such as YES must be printed
-                            if (Fakedex[currMon].nCaught == 1)  
+                            if (pFakedex[nCurrMon].nCaught == 1)  
                                 fprintf(fptr, "CAUGHT: YES\n");
-                            if (Fakedex[currMon].nCaught == 0)  
+                            if (pFakedex[nCurrMon].nCaught == 0)  
                                 fprintf(fptr, "CAUGHT: NO\n");
 
                             fprintf(fptr, "\n");
@@ -2549,12 +2708,12 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
                         fprintf(fptr, "--------- DEX END ---------\n");
                         fprintf(fptr, "NUMBER OF CAUGHT: %d\n", nCapturedMons);
                         fprintf(fptr, "\n");
-                        for (currMon = 0; currMon < nCapturedMons; currMon++)
+                        for (nCurrMon = 0; nCurrMon < nCapturedMons; nCurrMon++)
                         {
-                            fprintf(fptr, "SLOT: %d\n", caughtMons[currMon].nSlot);
-                            fprintf(fptr, "SHORT NAME: %s\n", caughtMons[currMon].sShort_Name);
-                            fprintf(fptr, "FULL NAME: %s\n", caughtMons[currMon].sFull_Name);
-                            fprintf(fptr, "INDEX FROM DEX: %d\n", caughtMons[currMon].index_Dex);
+                            fprintf(fptr, "SLOT: %d\n", pCaughtMons[nCurrMon].nSlot);
+                            fprintf(fptr, "SHORT NAME: %s\n", pCaughtMons[nCurrMon].sShort_Name);
+                            fprintf(fptr, "FULL NAME: %s\n", pCaughtMons[nCurrMon].sFull_Name);
+                            fprintf(fptr, "INDEX FROM DEX: %d\n", pCaughtMons[nCurrMon].index_Dex);
 
                             fprintf(fptr, "\n");
                         }
@@ -2577,10 +2736,20 @@ void save(stringIn sInput, int nInputSize, int nMonCreated, mon_type Fakedex[], 
 
 }
 
-void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[], box_type caughtMons[], 
-            int *nCapturedMons, stringMsg sMessage)
+
+/* This function saves the current progress of the user in a specified file name in the directore "sav"
+    @param sInput: put sInput variable here
+    @param nInputSize: Put the maximum string length sInput may take + STR_MARGIN
+    @param *pMonCreated: put address of nMonCreated here as laoding overwrites it
+    @param pFakedex: put pFakedex here as all its information will be saved
+    @param pCaughtMons: put pCaughtMons here as all its information will be saved
+    @param *pCapturedMons: put addres of nCapturedMons as loading overwrites it
+    @param sMessage: Put sMessage variable here
+*/
+void load(stringIn sInput, int nInputSize, int *pMonCreated, mon_type pFakedex[], box_type pCaughtMons[], 
+            int *pCapturedMons, stringMsg sMessage)
 {
-    int currRow;    // indicates to functions on how many rows are already printed in the content area.
+    int nCurrRow;    // indicates to functions on how many rows are already printed in the content area.
                     // this so that the height of the content is consistent to the macro HEIGHT
 
     int Input_Fail = 0; // used for input validation. will loop for user input if the input is invalid.
@@ -2595,16 +2764,16 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
     // file name has the maximum input of FILE_NAME_LEN characters (including .txt), so this space 
     // would not be a problem
     // The literal 6 is used for the "sav\\"
-    char pathBuffer[nInputSize + 6];
+    char sPathBuffer[nInputSize + 6];
 
     // variable used to know if the user confirmed to overwrite the file. deafult to no
     int isConfirmed = 0;
     int isConfimring = 0;   // is confirming is the state in which the program asks for a sure overwrite
     // choices for confirming
-    stringChoice confirmChoices[2] = {"Yes", "No"};
+    stringChoice sConfirmChoices[2] = {"Yes", "No"};
 
     // used in for loops when looping thorgh every fakemon entry
-    int currMon;
+    int nCurrMon;
 
     // file pointer used for file operations
     FILE *fptr;  
@@ -2612,27 +2781,27 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
     // for the strings used in cGender, since the data stored in a text file is a string
     // a buffer is needed to convert that data into the right data type
     // 10 should be a big enough size since the largest word is UNKNOWN
-    const int stringBuffer_Size = 10;
-    char stringBuffer[stringBuffer_Size];
+    const int nStringBuffer_Size = 10;
+    char sStringBuffer[nStringBuffer_Size];
     
     do {
         printf(CLEAR);  // clears the screen
         printf("\n");   // and creates new line for the margin
-        currRow = 0;    // sets row to 0 again
+        nCurrRow = 0;    // sets row to 0 again
 
         // prints the header of the TUI
         printHeader(HDR_Load);
 
         // prints the main content of the TUI
-        printFillerLines(HEIGHT / 5, &currRow);
-        printText("Save Slots:", 'c', &currRow);
-        printFillerLines(2, &currRow);
-        printFileNames("sav", &currRow);
-        printFillerLines(2, &currRow);
+        printFillerLines(HEIGHT / 5, &nCurrRow);
+        printText("Save Slots:", 'c', &nCurrRow);
+        printFillerLines(2, &nCurrRow);
+        printFileNames("sav", &nCurrRow);
+        printFillerLines(2, &nCurrRow);
         
         if (!(isConfimring))    // if not confirmiing for an overwrite (getting file name)
         {
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
@@ -2643,16 +2812,16 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
         }
         else if (isConfimring)  // if confirming for an overwrite
         {
-            printChoices(confirmChoices, 2, 2, 1, 'c', &currRow);
+            printChoices(sConfirmChoices, 2, 2, 1, 'c', &nCurrRow);
 
-            printBottomRemain(currRow);
+            printBottomRemain(nCurrRow);
 
             // prints bottom part of the box and the system message too, if there are any.
             printRemark(sMessage);
             sMessage[0] = '\0';     // cleaning the sMessage array because it will be reused.
 
             // get the confimation for overwrite
-            Input_Fail = getInput(sInput, nInputSize, confirmChoices, 2, sMessage);
+            Input_Fail = getInput(sInput, nInputSize, sConfirmChoices, 2, sMessage);
 
             if (!(Input_Fail))
             {
@@ -2682,9 +2851,9 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                 // open the file with the inputted file name
                 else
                 {
-                    // put the file name to the pathBuffer
-                    snprintf(pathBuffer, nInputSize + 6, "sav\\%s", sInput);
-                    fptr = fopen(pathBuffer, "r");  // open file in read mode
+                    // put the file name to the sPathBuffer
+                    snprintf(sPathBuffer, nInputSize + 6, "sav\\%s", sInput);
+                    fptr = fopen(sPathBuffer, "r");  // open file in read mode
                     isOpened = 1;   // set to yes. 
 
                     if (fptr == NULL)   // if the entered file name does not exist in the sav directory
@@ -2714,70 +2883,70 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
                 if (isConfirmed)
                 {
                     // deletes all the current data
-                    for (currMon = 0; currMon < *nMonCreated; currMon++)
+                    for (nCurrMon = 0; nCurrMon < *pMonCreated; nCurrMon++)
                     {
-                        (Fakedex[currMon].sFull_Name)[0] = '\0';
-                        (Fakedex[currMon].sShort_Name)[0] = '\0';
-                        (Fakedex[currMon].sDescript)[0] = '\0';
-                        Fakedex[currMon].cGender = 0;
-                        Fakedex[currMon].nCaught = 0;
+                        (pFakedex[nCurrMon].sFull_Name)[0] = '\0';
+                        (pFakedex[nCurrMon].sShort_Name)[0] = '\0';
+                        (pFakedex[nCurrMon].sDescript)[0] = '\0';
+                        pFakedex[nCurrMon].cGender = 0;
+                        pFakedex[nCurrMon].nCaught = 0;
                     }
-                    for (currMon = 0; currMon < *nCapturedMons; currMon++)
+                    for (nCurrMon = 0; nCurrMon < *pCapturedMons; nCurrMon++)
                     {
-                        caughtMons[currMon].nSlot = 0;
-                        (caughtMons[currMon].sShort_Name)[0] = '\0';
-                        (caughtMons[currMon].sFull_Name)[0] = '\0';
-                        caughtMons[currMon].index_Dex = 0;
+                        pCaughtMons[nCurrMon].nSlot = 0;
+                        (pCaughtMons[nCurrMon].sShort_Name)[0] = '\0';
+                        (pCaughtMons[nCurrMon].sFull_Name)[0] = '\0';
+                        pCaughtMons[nCurrMon].index_Dex = 0;
                     }
 
                     // PRELIMINARY INFO
                     // asterisk (*) is used to discard information that are not needed.
                     // such as, FULL NAME:, SHORT NAME:, etc. only the important data are gathered 
-                    fscanf(fptr, " %*s %*s %*s %d", nMonCreated);   // sets created fakemon
+                    fscanf(fptr, " %*s %*s %*s %d", pMonCreated);   // sets created fakemon
 
                     // loops through every fakemon entry
-                    for (currMon = 0; currMon < *nMonCreated; currMon++)
+                    for (nCurrMon = 0; nCurrMon < *pMonCreated; nCurrMon++)
                     {
                         //FULL NAME
                         // META information discarded
                         fscanf(fptr, " %*s %*s ");
                         // since there may be spaces in the entries, fgets is used
-                        fgets(Fakedex[currMon].sFull_Name, FULL_NAME_SIZE + STR_MARGIN, fptr);
+                        fgets(pFakedex[nCurrMon].sFull_Name, FULL_NAME_SIZE + STR_MARGIN, fptr);
                         // removes the new line characterin the string
-                        Fakedex[currMon].sFull_Name[strcspn(Fakedex[currMon].sFull_Name, "\n")] = 0;
+                        pFakedex[nCurrMon].sFull_Name[strcspn(pFakedex[nCurrMon].sFull_Name, "\n")] = 0;
 
                         // SHORT NAME
                         fscanf(fptr, " %*s %*s ");
-                        fgets(Fakedex[currMon].sShort_Name, SHORT_NAME_SIZE + STR_MARGIN, fptr);
-                        Fakedex[currMon].sShort_Name[strcspn(Fakedex[currMon].sShort_Name, "\n")] = 0;
+                        fgets(pFakedex[nCurrMon].sShort_Name, SHORT_NAME_SIZE + STR_MARGIN, fptr);
+                        pFakedex[nCurrMon].sShort_Name[strcspn(pFakedex[nCurrMon].sShort_Name, "\n")] = 0;
 
                         // DESCRIPTION
                         fscanf(fptr, " %*s ");
-                        fgets(Fakedex[currMon].sDescript, DESCRIPTION_SIZE + STR_MARGIN, fptr);
-                        Fakedex[currMon].sDescript[strcspn(Fakedex[currMon].sDescript, "\n")] = 0;
+                        fgets(pFakedex[nCurrMon].sDescript, DESCRIPTION_SIZE + STR_MARGIN, fptr);
+                        pFakedex[nCurrMon].sDescript[strcspn(pFakedex[nCurrMon].sDescript, "\n")] = 0;
 
                         // GENDER
                         // since the data in the save text file has the literal MALE, FEMALE, or UNKNOWN
                         // in it, it is necessary to convert those literals into characters
                         fscanf(fptr, " %*s ");
-                        fgets(stringBuffer, stringBuffer_Size, fptr);
-                        stringBuffer[strcspn(stringBuffer, "\n")] = 0;
-                        if (strcmp(stringBuffer, "MALE") == 0)
-                            Fakedex[currMon].cGender = 'M';
-                        else if (strcmp(stringBuffer, "FEMALE") == 0)
-                            Fakedex[currMon].cGender = 'F';
-                        else if (strcmp(stringBuffer, "UNKNOWN") == 0)
-                            Fakedex[currMon].cGender = 'U';
+                        fgets(sStringBuffer, nStringBuffer_Size, fptr);
+                        sStringBuffer[strcspn(sStringBuffer, "\n")] = 0;
+                        if (strcmp(sStringBuffer, "MALE") == 0)
+                            pFakedex[nCurrMon].cGender = 'M';
+                        else if (strcmp(sStringBuffer, "FEMALE") == 0)
+                            pFakedex[nCurrMon].cGender = 'F';
+                        else if (strcmp(sStringBuffer, "UNKNOWN") == 0)
+                            pFakedex[nCurrMon].cGender = 'U';
                         
                         // CAUGHT
                         // same case with gender
                         fscanf(fptr, " %*s ");
-                        fgets(stringBuffer, stringBuffer_Size, fptr);
-                        stringBuffer[strcspn(stringBuffer, "\n")] = 0;
-                        if (strcmp(stringBuffer, "YES") == 0)
-                            Fakedex[currMon].nCaught = 1;
-                        else if (strcmp(stringBuffer, "NO") == 0)
-                            Fakedex[currMon].nCaught = 0;
+                        fgets(sStringBuffer, nStringBuffer_Size, fptr);
+                        sStringBuffer[strcspn(sStringBuffer, "\n")] = 0;
+                        if (strcmp(sStringBuffer, "YES") == 0)
+                            pFakedex[nCurrMon].nCaught = 1;
+                        else if (strcmp(sStringBuffer, "NO") == 0)
+                            pFakedex[nCurrMon].nCaught = 0;
                         
                     }
 
@@ -2787,27 +2956,27 @@ void load(stringIn sInput, int nInputSize, int *nMonCreated, mon_type Fakedex[],
 
                     // PRELIMINARY INFO
                     // such as, FULL NAME:, SHORT NAME:, etc. only the important data are gathered 
-                    fscanf(fptr, " %*s %*s %*s %d", nCapturedMons);   // sets how many capture fakemon fakemon
+                    fscanf(fptr, " %*s %*s %*s %d", pCapturedMons);   // sets how many capture fakemon fakemon
 
-                    for (currMon = 0; currMon < *(nCapturedMons); currMon++)
+                    for (nCurrMon = 0; nCurrMon < *(pCapturedMons); nCurrMon++)
                     {
                         // SLOT NUMBER
-                        fscanf(fptr, " %*s %d", &(caughtMons[currMon].nSlot));
+                        fscanf(fptr, " %*s %d", &(pCaughtMons[nCurrMon].nSlot));
 
                         // SHORT NAME
                         fscanf(fptr, " %*s %*s ");
-                        fgets(caughtMons[currMon].sShort_Name, SHORT_NAME_SIZE + STR_MARGIN, fptr);
+                        fgets(pCaughtMons[nCurrMon].sShort_Name, SHORT_NAME_SIZE + STR_MARGIN, fptr);
                         // removes new line character
-                        caughtMons[currMon].sShort_Name[strcspn(caughtMons[currMon].sShort_Name, "\n")] = 0;
+                        pCaughtMons[nCurrMon].sShort_Name[strcspn(pCaughtMons[nCurrMon].sShort_Name, "\n")] = 0;
 
                         // FULL NAME
                         fscanf(fptr, " %*s %*s ");
-                        fgets(caughtMons[currMon].sFull_Name, FULL_NAME_SIZE + STR_MARGIN, fptr);
+                        fgets(pCaughtMons[nCurrMon].sFull_Name, FULL_NAME_SIZE + STR_MARGIN, fptr);
                         // removes new line character
-                        caughtMons[currMon].sFull_Name[strcspn(caughtMons[currMon].sFull_Name, "\n")] = 0;
+                        pCaughtMons[nCurrMon].sFull_Name[strcspn(pCaughtMons[nCurrMon].sFull_Name, "\n")] = 0;
 
                         // INDEX FROM DEX
-                        fscanf(fptr, " %*s %*s %*s %d", &(caughtMons[currMon].index_Dex));
+                        fscanf(fptr, " %*s %*s %*s %d", &(pCaughtMons[nCurrMon].index_Dex));
                     }
                     
 

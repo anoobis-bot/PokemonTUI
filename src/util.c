@@ -196,7 +196,7 @@ printRemark(char *sMessage)
 }
 
 
-/* This function handles the input of the user.
+/* This function handles the input of the user. It can handle some error inputs
     @param sInput: variable that holds the input of the user. it is to 
         be altered in this function
     @param sInputSize: size of the sInputArray

@@ -217,7 +217,7 @@ printGrass(int nActiveCell, int *nCurrRow)
 }
 
 
-/* This function prints the grass tiles on the screen and the position of the player
+/* This function prints the fakemon in the box in the current page
     based on the ActiveCell        
     @param pIndexMonsDisplay[]: the box_type array that would be printed on the screen
     @param nIndexMonsDisplay_Size: how many elements in pIndexMonsDisplay
