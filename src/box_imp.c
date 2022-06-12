@@ -1999,6 +1999,9 @@ viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int nModeC
                     if ((nSearchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
                         nTempMaxPage++;
                     
+                    // turning page to 0
+                    nCurrPage = 0;
+
                     setMessage(sMessage, "Found some fakemon!");
                 }
                 // if no fakemon was found
@@ -2072,6 +2075,9 @@ viewBox(stringIn sInput, int nInputSize, stringChoice sModeChoices[], int nModeC
                     if ((nSearchedQty % (NUM_BOX_COLUMN * NUM_BOX_ROW)) != 0)
                         nTempMaxPage++;
                     
+                    // setting the page to 0
+                    nCurrPage = 0;
+
                     setMessage(sMessage, "Found some fakemon!");
                 }
                 // if no fakemon was found

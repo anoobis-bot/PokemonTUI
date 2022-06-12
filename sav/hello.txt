@@ -1,4 +1,4 @@
-NUMBER OF ENTRIES: 12
+NUMBER OF ENTRIES: 14
 
 FULL NAME: Blastoise
 SHORT NAME: BLSTY
@@ -70,6 +70,18 @@ FULL NAME: Lucario
 SHORT NAME: LCRIO
 DESCRIPTION: Only the best pokemon ever! When I first played platinum I was in awe. Really cool design!
 GENDER: FEMALE
+CAUGHT: NO
+
+FULL NAME: Mewtwo
+SHORT NAME: MWTWO
+DESCRIPTION: Lab grown pokemon
+GENDER: UNKNOWN
+CAUGHT: NO
+
+FULL NAME: Shelby
+SHORT NAME: SHLBY
+DESCRIPTION: Idk, probrably from big bang theory
+GENDER: MALE
 CAUGHT: NO
 
 --------- DEX END ---------
