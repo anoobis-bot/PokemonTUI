@@ -580,6 +580,8 @@ addDex(stringIn sInput, int pInputSizes[], int nInputQty, mon_type *dex_Database
                         else
                         {
                             setMessage(sMessage, "Fakemon entry discarded");
+                            // so that it would go to the main menu
+                            strcpy(sInput, "Cancel");
                         }
 
                     }
@@ -2987,6 +2989,8 @@ void load(stringIn sInput, int nInputSize, int *pMonCreated, mon_type pFakedex[]
                     
 
                     setMessage(sMessage, "File succesfully loaded!");
+                    // so that it would go to the main menu
+                    strcpy(sInput, "Cancel");
                 }
                 // if they do not want to overwrite and load anymore
                 else if (!(isConfirmed))
@@ -2997,7 +3001,11 @@ void load(stringIn sInput, int nInputSize, int *pMonCreated, mon_type pFakedex[]
                 // either way, close the file and exit the function (will go back to settings menu)
                 fclose(fptr);
                 isConfimring = 0;   // to end the function
-                sInput[0] = '\0';   // cleaning input buffer
+                
+                // if the user confirmed, because of strcpy, sInput should
+                // be "Cancel". We would not want it to be erased
+                if (!isConfirmed)
+                    sInput[0] = '\0';   // cleaning input buffer
                 
             }
         }
