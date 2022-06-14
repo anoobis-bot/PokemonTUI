@@ -1,3 +1,13 @@
+/******************************************
+File Name: definitions.h
+
+Author: Francis Zaccharie B. de Leon
+Last Update: May 28, 2022
+
+This file contains the most likely 
+attributes that the user may want to configure in the program
+******************************************/
+
 #ifndef CONFIGURATION
 #define CONFIGURATION
 
@@ -47,9 +57,9 @@
 
 #define BOX_MON_PAGE 8          // how many fakemon to display in a page in view Box
 
-#define FILE_NAME_LEN 14
+#define FILE_NAME_LEN 14        // Manimum number of filename length (+4 for the .txt)
 
-#define MAX_SAV_FILES 3
+#define MAX_SAV_FILES 3         // Maximum number of save files
 
 #define EXPLORE_COLUMN 7        // how much horizontal tiles for the exploration part
 
