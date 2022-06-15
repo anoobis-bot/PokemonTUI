@@ -2,7 +2,7 @@
 File Name: art.c
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 21, 2022
+Last Update: June 12, 2022
 
 This file contains most of the implmentation 
 for printing the 2d array art in art.h 

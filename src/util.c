@@ -2,7 +2,7 @@
 File Name: util.c
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 18, 2022
+Last Update: June 12, 2022
 
 This file contains the common utility 
 functions that the developer may use

@@ -2,7 +2,7 @@
 File Name: art.h
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 28, 2022
+Last Update: June 10, 2022
 
 This file contains the declaration of 2d 
 array variables for the art that would

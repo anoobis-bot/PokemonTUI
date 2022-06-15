@@ -2,7 +2,7 @@
 File Name: array_sizes.h
 
 Author: Francis Zaccharie B. de Leon
-Last Update: May 23, 2022
+Last Update: June 3, 2022
 
 This file contains most of the macros for
 declaring the sizes of arrays.
