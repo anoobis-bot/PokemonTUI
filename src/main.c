@@ -45,8 +45,9 @@ int main(void)
     mon_type pFakeDex[DEX_MAX] = {{{0}}};
 
     // sizes of each member in the FakeDex struct (mon_type)
+    // contant 7 is for UNKNOWN since it is the longest word
     int nDatabase_In_Sizes[STRUCT_IN_NUM] = {FULL_NAME_SIZE + STR_MARGIN, SHORT_NAME_SIZE + STR_MARGIN, DESCRIPTION_SIZE + STR_MARGIN, 
-                                    1 + STR_MARGIN};
+                                    7 + STR_MARGIN};
 
     // number of Fakemon already created
     int nMonCreated = 0;

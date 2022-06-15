@@ -414,7 +414,7 @@ addDex(stringIn sInput, int pInputSizes[], int nInputQty, mon_type *dex_Database
             else if (nCurrQuestion == 2)
                 strcpy(sMessage, "Input your Fakemon's description.");
             else if (nCurrQuestion == 3)
-                strcpy(sMessage, "Input your Fakemon's gender. 'F', 'M', 'U' only. U is Unknown.");
+                strcpy(sMessage, "Input your Fakemon's gender: MALE, FEMALE, or UNKNOWN");
         }
         // prints bottom part of the box and the system message too, if there are any.
         printRemark(sMessage);
@@ -515,12 +515,22 @@ addDex(stringIn sInput, int pInputSizes[], int nInputQty, mon_type *dex_Database
                 // there is no need to alter the getInput function as this will complicate the getInput function.
                 else if (nCurrQuestion == 3)
                 {
-                    if (sInput[0] == 'M' || sInput[0] == 'F' || sInput[0] == 'U')
-                        strucTempMon.cGender = sInput[0];
-                    else // if other letters are inputted
+                    if (strcmp(sInput, "MALE") == 0)
+                    {
+                        strucTempMon.cGender = 'M';
+                    }
+                    else if (strcmp(sInput, "FEMALE") == 0)
+                    {
+                        strucTempMon.cGender = 'F';
+                    }
+                    else if (strcmp(sInput, "UNKNOWN") == 0)
+                    {
+                        strucTempMon.cGender = 'U';
+                    }
+                    else // if other word are inputted
                     {
                         Input_Fail = 2; // user input not in the choices
-                        strcpy(sMessage, "Invalid input! You can only enter 'M', 'F', or 'U'" );    
+                        strcpy(sMessage, "Invalid input! You can only enter MALE, FEMALE, or UNKNOWN");    
                     }
                 }
                 
@@ -674,12 +684,22 @@ addDex(stringIn sInput, int pInputSizes[], int nInputQty, mon_type *dex_Database
                 // there is no need to alter the getInput function as this will complicate the getInput function.
                 else if (nCurrQuestion == 3)
                 {
-                    if (sInput[0] == 'M' || sInput[0] == 'F' || sInput[0] == 'U')
-                        dex_Database[nCurrMon].cGender = sInput[0];
+                    if (strcmp(sInput, "MALE") == 0)
+                    {
+                        dex_Database[nCurrMon].cGender = 'M';
+                    }
+                    else if (strcmp(sInput, "FEMALE") == 0)
+                    {
+                        dex_Database[nCurrMon].cGender = 'F';
+                    }
+                    else if (strcmp(sInput, "UNKNOWN") == 0)
+                    {
+                        dex_Database[nCurrMon].cGender = 'U';
+                    }
                     else // if other letters are inputted
                     {
                         Input_Fail = 2; // user input not in the choices
-                        strcpy(sMessage, "Invalid input! You can only enter 'M', 'F', or 'U'" );    
+                        strcpy(sMessage, "Invalid input! You can only enter MALE, FEMALE, or UNKNOWN");    
                     }
                 }
 
